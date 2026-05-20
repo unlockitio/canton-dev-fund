@@ -221,7 +221,7 @@ CAP’s outcome-execution layer will need to interoperate with the asset and tra
   - API documentation and developer setup instructions
   - extension guide for building new modules on `cap-core`
   - documentation of known implementation constraints, operating assumptions, and current first-release limitations
-  - open-source release under Apache 2.0 or equivalent
+  - final/stable public open-source release under Apache 2.0 or equivalent, following public development throughout the project lifecycle
   - at least one public walkthrough, tutorial, or technical session
 
 ### Milestone 7: Internal Product Adoption
