@@ -309,8 +309,6 @@ The planned engineering and delivery duration is **6 months** for Milestones 1 t
 
 The listed CC amounts reflect the Canton Coin exchange rate and value at the time this proposal is accepted. Because adoption milestones 7 and 8 may be accepted after the 6-month engineering delivery window, the parties may agree to fix the value of those adoption milestones in fiat currency terms, preferably EUR or otherwise USD, to address material CC valuation fluctuations. Any such adjustment must be approved by the Foundation or Tech & Ops Committee before payment. The approved amount remains capped and ring-fenced, and this stipulation does not create an automatic right to additional funding.
 
-Unlockit is already exploring these topics through ongoing academic partnerships. That work continues regardless of the fund outcome. The funding would accelerate delivery from an academic-exploration pace to a six-month public release.
-
 ---
 
 ## Co-Marketing
@@ -347,6 +345,8 @@ Three concrete gaps motivate the proposal:
 ## Rationale
 
 **Why fund this as shared infrastructure.** One reusable implementation of submission, resolution, and outcome-execution mechanics is cheaper for the ecosystem than having each Canton team re-derive the same logic independently. The governance and auction modules are the first two consumers of `cap-core`; the core is the lasting asset.
+
+Unlockit is already exploring related allocation and coordination topics through ongoing academic partnerships. That work will continue regardless of the fund outcome, but Development Fund support would accelerate CAP from academic exploration into a bounded six-month public release for the Canton ecosystem.
 
 **Why two modules instead of one.** A single-domain release would leave the core untested against a second workflow family. Shipping both governance and auctions in the first release forces the core interfaces to generalize early rather than silently coupling to one domain.
 
