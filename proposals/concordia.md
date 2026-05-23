@@ -224,28 +224,30 @@ CAP’s outcome-execution layer will need to interoperate with the asset and tra
   - final/stable public open-source release under Apache 2.0 or equivalent, following public development throughout the project lifecycle
   - at least one public walkthrough, tutorial, or technical session
 
-### Milestone 7: Internal Product Adoption
-- **Estimated Delivery:** Within 1 quarter after Milestone 6
-- **Focus:** Demonstrate that CAP primitives are usable in a live product setting
+### Milestone 7: External Adoption Validation
+- **Estimated Delivery:** Within 12 months after Milestone 6
+- **Focus:** Validate external adoption through exactly 2 qualified external teams using CAP in pilot or production applications
 - **Deliverables / Value Metrics:**
-  - CAP primitives integrated into a live Unlockit product workflow
-  - documentation of which CAP primitives were reused or adapted
-  - committee-visible evidence of the running integration
+  - exactly 2 external teams using CAP primitives in a pilot or production application
+  - confirmation from each adopting team to the Tech & Ops Committee
+  - documentation showing substantive reuse of CAP primitives, including adapted or extended use where applicable
+  - letters of intent may support evaluation but do not satisfy this milestone
+  - validation is based on documented evidence of use and adopter confirmation; strict binary package traceability is not required
 
-### Milestone 8: External Adoption Validation
-- **Estimated Delivery:** Within 2 quarters after Milestone 6
-- **Focus:** Demonstrate downstream demand and active adoption beyond Unlockit
+### Milestone 8: Extended External Adoption
+- **Estimated Delivery:** Within 24 months after Milestone 6
+- **Focus:** Reward additional external adoption beyond Milestone 7
 - **Deliverables / Value Metrics:**
-  - at least 3 identified third-party letters of intent
-  - at least 1 identified third party actively implementing, piloting, or formally integrating the library or its primitives
-  - documentation or evidence sufficient to show substantive engagement, including adapted or extended use where applicable
-
-### Milestone 9: Extended External Adoption
-- **Estimated Delivery:** Within 2 quarters after Milestone 6
-- **Focus:** Preserve incentive alignment for additional external adoption beyond the Milestone 8 minimum
-- **Deliverables / Value Metrics:**
-  - additional identified third-party letters of intent beyond the Milestone 8 minimum
-  - additional verifiable ongoing third-party implementations beyond the Milestone 8 minimum
+  - up to 10 additional qualified external teams beyond Milestone 7 using CAP primitives in pilot or production applications
+  - pilot adoption earns 30,000 CC per additional qualified external team
+  - production adoption earns 60,000 CC per additional qualified external team
+  - if a qualified pilot later reaches production during the milestone period, the production payment is reduced by the pilot payment already made, with the same team capped at 60,000 CC
+  - breadth premium of 50,000 CC if at least 5 additional qualified external teams are accepted by the end of the milestone period
+  - additional breadth premium of 50,000 CC if 10 additional qualified external teams are accepted by the end of the milestone period
+  - total Milestone 8 funding is capped at 700,000 CC
+  - each accepted additional team must provide confirmation to the Tech & Ops Committee and substantive documentation of CAP primitive reuse, including adapted or extended use where applicable
+  - letters of intent may support evaluation but do not satisfy this milestone
+  - validation is based on documented evidence of use and adopter confirmation; strict binary package traceability is not required
 
 ---
 
@@ -266,22 +268,24 @@ Project validation:
 - **Shared core.** The auction and governance modules import and use the same `cap-core` packages.
 - **Open-source release.** Source code is published under Apache 2.0 or equivalent in a public repository with documentation sufficient for a developer to clone, build, and run the delivered implementation.
 - **Documented scope and constraints.** The released documentation clearly states what CAP covers in the first release, what remains out of scope, and the main implementation constraints and operating assumptions.
-- **Internal adoption.** The released CAP primitives must be integrated into at least one live Unlockit product workflow within 1 quarter after Milestone 6.
-- **External adoption.** External adoption must include at least 3 identified third-party letters of intent and at least 1 third party actively implementing, piloting, or formally integrating the library within 2 quarters after Milestone 6.
+- **External pilot or production adoption.** Adoption milestones require qualified external teams using CAP primitives in pilot or production applications.
+- **Adopter confirmation.** Each accepted external adoption must include confirmation from the adopting team to the Tech & Ops Committee.
 - **Adapted reuse counts.** Downstream adaptation or extension counts as adoption where substantive reuse of CAP primitives is documented.
 - **Traceability boundary.** Validation of adoption is based on documented evidence of use and adopter confirmation rather than strict binary package traceability, since `cap-core` interfaces are expected to be more bespoke than standardized token interfaces.
+- **Internal use.** Unlockit internal use may support evaluation as evidence of implementation maturity, but it does not satisfy adoption milestones.
+- **Letters of intent.** Letters of intent may support evaluation but do not satisfy adoption milestones.
 
 ---
 
 ## Funding
 
 **Base Funding Request:** 550,000 CC
-**Adoption-Linked Additional Funding:** 200,000 CC plus uncapped Milestone 9 upside
-**Total Funding:** 750,000 CC plus uncapped additional adoption-linked funding under Milestone 9
+**Adoption-Linked Additional Funding:** up to 850,000 CC
+**Total Funding Cap:** 1,400,000 CC
 
 Part of the funding is shifted from pure delivery milestones into adoption-linked milestones. The base amount covers design, implementation, hardening, documentation, and public release. Additional funding is contingent on demonstrated downstream adoption so that part of the proposal's value is earned through real reuse, not only through delivery of the reference implementation.
 
-This proposal includes adoption milestones M7, M8, and M9 as a deliberate mechanism to validate reusability through downstream use. For that reason, Milestone 9 is intentionally uncapped: once the minimum adoption threshold has been reached, further adoption continues to create ecosystem value within the timeframes of the adoption milestones and should continue to be rewarded.
+This proposal includes adoption milestones M7 and M8 as a deliberate mechanism to validate reusability through downstream use. Adoption-linked funding is capped and earned only through accepted milestone evidence within the stated milestone periods.
 
 ### Payment Breakdown by Milestone
 - Milestone 1 _(Core Design And Scope Definition)_: 90,000 CC upon committee acceptance
@@ -290,17 +294,20 @@ This proposal includes adoption milestones M7, M8, and M9 as a deliberate mechan
 - Milestone 4 _(Auctions Module Expansion)_: 100,000 CC upon committee acceptance
 - Milestone 5 _(Reference Flows And Integration Hardening)_: 100,000 CC upon committee acceptance
 - Milestone 6 _(Documentation, Extension Guide, And Open-Source Release)_: 60,000 CC upon final release and acceptance
-- Milestone 7 _(Internal Product Adoption)_: 100,000 CC upon acceptance within 1 quarter of Milestone 6
-- Milestone 8 _(External Adoption Validation)_: 100,000 CC upon acceptance within 2 quarters of Milestone 6 and delivery of at least 3 identified third-party letters of intent and at least 1 third party actively implementing, piloting, or formally integrating the library or its primitives
-- Milestone 9 _(Extended External Adoption)_: 25,000 CC per additional identified third-party letter of intent beyond the Milestone 8 minimum, and 75,000 CC per additional verifiable ongoing third-party implementation beyond the Milestone 8 minimum
+- Milestone 7 _(External Adoption Validation)_: 150,000 CC upon acceptance within 12 months after Milestone 6 for exactly 2 qualified external teams using CAP in pilot or production applications
+- Milestone 8 _(Extended External Adoption)_: up to 700,000 CC upon acceptance within 24 months after Milestone 6, covering up to 10 additional qualified external teams beyond Milestone 7, paid at 30,000 CC per pilot adoption and 60,000 CC per production adoption, plus breadth premiums as specified in the milestone deliverables
 
 ### Timeline Accountability
-If a milestone is delayed beyond its stated delivery month for reasons under the proposer’s control, the payout for that milestone should be reduced by **5% for each additional 2-week delay**, capped at **20%** for that milestone.
+If a milestone from Milestones 1 through 6 is delayed beyond its stated delivery month for reasons under the proposer’s control, the payout for that milestone should be reduced by **10% for each additional 2-week delay**, capped at **20%** for that milestone. After the capped delay penalty has been exhausted, if delays continue for reasons under the proposer’s control, become unreasonable, or result in non-delivery, the Foundation or Tech & Ops Committee may refuse acceptance and close the affected milestone, and reserved funds for that milestone return to the Dev Fund pool. If two milestones are closed for those reasons, the Foundation or Tech & Ops Committee may terminate the full proposal, and any remaining reserved funds return to the Dev Fund pool.
 
 Delays caused by Committee-requested scope changes or dependency changes imposed by the Canton ecosystem should not trigger this penalty automatically and should instead be handled through explicit milestone re-planning.
 
+For Milestones 7 and 8, unaccepted or unearned reserved adoption funds return to the Dev Fund pool at their respective milestone deadlines.
+
 ### Volatility Stipulation
-The planned engineering and delivery duration is **6 months** for Milestones 1 through 6. Adoption milestones 7, 8, and 9 extend beyond that window and are treated as separate adoption-linked milestones rather than part of the core delivery timeline. Unlockit assumes the volatility risk for the adoption milestones.
+The planned engineering and delivery duration is **6 months** for Milestones 1 through 6. Adoption milestones 7 and 8 extend beyond that window and are treated as separate adoption-linked milestones rather than part of the core delivery timeline.
+
+The listed CC amounts reflect the Canton Coin exchange rate and value at the time this proposal is accepted. Because adoption milestones 7 and 8 may be accepted after the 6-month engineering delivery window, the parties may agree to fix the value of those adoption milestones in fiat currency terms, preferably EUR or otherwise USD, to address material CC valuation fluctuations. Any such adjustment must be approved by the Foundation or Tech & Ops Committee before payment. The approved amount remains capped and ring-fenced, and this stipulation does not create an automatic right to additional funding.
 
 Unlockit is already exploring these topics through ongoing academic partnerships. That work continues regardless of the fund outcome. The funding would accelerate delivery from an academic-exploration pace to a six-month public release.
 
