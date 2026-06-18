@@ -8,7 +8,7 @@
 | Created | 2026-04-10 |
 | Approved | 2026-06-10|
 | PR | [#184](https://github.com/canton-foundation/canton-dev-fund/pull/184) | 
-
+| Champion | IntellectEU |
 ---
 
 ## Abstract
