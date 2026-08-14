@@ -3,22 +3,20 @@
 **Author:** Unlockit (luis.marado@unlockit.io)
 **Status:** Draft
 **Created:** 2026-08-05
-**Label:** financial-workflows-composability
-**Champion:** IntellectEU
-
-> This initial proposal is provided for discussion. It does not create a funding commitment, contractual claim, delivery commitment, or Foundation obligation.
+**Label:** financial-workflows-composability, onchain-governance
+**Champion:** TBD
 
 ---
 
 ## Abstract
 
-Concordia V2 extends [Concordia](https://github.com/unlockitio/concordia) and Canton Allocation Primitives (CAP) with reusable recurring allocation and payment workflows, and adds a common participant-facing application layer for composing ecosystem workflows. It will provide shared Daml primitives, reference policies, contract projections and view models, reusable frontend components, a generic independently runnable reference UI, and integration guidance for obligations or entitlements over time, including employment compensation, rent, subscriptions, revenue sharing, vesting, recurring obligations, and treasury distributions.
+Concordia V2 extends **Canton Allocation Primitives (CAP)**, the open-source reference implementation established by Concordia V1 for privacy-preserving multi-party allocation and decision workflows on Canton. CAP provides shared submission, resolution, outcome-execution, and expiry mechanics, with governance and auctions as its initial proving domains.
 
-Concordia V2 is additive to Concordia V1 and CAP; it does not replace, reopen, or alter V1 governance or auction commitments.
+This proposal adds recurring allocations governed by scheduled or continuous rules. Authorized governance actions can initialize, amend, suspend, terminate, or finalize these allocations and produce subsequent or final outcomes through the existing CAP execution model.
 
-The implementation separates authorization, domain policy, time-based allocation, and settlement. Existing Canton Token Standards remain responsible for asset representation and transfer. The Development Fund would support this common application layer and the underlying public, Apache-2.0 infrastructure as a grant-funded shared asset available to any Canton ecosystem team. Unlockit's product frontend, product-specific integrations, commercial user interfaces, customer work, hosting, sales, and go-to-market activity remain privately funded by Unlockit.
+The reference application is also extended with a reusable governance and workflow microfrontend that wallet providers, validator operators, and application developers can adopt, embed, and extend. Existing contracts, authorization rules, signing flows, and Canton asset infrastructure remain authoritative.
 
-Funding amounts, milestone percentages, delivery dates, maintenance terms, and the adopter incentive mechanism remain subject to confirmation.
+The proposal is additive. It does not replace, reopen, or alter the governance, auction, delivery, or adoption commitments established in Concordia V1.
 
 ---
 
@@ -26,130 +24,149 @@ Funding amounts, milestone percentages, delivery dates, maintenance terms, and t
 
 ### 1. Objective
 
-Recurring financial workflows commonly bind authorization, business rules, time calculations, and asset movement into one application. That coupling makes components harder to reuse, review, test, and combine with other Canton projects.
+Extend the reusable CAP V1 reference implementation so developers can model, execute, and evaluate allocations governed by recurring rules without rebuilding the same authorization, time-calculation, lifecycle, and outcome structure from scratch.
 
-Concordia and CAP already address reusable multi-party decision and allocation mechanics. Concordia V2 will apply that foundation to recurring allocations and payments so that an authorized agreement can establish an entitlement or obligation, calculate amounts over time, support policy-controlled amendment and termination, produce final allocations, and hand settlement instructions to existing Canton Token Standards.
+V2 proposes applying Concordia/CAP primitives to the existing Splice governance process and incorporating `cap-dapp` into the Splice Validator Wallet, while preserving CAP's core concepts and canonical signing authority.
 
-The umbrella includes two distinct timing models: scheduled recurring payments create discrete obligations at agreed dates, while continuous accrual calculates an amount across an effective interval even when settlement occurs on a separate cadence. A domain policy selects and constrains the appropriate model.
+V2 should cover a narrow but meaningful class of recurring allocation rules:
 
-The objective is an Apache-2.0 reference implementation that allows Canton developers to:
+- initialization from an authorized agreement or decision
+- scheduled recurrence and continuous accrual
+- deterministic calculation over an agreed schedule or effective interval
+- governance actions that amend, suspend, terminate, or finalize an active recurring allocation
+- production of subsequent or final allocations for settlement through existing Canton infrastructure
 
-- initialize a recurring allocation or payment obligation from an authorized decision or agreement
-- calculate amounts deterministically over an agreed schedule or interval
-- amend, suspend, terminate, or finalize an active obligation under explicit domain policy
-- produce route-specific final allocations when an obligation ends
-- hand settlement instructions to existing Canton Token Standards
-- reuse the same core across at least two materially different domains
-- integrate through documented APIs, adapters, examples, automated tests, and a common participant-facing application layer
+The intended outcome is that a Canton team can use the shared CAP foundation to build recurring allocation workflows for employment compensation, rent, subscriptions, revenue sharing, vesting, recurring obligations, and treasury distributions. Domain-specific governance determines which participants can act, which routes are available, and how each authorized action affects the recurring allocation and any resulting allocations.
 
-Success means that an independent ecosystem team can evaluate, run, and integrate the public artifacts without relying on an Unlockit product or hosted service.
+V2 also extends the reference application layer with a reusable governance and workflow microfrontend that Canton ecosystem teams, including wallet providers, validator operators, and application developers, can adopt, embed, and extend.
 
-#### Public-good scope funded by the Development Fund
-
-- shared Apache-2.0 Daml primitives for recurring allocations, payment schedules, time-based calculations, and lifecycle transitions
-- reusable agreement, amendment, suspension, termination, calculation, and final-allocation workflows
-- domain-policy interfaces and bounded reference policies for multiple workflow families
-- standards-aligned settlement adapters or integration examples using existing Canton Token Standards
-- a common participant-facing application layer with reusable frontend components and a generic, independently runnable reference UI sufficient to inspect and exercise the public workflows through authorized routes
-- developer documentation, architecture guidance, integration guides, examples, automated tests, and tooling
-- interoperability work that benefits any Canton ecosystem team
-- public development and public release from the start
-
-#### Unlockit-funded exclusions
-
-The grant does not fund:
-
-- Unlockit-specific integrations
-- an Unlockit commercial frontend or other product-specific user interface work
-- Unlockit branding or product design
-- customer-specific workflows or customization
-- hosted operations, production support, or managed infrastructure
-- sales, business development, customer acquisition, commercial packaging, or Unlockit go-to-market execution
-
-Unlockit will fund these activities separately. No Unlockit product-specific integration or frontend work is included in the funding request.
+This proposal extends CAP V1's shared submission, resolution, outcome execution, and expiry mechanics. It does not replace, reopen, or alter V1 governance, auction, delivery, or adoption commitments.
 
 ### 2. Implementation Mechanics
 
-The implementation composes five replaceable layers: canonical governance and authorization, CAP decision and domain workflows, recurring-allocation primitives, token-standard settlement, and a common participant-facing application layer.
+The project extends the CAP V1 implementation with recurring allocations and a reusable reference application.
 
-#### Layer 1: Canonical governance and authorization
+The descriptions of `cap-core`, `cap-governance`, and `cap-auctions` below reiterate relevant parts of Concordia V1 for context. They do not redefine or expand the approved V1 scope except where a V2 extension is stated explicitly.
 
-Existing governance infrastructure remains canonical wherever a workflow already uses it. Splice governance is existing infrastructure with authoritative contracts, identities, roles, signatures, and authorized submission routes; it is not a deployment or implementation of Concordia or CAP. Concordia and CAP may compose with that infrastructure by projecting state, discovering actions available to an authenticated role, and scaffolding submissions through canonical authorized routes. Concordia cannot vote, allocate, sign, or submit on behalf of an SV or the Development Fund Manager.
+The implementation preserves the modular structure established in V1:
 
-For workflows that do not already have canonical governance, Concordia supplies reusable authorization and decision mechanics. A decision records who may establish, amend, suspend, or end an agreement and which approvals are required. A domain may use bilateral agreement, role-based authorization, threshold governance, or another explicit mechanism.
+- `cap-core` provides submission, resolution, outcome execution, and expiry mechanics
+- `cap-governance` provides proposals, voting, approval rules, and authorized execution
+- `cap-auctions` remains an existing V1 proving domain
+- `cap-recurrence` adds allocations governed by recurring rules
+- `cap-dapp` provides the open-source reference application for interacting with supported CAP workflows
 
-#### Layer 2: CAP decision and domain workflows
+The names `cap-recurrence` and `cap-dapp` describe proposed logical components. Their final implementation boundaries will be determined during technical design.
 
-A domain policy defines valid terms and lifecycle routes. It governs start and end conditions, schedules or rate changes, notice periods, suspension, unilateral rights, final adjustments, and the parties required to authorize each transition. Domain-specific legal and commercial rules remain outside generic time and allocation calculations.
+#### Core Layer: `cap-core`
 
-#### Layer 3: Recurring allocation and payment primitives
+The core captures the common structure of allocation workflows on Canton.
 
-The shared primitives represent an agreed rate or schedule, calculated quantity, claimed or settled quantity, effective periods, and lifecycle state. They will provide deterministic calculations, bounded rounding rules, idempotent transition handling, and explicit finalization without assuming a particular asset or settlement cadence.
+**Submission workflow**
+Each participant submits through a privacy-preserving invite, submit, and close lifecycle. Submissions remain visible only to the submitter and the parties that need to see them. Workflows have deadlines, expired invitations can be reclaimed, and the model remains non-blocking if a participant goes offline.
 
-#### Layer 4: Token-standard settlement
+**Resolution rules**
+The core exposes pluggable resolution hooks that process collected submissions into an outcome. Domain modules implement their own rules, including auction winner selection, governance approval, and recurring allocation calculations.
 
-The core produces allocations or settlement instructions. Existing Canton Token Standards remain responsible for asset representation and transfer. The implementation will document supported interfaces, versions, and unresolved dependencies rather than introduce a parallel token or payment standard.
+**Outcome execution**
+The workflow produces an executable outcome carrying the authority collected during the workflow. Where the required parties have authorized the resulting action, the outcome can be exercised atomically.
 
-#### Layer 5: Common participant application layer
+Outcome execution may initialize or modify governance state, produce subsequent or final allocations, invoke settlement through existing Canton infrastructure, or trigger another authorized downstream action.
 
-The shared application layer projects source contracts into participant-facing view models, renders role-aware workflow state and available actions, and scaffolds authorized submissions without granting authority. API adapters will use public or read APIs where suitable and will submit writes only through validated canonical authorized routes. Existing contracts, identities, roles, signatories, and signatures remain authoritative.
+**Expiry handling**
+Deadlines, notice periods, and effective intervals are modeled explicitly. Expired participation paths can be released or reclaimed without changing completed outcomes.
 
-Privacy, signatories, observers, and authorization will be modeled explicitly in Daml. Automated tests will cover lifecycle transitions, time boundaries, amendment, suspension where applicable, termination, final allocation, and settlement handoff. Generic reference components will expose states and actions without Unlockit-specific user experience or integration assumptions.
+#### Governance Module: `cap-governance`
 
-#### Employment reference workflow
+The governance module remains the governance-oriented reference implementation built on `cap-core`.
 
-1. An employer and worker review an employment agreement and provide **bilateral unanimous approval**. This is an agreement workflow, not an election.
-2. Approval initializes recurring salary terms under the agreement's effective date, rate or schedule, currency or asset reference, and domain policy.
-3. Earned salary is recorded independently from settlement timing.
-4. Prospective amendment requires the approvals specified by the agreement, including for salary or schedule changes.
-5. The agreement may end through mutual termination or a policy-authorized unilateral route.
-6. Every termination route stops future amounts at its effective time.
-7. Finalization creates only the separate final allocations authorized for that route, potentially including earned salary, notice, accrued leave, bonus, and severance.
-8. Existing Canton Token Standards handle settlement of those allocations.
+It covers:
 
-The reference implementation demonstrates mechanics and configurable policy boundaries. It does not encode universal employment law, grant termination rights by itself, or replace jurisdiction-specific legal review.
+- proposal creation
+- ballot submission
+- quorum and approval threshold checks
+- weighted voting
+- downstream execution after approval
 
-#### Non-employment reference workflow: rental agreement
+Concordia V2 evolves this module so authorized governance actions can initialize, amend, suspend, terminate, or finalize recurring allocations. Each action follows the approval rules defined by the applicable workflow and may produce subsequent or final allocations through `cap-core` outcome execution.
 
-1. A landlord and tenant approve an agreement containing a start date, recurring rent terms, and any separately modeled deposit obligation.
-2. Approval initializes the rent schedule or time-based rent terms, with settlement on the agreed cadence.
-3. A jointly authorized amendment may change future terms without rewriting settled history.
-4. A valid end-of-tenancy route stops future rent amounts at its effective time.
-5. Finalization may create allocations for rent due and explicitly authorized adjustments. Disputes and deposit handling remain separate policy workflows unless an adopter implements them.
-6. Existing Canton Token Standards handle settlement.
+The module does not create domain-specific rights. Employment, rental, subscription, or other policies determine who may act, which governance routes are available, and what outcome each route produces.
 
-This workflow proves that the core is independent of employment policy. Revenue sharing will also be used as a design test, with the source and recognition of revenue supplied as domain inputs.
+#### Recurrence Module: `cap-recurrence`
 
-#### Operational approach
+`cap-recurrence` represents CAP allocations governed by recurring rules.
 
-- development occurs publicly from the first milestone
-- interfaces and material design decisions are documented in the public repository
-- security assumptions and a threat model are reviewed before final release
-- package versions, migrations, and support boundaries are documented
-- verified interoperability is distinguished from proposed or unresolved alignment
-- issue triage, contribution, disclosure, and release procedures are established before final acceptance
+It supports:
 
-#### Governance Composition with Foundation and Splice
+- scheduled recurrence and continuous accrual
+- agreed rates or schedules
+- effective start and end times
+- deterministic calculation and rounding
+- amendment, suspension, and resumption
+- termination and finalization
+- subsequent and final allocations
 
-Concordia V2 explicitly builds on governance already used by the Canton Foundation Development Fund and Canton Foundation SV/Splice. Composition means reading or projecting authoritative lifecycle state, mapping it to role-aware view models, discovering actions exposed to the current authenticated role, preparing the required payload and signing context, and handing submission to a canonical authorized route. Action discovery communicates what an existing authority may do; it never creates, transfers, or expands that authority.
+A recurring rule determines how an allocation evolves over time. Governance determines which participants may modify that rule and what outcomes each authorized action produces.
 
-A conservative primary-source anchor is Splice `DsoRules`: its vote-request, vote-cast, and close lifecycle can be projected through public/read APIs where suitable. Development Fund integration will likewise project the allocation and coupon lifecycle and expose manager-authorized routes only to the Development Fund Manager's existing authorized context. Write compatibility will not be promised until the relevant interface, version, identity, signing, and submission route have been validated.
+Calculated and settled amounts are recorded independently so settlement timing does not change what has already accrued. The module does not introduce a separate token, transfer, or settlement standard.
 
-The minimal governance reference demonstration will read an existing SV/Splice vote lifecycle, render the request, casts, status, and close outcome, then scaffold one authorized action for the authenticated SV context. The demonstration stops before execution or delegates submission to the canonical route; Concordia does not execute as the governed actor. Employment and rental remain bilateral/domain workflows and do not require SV governance.
+#### Reference Application: Concordia Dapp (`cap-dapp`)
 
-#### Common Participant Application Layer
+The Concordia Dapp (`cap-dapp`) is the open-source reference application for interacting with supported CAP workflows.
 
-The grant-funded shared application layer includes:
+It provides one reusable governance and workflow microfrontend that wallet providers, validator operators, and application developers can adopt, embed, and extend.
 
-- shared contract projections and view models with provenance links to source Daml contracts and API versions
-- role-aware workflow state and action discovery that reflects, but never grants, contract authority
-- lifecycle rendering for proposal, vote, agreement, allocation, accrual, amendment, termination, and settlement states
-- reusable accessible frontend components and API adapters
-- a generic, independently runnable reference UI with no Unlockit product branding or dependency
-- adapter documentation that distinguishes read/projection support from validated authorized write routes
-- accessibility guidance and checks, developer documentation, examples, and automated component, adapter, and lifecycle tests
+The application:
 
-The same application layer is intended for governance, Development Fund, agreement, recurring-allocation, and settlement workflows so ecosystem teams do not need to rebuild common participant-facing mechanics. Unlockit's product frontend remains excluded from grant scope.
+- presents supported governance and allocation workflows
+- shows current state and relevant history
+- allows participants to prepare actions available to them
+- hands approved actions to the applicable authorization and signing route
+- supports `cap-governance`, `cap-recurrence`, and future compatible CAP modules
+
+`cap-dapp` supports two main modes of operation:
+
+- **Traditional interaction:** participants inspect governance and allocation activity, receive relevant updates, and initiate or respond to actions through the user interface. The application supports both pull-based access, where participants review current activity, and push-based notifications for proposals, deadlines, state changes, and actions requiring attention.
+- **Agentic assistance:** each participating entity may connect its own LLM and configure its own policies, privacy controls, and operational boundaries. The agent can summarize activity, explain proposals, compare changes, identify pending actions, and prepare non-binding actions for participant review.
+
+Both modes use the same CAP workflows and authorization boundaries. Agentic assistance does not vote, sign, submit, allocate, or execute on behalf of a participant. Binding actions remain subject to explicit approval and the canonical authorization and signing route.
+
+Contracts, participant authority, approval rules, and signing mechanisms remain authoritative. `cap-dapp` does not grant authority or execute actions on behalf of a participant.
+
+Integration with existing Splice and wallet governance work will be coordinated with the responsible maintainers. The implementation will extend or reuse existing components where agreed rather than assume ownership of those systems.
+
+#### Illustrative Execution Flows
+
+**Employment**
+
+1. An employer and worker provide bilateral unanimous approval of an employment agreement.
+2. Approval initializes a recurring salary allocation with its rate or schedule, effective date, asset reference, and applicable policy.
+3. Salary accrues according to the agreed recurring rule.
+4. Authorized governance actions may amend or suspend future accrual.
+5. The agreement may end by mutual approval or through a policy-authorized unilateral route.
+6. The selected route stops future accrual and may produce final allocations for earned salary, notice, leave, bonus, or severance.
+7. Outcome execution invokes settlement through existing Canton infrastructure.
+
+The reference workflow demonstrates configurable mechanics. It does not encode universal employment law or create termination rights independently of the agreement and applicable policy.
+
+**Rental**
+
+1. A landlord and tenant approve an agreement containing its start date and recurring rent terms.
+2. Approval initializes the recurring rent allocation.
+3. Authorized amendments may change future terms without rewriting settled history.
+4. A valid end-of-tenancy route stops future rent accrual.
+5. Finalization may produce allocations for outstanding rent and explicitly authorized adjustments.
+6. Outcome execution invokes settlement through existing Canton infrastructure.
+
+Deposit handling and disputes remain separate policy workflows unless explicitly implemented by an adopter.
+
+#### Proposed Splice Work
+
+Concordia V2 intends to improve and extend the existing Splice SV governance process and Splice Validator Wallet by leveraging CAP governance and allocation primitives and integrating `cap-dapp` into the Validator Wallet. The work first confirms the existing SV governance procedures for proposal initiation and preparation, proposal review, voting, lifecycle, status and attribution, and allocation-governance lifecycle. Any external upstream work and the exact procedure implementation remain contingent on Splice maintainer review, FCS and Avro coordination, and applicable governance agreement; this proposal does not assert a partnership, approval, or completed implementation.
+
+**FCS coordination and dependency.** Other teams, including Avro and the FCS Splice SV UI/UX improvements grant, are already delivering relevant Splice governance UI/UX work. Concordia V2 will support, build on, and carry forward compatible outcomes, and will involve those teams in its proposed work to avoid duplication or ownership claims. Concordia does not duplicate FCS or Avro-owned work. This does not imply that any of that work is complete, or that maintainers or those teams have agreed to integrations.
+
+**Governance package migration.** If adoption of a new SV governance package is required as part of this proposed Splice work, a migration path will be provided as needed for SV operators and integrators. This remains contingent on Splice maintainer review and applicable governance agreement, and does not assert approval or completion.
 
 ### 3. Architectural Alignment
 
@@ -157,9 +174,169 @@ Concordia V2 is application-layer public infrastructure built on Canton and Daml
 
 Separating authorization, domain policy, recurring allocation, and settlement keeps each concern replaceable. A bilateral employment agreement can use the same allocation mechanics as a governed treasury distribution while retaining different approval and termination rules. Existing Canton Token Standards remain the settlement boundary.
 
+Concordia V2 defines strict, reusable primitives and documented interfaces while leaving concrete implementation choices to implementors. This common-good approach provides shared, interoperable building blocks without prescribing application-specific workflow implementations; employment and rental remain reference use cases, `cap-core` and `cap-dapp` retain their stated scopes, and proposed Splice work remains contingent on its stated coordination and governance processes.
+
 The project aligns with the Development Fund's support for reusable reference implementations and common-good developer infrastructure. Relevant CIPs and ecosystem projects will be reviewed during discovery, but compatibility will be claimed only for interfaces demonstrated by tests.
 
+#### Architectural Views
+
+These diagrams show Concordia V2 at ecosystem and container levels. The catalogs record detailed responsibilities and authority boundaries.
+
+##### System Context
+
+The System Context shows Concordia V2 in its surrounding ecosystem. Readers see end users, external systems, CAP / Concordia V1 and V2, the LLM, and the relationships among them.
+
+```plantuml
+@startuml
+!include <C4/C4_Context>
+
+title CAP / Concordia V2 - Proposed System Context
+
+LAYOUT_TOP_DOWN()
+skinparam ranksep 180
+skinparam nodesep 20
+
+Person(endUsers, "End Users", "Consume governance and allocation workflows")
+
+System_Ext(walletApps, "Wallet Provider Apps", "Provide participant applications that embed or integrate CAP capabilities")
+System_Ext(otherThirdPartyProjects, "Other Third-Party Projects", "Provide ecosystem applications that reuse governance, auction, or recurrence capabilities")
+System_Ext(devFundGrants, "Canton Dev Fund Grants", "Provide funded ecosystem applications including Avro, DecMan, SyncVotes, and Zebec")
+System_Ext(splice, "Splice", "Provides SV governance and Validator Wallet capabilities; proposed V2 work is contingent")
+
+System_Ext(entityLlm, "LLM", "Provides contextual guidance and draft action text from permitted CAP workflow context")
+System(cap, "CAP / Concordia V2", "Provides reusable governance, allocation, recurrence, outcome execution, and participant application capabilities")
+System(v1, "CAP / Concordia V1", "Provides established CAP primitives reused by V2")
+
+' Layout-only edges establish the external peer row and the LLM/V2/V1 order.
+walletApps -[hidden]right- otherThirdPartyProjects
+otherThirdPartyProjects -[hidden]right- devFundGrants
+devFundGrants -[hidden]right- splice
+entityLlm -[hidden]right- cap
+cap -[hidden]right- v1
+
+Rel_D(endUsers, walletApps, "Uses")
+Rel_D(endUsers, otherThirdPartyProjects, "Uses")
+Rel_D(endUsers, devFundGrants, "Uses")
+Rel_D(walletApps, cap, "Embeds")
+Rel_D(otherThirdPartyProjects, cap, "Leverages")
+Rel_D(devFundGrants, cap, "CAP Reuse Opportunity")
+Rel_R(cap, v1, "Extends")
+Rel_U(cap, splice, "Leverages Code")
+Rel_D(splice, cap, "Leverages Primitives")
+Rel_L(cap, entityLlm, "Leverages LLM Guidance")
+
+SHOW_LEGEND()
+@enduml
+```
+
+This context view distinguishes CAP's present reuse of external Splice code from the proposed V2 work in Splice's governance process and wallet app that may reuse CAP primitives. The catalog records the authority and maintainer-agreement limits on that contingent work alongside each system's role.
+
+###### System Context Box Catalog
+
+This catalog identifies the systems and records their roles, relationships to Concordia V2, and relevant authority boundaries.
+
+| Box | Role | Relationship to Concordia V2 | Status or authority boundary |
+| --- | --- | --- | --- |
+| End Users | Consume governance and allocation workflows | Use wallet provider apps, third-party projects, and Canton Dev Fund Grants | No direct relationship to CAP V1 or V2 |
+| Wallet Provider Apps | Provide participant applications that embed or integrate CAP capabilities | Embed CAP | Potential adopters or integrators |
+| Other Third-Party Projects | Provide ecosystem applications that reuse governance, auction, or recurrence capabilities | Leverage CAP | Potential adopters or integrators; unconfirmed |
+| Canton Dev Fund Grants | Provide funded ecosystem applications including Avro, DecMan, SyncVotes, and Zebec; the approved in-flight FCS Splice SV UI/UX improvements grant (Canton Dev Fund [PR #444](https://github.com/canton-foundation/canton-dev-fund/pull/444), per-milestone execution via [issue #529](https://github.com/canton-foundation/canton-dev-fund/issues/529)) is coordinated with, not duplicated by, Concordia V2 | CAP reuse opportunity | Proposed reuse opportunity; no confirmed adoption or partnership |
+| Splice | Provides SV governance and Validator Wallet capabilities | CAP leverages Splice code; Concordia V2 proposes to extend/iterate the Splice governance process and Splice Validator Wallet to leverage CAP primitives and incorporate `cap-dapp` | Proposed upstream changes remain contingent on Splice maintainer review and applicable governance agreement; external contracts, authority, and signing remain canonical |
+| CAP / Concordia V2 | Provides reusable governance, allocation, recurrence, outcome execution, and participant application capabilities | Extends V1 and provides primitives that contingent Splice work may leverage | Proposed additive system; no Splice implementation commitment is implied |
+| CAP / Concordia V1 | Provides established CAP primitives reused by V2 | Foundation extended by V2 | Existing CAP foundation, not a third party |
+| LLM | Provides contextual guidance and draft action text from permitted CAP workflow context | CAP leverages LLM guidance through `cap-dapp` | No autonomous or binding actions; `cap-core` supports execution, and participant approval and signing are required |
+
+##### Container Diagram
+
+The Container Diagram shows the deployable and logical CAP containers within Concordia V2 and its external peer integrations. It focuses on each container's responsibilities and the integration relationships between them.
+
+```plantuml
+@startuml
+!include <C4/C4_Container>
+
+title CAP / Concordia V2 - Proposed Container View
+
+LAYOUT_TOP_DOWN()
+skinparam ranksep 90
+skinparam nodesep 60
+
+System_Boundary(capBoundary, "CAP / Concordia") {
+    together {
+        Container(capDapp, "cap-dapp [V2]", "Reusable web microfrontend", "Provides participant interaction with supported CAP workflows.")
+        Container(capCore, "cap-core [V1]", "Daml", "Provides governance and allocation primitives.")
+    }
+    Container(capGovernance, "cap-governance [V1]", "Daml", "Provides proposals, voting, approval rules, and authorized lifecycle actions.")
+    Container(capAuctions, "cap-auctions [V1]", "Daml", "Provides auction workflows.")
+    Container(capRecurrence, "cap-recurrence [V2]", "Daml", "Provides scheduled recurrence, continuous accrual, and recurring-allocation lifecycles.")
+
+    ' Layout-only edge keeps the V2 primary surface left of the V1 primary surface.
+    capDapp -[hidden]right- capCore
+
+    Rel_R(capDapp, capCore, "Composes")
+    Rel_U(capGovernance, capCore, "Implements")
+    Rel_U(capAuctions, capCore, "Implements")
+    Rel_U(capRecurrence, capCore, "Implements")
+}
+
+System_Boundary(externalBoundary, "External Peer Systems and Integrations") {
+    together {
+        System_Ext(walletApps, "Wallet Provider Apps", "Provide participant applications that embed cap-dapp.")
+        System_Ext(thirdPartyProjects, "Third-Party Projects", "Provide ecosystem applications that leverage cap-core or embed cap-dapp.")
+        System_Ext(splice, "Splice", "Provides SV governance and Validator Wallet capabilities; proposed V2 work is contingent.")
+    }
+}
+
+System_Ext(entityLlm, "LLM", "Provides contextual guidance and draft action text to cap-dapp from permitted smart-contract and workflow context.")
+
+' Layout-only ordering keeps external peers above CAP and the LLM left of cap-dapp.
+walletApps -[hidden]right- thirdPartyProjects
+thirdPartyProjects -[hidden]right- splice
+walletApps -[hidden]down- entityLlm
+entityLlm -[hidden]right- capDapp
+
+Rel_D(walletApps, capDapp, "Embeds")
+Rel_D(thirdPartyProjects, capCore, "Leverages")
+Rel_D(thirdPartyProjects, capDapp, "Embeds")
+Rel_U(capCore, splice, "Leverages Code")
+Rel_D(splice, capCore, "Leverages Primitives")
+Rel_L(capDapp, entityLlm, "Leverages LLM Guidance")
+
+SHOW_LEGEND()
+@enduml
+```
+
+The container view locates reusable governance and allocation primitives in `cap-core`, while `cap-dapp` remains the participant-facing integration surface. It separates CAP's use of Splice code from the contingent governance-process and wallet-app implementation work that may reuse those primitives, subject to maintainer and governance agreement.
+
+###### Container Responsibility Catalog
+
+This catalog records the containers, their responsibilities, and their integration boundaries.
+
+| Box | Responsibility | Dependencies or outputs | Explicit boundary |
+| --- | --- | --- | --- |
+| External Peer Systems and Integrations | Groups external systems that provide capabilities to CAP or consume CAP capabilities | Contains Splice, wallet provider apps, and third-party projects | Grouping boundary, not a runtime system or authority |
+| Splice | Provides SV governance and Validator Wallet capabilities | `cap-core` leverages Splice code; Concordia V2 proposes to extend/iterate the Splice governance process and Splice Validator Wallet to leverage CAP primitives and incorporate `cap-dapp` | Proposed upstream changes remain contingent on Splice maintainer review and applicable governance agreement; no approval, partnership, or completed implementation is claimed |
+| Wallet Provider Apps | Provide participant applications | Embed `cap-dapp` | External application; exactly one CAP relationship, to `cap-dapp` |
+| Third-Party Projects | Provide ecosystem applications that reuse CAP capabilities; examples include Avro SV Governance dApp, Decentralization Manager, SyncVotes, and Zebec Streaming Payroll and Programmable Payments | Leverage `cap-core` and embed `cap-dapp` | Exactly two CAP relationships; identified projects are potential or unconfirmed candidates, not confirmed integrations or partners |
+| CAP / Concordia | Provides reusable governance, allocation, recurrence, auction, and participant application capabilities | Contains the V1 foundation and V2 additions | Domain policies define rights and governance routes |
+| Primary Integration Surfaces (`cap-core`, `cap-dapp`) | Provide CAP's direct integration surfaces | `cap-dapp` composes with `cap-core`; external adopters integrate through these two containers | Primary integration surface pairing |
+| `cap-core` | Provides governance and allocation primitives | Supports shared submission, resolution, expiry, authorized outcome execution, and settlement handoff for CAP modules and adopters; leverages Splice code where applicable | Settlement and outcome execution remain in `cap-core`; Daml models privacy, signatories, observers, and authorization explicitly |
+| `cap-governance` | Provides proposals, voting, approval rules, and authorized lifecycle actions | Implements `cap-core` workflow and outcome interfaces | Existing V1 Daml domain module; external governance contracts and signing remain authoritative |
+| `cap-auctions` | Provides auction workflows | Implements `cap-core` workflow and outcome interfaces | Existing V1 Daml domain module |
+| `cap-recurrence` | Provides scheduled recurrence, continuous accrual, and recurring-allocation lifecycles | Implements `cap-core` interfaces; authorized governance actions can initialize, amend, suspend, terminate, or finalize recurring allocations using `cap-core` outcome mechanics | V2 Daml domain module; domain policies define rights and routes |
+| `cap-dapp` | Provides participant interaction with supported CAP workflows | Composes with `cap-core` and presents approved actions to canonical authorization and signing routes; may support contingent Splice wallet-app work | V2 application/microfrontend; only embeddable CAP container; no direct presentation edge to individual reference modules |
+| LLM | Provides contextual guidance and draft action text to `cap-dapp` from permitted smart-contract and workflow context | `cap-dapp` leverages LLM guidance; generated text returns within that interaction | No autonomous or binding actions; `cap-core` supports execution, and participant approval and signing are required |
+
+**Legend**
+
+- Solid relationships indicate baseline composition or dependency; dashed relationships indicate proposed reuse or integration.
+- The Splice-to-CAP reuse direction represents contingent governance-process and wallet-app work, subject to Splice maintainer and applicable governance agreement.
+- FCS Splice SV UI/UX improvements are listed under the System Context's Canton Dev Fund Grants aggregate: approved and in flight via [PR #444](https://github.com/canton-foundation/canton-dev-fund/pull/444) and [issue #529](https://github.com/canton-foundation/canton-dev-fund/issues/529), coordinated with and not duplicated by Concordia V2.
+- The diagrams show proposed architecture and do not imply endorsement, confirmed partnerships or integrations, accepted upstream changes, or final package boundaries.
+
+
 ### 4. Backward Compatibility
+
+Concordia V2 will strive to maintain backward compatibility with V1. Because V2 extends V1, any unavoidable impact or change will include a clear migration path.
 
 No protocol-level backward compatibility impact is expected. Concordia V2 is a new application-layer library and set of reference workflows. Existing Canton applications and protocol behavior remain unchanged.
 
@@ -169,93 +346,148 @@ Package boundaries and migration paths from Concordia and CAP require confirmati
 
 ## Milestones and Deliverables
 
-Project start, delivery dates, funding amounts, and percentages remain **TBD** pending scope, governance, and funding confirmation.
+Each one-month milestone advances the recurrence, governance, Concordia Dapp, and proposed Splice tracks together as dependencies allow. Exact calendar dates will be set or updated upon approval. Review and payment are based on achieved evidence and remain subject to applicable governance and funding approval.
 
-### Milestone 1: Architecture, Governance Composition, and Executable Core
+### Milestone 1: Discovery, Design, and Prototypes
 
-- **Estimated Delivery:** TBD
-- **Funding:** TBD CC
-- **Percentage:** TBD
-- **Focus:** Establish the five-layer architecture, validate canonical governance composition boundaries, and deliver an executable recurring-allocation core.
+- **Estimated Delivery:** Month 1
+- **Focus:** Establish first-release discovery, design, and usable prototypes for recurrence, governance, the Concordia Dapp, and proposed Splice integration.
 - **Deliverables / Value Metrics:**
-  - public architecture and threat-model documentation for canonical governance/authorization, CAP decision/domain workflows, recurring allocation, token-standard settlement, and the common application layer
-  - initial Apache-2.0 Daml packages for agreement authorization and recurring allocation lifecycle
-  - deterministic calculation, amendment, stop, and finalization behavior
-  - documented settlement-interface assumptions for existing Canton Token Standards
-  - test harness, local examples, and public repository workflow
-  - interface review of the related projects and CIPs listed below
-  - documented Splice `DsoRules` vote request/cast/close projections and Development Fund allocation/coupon lifecycle anchors, including read/write support boundaries
-- **Acceptance Criteria:**
-  - **M1-AC1 Core lifecycle:** A reviewer can run agreement approval, amount calculation, amendment, termination, final allocation, and settlement handoff using published instructions.
-  - **M1-AC2 Lifecycle tests:** Automated tests pass for time boundaries, prospective amendment, mutual termination, authorized unilateral termination, and duplicate or invalid transition rejection.
-  - **M1-AC3 Public-good boundary:** Package interfaces contain no Unlockit branding, customer data, hosted-service dependency, or product-specific code.
-  - **M1-AC4 Interface evidence:** Supported settlement behavior is backed by tests; assumptions and unresolved interfaces are explicitly documented.
-  - **M1-AC5 Governance boundary:** Tests and documentation show that projected state and discovered actions preserve existing identities, roles, signatures, and canonical submission routes; Concordia does not act for an SV or the Development Fund Manager.
-  - **M1-AC6 License and access:** All grant-funded artifacts are publicly available under Apache-2.0 from the start.
+  - **Design**
+    - Iterate a recurrence-first `cap-core` design document with concrete first-release scope and explicit in-scope and out-of-scope boundaries.
+    - Define strict interfaces and extension points that `cap-recurrence`, `cap-governance`, and, where relevant, `cap-auctions` implement without expanding the shared core unnecessarily.
+    - Analyze compatibility and migration implications for the first release, including a migration approach for supported consumers.
+    - Assess material impact on existing governance and auction interfaces only where identified; `cap-auctions` remains reference-only unless that analysis identifies material shared-`cap-core` impact.
+  - **Concordia as Daml**
+    - Deliver a first usable `cap-recurrence` prototype over `cap-core`.
+    - Define and exercise the core interface contracts that `cap-recurrence` implements, with local examples and a test harness.
+    - Establish the public repository workflow for the prototype without claiming a governance reference-interface implementation at this stage.
+  - **Concordia as Dapp**
+    - First usable Concordia Dapp (`cap-dapp`) mockup or prototype for governance and allocation interactions, including advisory participant flows and explicit human approval/signing boundaries.
+    - Governance interaction prototype showing advisory participant views and preparation of a supported action.
+    - Allocation interaction prototype showing advisory participant views and preparation of a supported allocation action.
+    - Explicit handoff from prepared actions to the applicable human approval and signing route.
+  - **Splice-related work**
+    - Splice SV governance and Validator Wallet integration discovery and architecture approach, including FCS and Avro coordination, procedure confirmation, and documented read/write, authorization, and upstream-dependency boundaries.
+    - Procedure and integration inventory for the confirmed or proposed SV governance and Validator Wallet touchpoints.
+    - Coordination record identifying FCS and Avro ownership boundaries and work that Concordia does not duplicate.
+    - Read/write, authorization, signing, and upstream-dependency evidence for each evaluated integration path.
 
-### Milestone 2: Reference Workflows and Common Application Layer
+### Milestone 2: First Runtime Slices in Both V2 Proving Domains
 
-- **Estimated Delivery:** TBD
-- **Funding:** TBD CC
-- **Percentage:** TBD
-- **Focus:** Prove reuse across employment and non-employment domains and deliver the common participant-facing application layer.
+- **Estimated Delivery:** Month 2
+- **Focus:** Validate `cap-core` early in governance and allocation, including recurrent allocation.
 - **Deliverables / Value Metrics:**
-  - bilateral unanimous employment agreement approval and recurring salary initialization
-  - amendment, mutual termination, and policy-authorized unilateral termination examples
-  - route-specific final allocations for applicable earned salary, notice, leave, bonus, and severance
-  - rental agreement and recurring rent reference workflow
-  - shared projections, role-aware workflow state, action discovery, reusable frontend components, and API adapters for proposal, vote, agreement, allocation, accrual, amendment, termination, and settlement lifecycles
-  - accessible, documented, tested, independently runnable generic reference UI for inspecting and scaffolding authorized actions
-  - workflow documentation and automated tests
-- **Acceptance Criteria:**
-  - **M2-AC1 Employment approval:** The employment example requires bilateral unanimous approval when establishing the agreement.
-  - **M2-AC2 Termination routes:** Every demonstrated route stops future amounts at its effective time and produces only allocations authorized for that route.
-  - **M2-AC3 Domain separation:** The rental workflow imports the shared core without importing employment policy.
-  - **M2-AC4 Common application layer:** The generic reference UI runs independently; reusable components and adapters preserve source-contract provenance, expose role-aware state, and contain no Unlockit product frontend work.
-  - **M2-AC5 Governance demonstration:** The reference UI projects an existing Splice `DsoRules` vote request/cast/close lifecycle and scaffolds an authorized action without executing as an SV; tests confirm action discovery does not grant authority.
-  - **M2-AC6 End-to-end evidence:** Automated tests and runnable documentation cover both workflows through the settlement boundary.
+  - **Concordia as Daml**
+    - Deliver governance reference runtime slices built on `cap-core` interfaces implemented by `cap-governance`.
+    - Deliver allocation and recurrent-allocation reference runtime slices built on `cap-core` interfaces implemented by `cap-recurrence` where relevant.
+    - Demonstrate the explicit authorization and signing boundary for both runtime slices.
+    - Provide Daml script and sandbox integration tests for both slices.
+  - **Concordia as Dapp**
+    - Initial Concordia Dapp (`cap-dapp`) governance and allocation flow iteration.
+    - Governance flow rendering the core reference slice and its available action preparation.
+    - Allocation and recurrent-allocation flow rendering the core reference slice and its available action preparation.
+    - Explicit approval and signing handoff for both prepared flows.
+    - Dapp flow test evidence aligned with the Daml script and sandbox slices.
+  - **Splice-related work**
+    - Refine the confirmed Splice SV governance and Validator Wallet integration inventory against the M2 runtime slices.
+    - Maintain documented FCS and Avro ownership, authorization, signing, and upstream-dependency boundaries for evaluated integration paths.
 
-### Milestone 3: Generalization, Interoperability, and Adopter Readiness
+### Milestone 3: Runtime Reference Flows and Splice SV Governance Integration
 
-- **Estimated Delivery:** TBD
-- **Funding:** TBD CC
-- **Percentage:** TBD
-- **Focus:** Prepare extension points, interoperability evidence, and independent adoption.
+- **Estimated Delivery:** Month 3
+- **Focus:** Extend runtime governance and allocation reference flows and integrate confirmed Splice SV governance procedures where approved or available.
 - **Deliverables / Value Metrics:**
-  - reusable policy extension points for subscriptions, revenue sharing, vesting, recurring obligations, and treasury distributions
-  - at least one additional executable reference slice, preferably revenue sharing
-  - hardened APIs, migration and versioning guidance, test utilities, and integration tooling
-  - documented interoperability results against confirmed related-project interfaces
-  - adopter guide, public technical walkthrough, and adopter-bounty process subject to approval
-  - maintenance and contribution guidance
-- **Acceptance Criteria:**
-  - **M3-AC1 Extensibility:** An independent team can implement a new domain policy without modifying the shared core.
-  - **M3-AC2 Additional domain:** The additional reference slice runs with automated tests and uses the same shared packages as Milestone 2.
-  - **M3-AC3 Adoption evidence:** At least one third-party team completes a documented technical evaluation, reproducible prototype, or integration attempt, or provides equivalent evidence accepted by the Foundation.
-  - **M3-AC4 Interoperability evidence:** Documentation separates verified behavior from proposed or unresolved alignment and identifies tested interface versions.
-  - **M3-AC5 Adopter documentation:** Public documentation covers setup, extension, testing, settlement handoff, application-layer projections and adapters, accessibility, limitations, privacy, and security assumptions.
-  - **M3-AC6 Scope separation:** Release artifacts remain free of Unlockit-specific integrations, branding, customer customization, hosted operations, sales, and go-to-market work.
+  - **Concordia as Daml**
+    - Complete and integrate governance and allocation-governance lifecycle reference flows built on `cap-core` interfaces implemented by `cap-governance` and `cap-recurrence` where relevant.
+    - Complete the allocation-governance lifecycle integration slice built on `cap-core`.
+    - Confirm and integrate approved or available Splice SV governance procedures for proposal initiation and preparation, review, voting, lifecycle, status, and attribution.
+    - Provide Daml script and sandbox integration tests and integration evidence for supported reference and Splice slices.
+    - Deliver an SV governance package migration path where a new package is required.
+  - **Concordia as Dapp**
+    - First approved or available Validator Wallet embedding slice for Concordia Dapp (`cap-dapp`) where viable.
+    - `cap-dapp` SV procedure views for the confirmed governance integration slices.
+    - Validator Wallet embedding integration evidence where approved and available.
+    - Standalone `cap-dapp` fallback verification where embedding is not available.
+    - Integration tests and migration evidence for the supported Dapp and SV governance paths.
+  - **Splice-related work**
+    - Confirmed Splice SV governance integration slices for the supported proposal procedures, with test evidence.
+    - Document the FCS and Avro coordination boundary without duplicating their work.
+    - Coordinate the SV governance package migration path where a new package is required.
+
+### Milestone 4: End-to-End Composition and Release Readiness
+
+- **Estimated Delivery:** Month 4
+- **Focus:** Deliver release-ready end-to-end governance, allocation, and recurrent-allocation flows.
+- **Deliverables / Value Metrics:**
+  - **Concordia as Daml**
+    - Provide tested end-to-end governance, allocation, and recurrent-allocation flows built on `cap-core` interfaces implemented by `cap-governance` and `cap-recurrence` where relevant.
+    - Demonstrate participant approval and signing handoff for supported flows.
+    - Produce hardening integration evidence, including recovery, observability, migration, and rollback procedures for supported flows.
+    - Deliver release-ready Daml integration documentation and Daml script and sandbox test evidence for end-to-end flows.
+  - **Concordia as Dapp**
+    - Concordia Dapp (`cap-dapp`) and Validator Wallet integration completed where upstream is available; standalone `cap-dapp` fallback otherwise.
+    - End-to-end governance, allocation, and recurrent-allocation flow presentation and action preparation.
+    - Explicit participant approval and signing handoff evidence for each supported end-to-end flow.
+    - Validator Wallet embedding release evidence where upstream is available, or standalone `cap-dapp` fallback release evidence otherwise.
+    - Supported-flow integration, migration, and rollback test evidence.
+  - **Splice-related work**
+    - Complete release-readiness integration evidence for confirmed Splice SV governance procedures and Validator Wallet touchpoints where upstream is available.
+    - Document recovery, observability, migration, and rollback evidence for supported Splice integration paths.
+    - Preserve the standalone `cap-dapp` fallback evidence where embedding is unavailable.
+
+### Milestone 5: External Adoption Validation
+
+- **Estimated Delivery:** Month 5
+- **Focus:** Validate external adoption through exactly 2 qualified external teams using CAP-v2 in pilot or production applications.
+- **Deliverables / Value Metrics:**
+  - exactly 2 qualified independent external teams adopting `cap-dapp` or `cap-core`/Concordia primitives from deliverables completed through Milestone 4 in a pilot or production application
+  - qualified adoption of the embedded Concordia microfrontend/Concordia Dapp (`cap-dapp`) earns 30,000 CC per qualifying external team
+  - qualified adoption of `cap-core`/Concordia primitives only earns 20,000 CC per qualifying external team
+  - a qualifying external team earns one mutually exclusive adoption payment: the 30,000 CC `cap-dapp` payment or the 20,000 CC `cap-core`/Concordia-primitives-only payment; payments do not stack
+  - confirmation from each adopting team to the Tech & Ops Committee
+  - documentation showing substantive reuse, adaptation, or extension of the adopted Concordia deliverables where applicable
+  - letters of intent may support evaluation but do not satisfy this milestone
+  - validation is based on documented evidence of use, traceability to the adopted deliverables, and adopter confirmation; strict binary package traceability is not required
+
+### Milestone 6: Extended External Adoption
+
+- **Estimated Delivery:** Month 6
+- **Focus:** Reward additional external adoption beyond Milestone 5.
+- **Deliverables / Value Metrics:**
+  - up to 10 additional qualified independent external teams beyond Milestone 5 adopting `cap-dapp` or `cap-core`/Concordia primitives from deliverables completed through Milestone 4 in a pilot or production application
+  - qualified adoption of the embedded Concordia microfrontend/Concordia Dapp (`cap-dapp`) earns 30,000 CC per qualifying external team
+  - qualified adoption of `cap-core`/Concordia primitives only earns 20,000 CC per qualifying external team
+  - a qualifying external team earns one mutually exclusive adoption payment: the 30,000 CC `cap-dapp` payment or the 20,000 CC `cap-core`/Concordia-primitives-only payment; payments do not stack
+  - portfolio breadth premium of 50,000 CC if at least 5 additional qualified external teams are accepted by the end of the milestone period
+  - additional portfolio breadth premium of 50,000 CC if 10 additional qualified external teams are accepted by the end of the milestone period
+  - the breadth premiums are separate, non-duplicative portfolio incentives: each is paid once for the accepted M6 cohort, is not a per-adopter award, and does not replace either mutually exclusive individual adoption track; acceptance of 10 additional teams earns both breadth premiums, for 100,000 CC in total breadth premiums
+  - total Milestone 6 funding is capped at 400,000 CC
+  - each accepted additional team must provide confirmation to the Tech & Ops Committee and substantive documentation of reuse, adaptation, or extension of the adopted Concordia deliverables where applicable
+  - letters of intent may support evaluation but do not satisfy this milestone
+  - validation is based on documented evidence of use, traceability to the adopted deliverables, and adopter confirmation; strict binary package traceability is not required
+
 
 ---
 
 ## Acceptance Criteria
 
-The Tech & Ops Committee will evaluate each milestone only against its identified deliverables and acceptance criteria. Evidence must be available in the public repository or linked from the milestone submission.
+The Tech & Ops Committee will evaluate completion based on:
+
+- Deliverables completed as specified for each milestone
+- Demonstrated functionality or operational readiness
+- Documentation and knowledge transfer provided
+- Alignment with stated value metrics
 
 Project-wide acceptance requires:
 
-- **P-AC1 Build:** A developer can clone, build, and run the documented examples using published instructions.
-- **P-AC2 Tests:** The delivered Daml and integration test suites pass for supported workflows and interface versions.
-- **P-AC3 Reuse:** Employment, rental, and the additional reference slice use the same recurring allocation and payment core.
-- **P-AC4 Authorization:** Tests demonstrate required approval, invalid transition rejection, and each supported termination route.
-- **P-AC5 Final allocations:** Tests demonstrate that route-specific finalization includes only policy-authorized allocation categories and stops future amounts at the effective time.
-- **P-AC6 Settlement boundary:** Asset representation and transfer use documented Canton Token Standards interfaces rather than a new settlement layer.
-- **P-AC7 Common application layer:** The independently runnable reference UI, reusable components, view models, and API adapters render the specified lifecycles accessibly, retain provenance to source contracts, and contain no Unlockit product branding or customer-specific behavior.
-- **P-AC8 Governance composition:** A minimal demonstration projects the existing Splice `DsoRules` vote request/cast/close lifecycle and scaffolds an authenticated role's authorized action without voting, signing, allocating, or submitting on behalf of an SV or Development Fund Manager.
-- **P-AC9 Authority preservation:** Action discovery never grants authority; write support is claimed only for validated canonical authorized routes, with underlying contracts, identities, roles, and signatures remaining authoritative.
-- **P-AC10 Open source:** All grant-funded source and documentation are publicly released under Apache-2.0.
-- **P-AC11 Documentation:** Architecture, setup, APIs, extension points, migrations, support boundaries, limitations, and security assumptions are documented.
-- **P-AC12 Public-good boundary:** Grant reporting identifies public deliverables separately from Unlockit-funded product, customer, commercial, and operational work.
+- **P-AC1 First-release foundation:** M1 includes a usable `cap-recurrence` prototype, iterated recurrence-first `cap-core` design, a usable `cap-dapp` mockup or prototype, and Splice SV governance and Validator Wallet discovery with confirmed procedures and dependency boundaries.
+- **P-AC2 Strict reference interfaces:** M2 through M4 demonstrate recurrence and governance reference flows through strict shared `cap-core` interfaces, with documented support boundaries and canonical authorized routes.
+- **P-AC3 SV procedure integration:** M2 through M4 document and, where approved and available, integrate existing Splice SV procedures for proposal preparation and initiation, review, voting, lifecycle, status and attribution, and allocation-governance lifecycle.
+- **P-AC4 Coordination and governance boundary:** Proposed Splice work coordinates with Splice maintainers, FCS, and Avro without duplicating their work, remains contingent on applicable maintainer and governance agreement, and does not claim a separate governance system.
+- **P-AC5 Dapp, wallet, and fallback:** M2 through M4 iterate the `cap-dapp` advisory and action-preparation experience, preserve binding human approval/signing boundaries, validate end-to-end recovery and observability, and provide either approved and available Splice Validator Wallet embedding or the standalone Dapp fallback.
+- **P-AC6 Migration:** M1 through M4 provide compatible migration design, a new SV governance package path if needed, and migration and rollback preparation for supported flows.
+- **P-AC7 Independent adoption and reuse:** M5 and M6 require qualified independent external teams to provide adopter confirmation and substantive documented reuse, adaptation, or extension of completed Concordia V2 deliverables from M4 in pilot or production applications; letters of intent alone do not satisfy acceptance. Each qualifying adopter receives one mutually exclusive payment: 30,000 CC for qualified adoption of the embedded Concordia microfrontend/Concordia Dapp (`cap-dapp`) or 20,000 CC for qualified adoption of `cap-core`/Concordia primitives only. These payments do not stack. M6 separately awards a 50,000 CC portfolio breadth premium at at least 5 accepted additional qualified external teams and an additional 50,000 CC at 10 accepted additional qualified external teams; neither premium is a per-adopter award or replaces an individual adoption track, and acceptance of 10 additional teams earns both premiums for 100,000 CC in total breadth premiums. Acceptance requires documented evidence of use and traceability to the adopted deliverables.
 
 ---
 
@@ -268,9 +500,12 @@ Each milestone is earned only after its deliverables, acceptance criteria, and r
 
 ### Payment Breakdown by Milestone
 
-- Milestone 1 _(Architecture, Governance Composition, and Executable Core)_: TBD CC upon committee acceptance
-- Milestone 2 _(Reference Workflows and Common Application Layer)_: TBD CC upon committee acceptance
-- Milestone 3 _(Generalization, Interoperability, and Adopter Readiness)_: TBD CC upon final release and committee acceptance
+- Milestone 1 _(Discovery, Design, and Prototypes)_: TBD CC upon committee acceptance
+- Milestone 2 _(First Runtime Slices in Both V2 Proving Domains)_: TBD CC upon committee acceptance
+- Milestone 3 _(Runtime Reference Flows and Splice SV Governance Integration)_: TBD CC upon committee acceptance
+- Milestone 4 _(End-to-End Composition and Release Readiness)_: TBD CC upon committee acceptance
+- Milestone 5 _(External Adoption Validation)_: up to 60,000 CC upon committee acceptance for exactly 2 qualified independent external teams, paid once per qualifying adopter under the mutually exclusive 30,000 CC `cap-dapp` or 20,000 CC `cap-core`/Concordia-primitives-only terms in the milestone deliverables
+- Milestone 6 _(Extended External Adoption)_: up to 400,000 CC upon committee acceptance for up to 10 additional qualified independent external teams beyond Milestone 5: up to 300,000 CC in mutually exclusive 30,000 CC `cap-dapp` or 20,000 CC `cap-core`/Concordia-primitives-only per-adopter payments, plus a separate 50,000 CC portfolio breadth premium at at least 5 accepted additional qualified external teams and an additional 50,000 CC portfolio breadth premium at 10 accepted additional qualified external teams
 
 ### Adopter Bounty
 
@@ -314,7 +549,7 @@ Implementing those mechanics once as public infrastructure can reduce duplicate 
 
 The proposal also extends the reuse goals of Concordia and CAP. Concordia provides decision and authority mechanics; Concordia V2 turns authorized agreements and decisions into reusable recurring financial workflows while preserving domain-specific policy.
 
-The quantitative estimate of ecosystem benefit is TBD pending adopter validation. Benefits will be measured through independent integrations, the number and variety of workflow families implemented, demonstrated adapter and component reuse, and verified interoperability against documented interface versions.
+Concordia V2 addresses recurring financial-workflow problems relevant to grant-funded initiatives and workflows involving substantial currency values, creating potential for a broad range of use cases. Meaningful benefits must be measured through actual independent integrations, workflow-family breadth, demonstrated adapter and component reuse, and verified interoperability against documented interface versions.
 
 ---
 
@@ -329,6 +564,10 @@ The quantitative estimate of ecosystem benefit is TBD pending adopter validation
 **Why use existing settlement standards.** Concordia V2 determines obligations and allocations. Existing Canton Token Standards are the proper boundary for asset representation and transfer, avoiding a competing payment or token layer.
 
 **Why adoption evidence.** Independent evaluation or integration is stronger evidence of reuse than stated interest. Because adopter availability is outside Unlockit's control, the Foundation must confirm acceptable equivalent evidence before final submission.
+
+**Coordination with existing governance work.** Unlockit will coordinate with Avro, the Canton Foundation, and Splice maintainers to identify reusable components and boundaries for the SV Governance dApp and wallet. Implementation or upstream contribution will follow the responsibilities agreed with those maintainers. If direct integration is not agreed, the standalone application layer will remain reusable.
+
+**Funding boundary.** Development Fund support covers reusable Apache-2.0 primitives, the common application layer, reference workflows, documentation, tests, and interoperability work. Unlockit funds its product frontend, product-specific integrations, customer customization, hosted operations, sales, and go-to-market activity; no grant funding is requested for Unlockit's commercial implementation.
 
 ---
 
@@ -349,7 +588,7 @@ Maintenance of Unlockit-specific integrations, commercial user interfaces, custo
 
 ## Governance and Open Decisions
 
-IntellectEU is the proposal champion. The proposal uses the `financial-workflows-composability` SIG label.
+The proposal champion remains **TBD**. The proposal uses the `financial-workflows-composability` and `onchain-governance` SIG labels.
 
 Material scope, milestone, funding, licensing, or adopter-bounty changes must follow the applicable Development Fund governance process. Technical design decisions will be recorded publicly. Maintainer authority, contribution review, release signing, dispute handling, and security disclosure procedures will be documented before final release.
 
