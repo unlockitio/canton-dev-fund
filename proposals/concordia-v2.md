@@ -441,10 +441,11 @@ Each one-month milestone advances the recurrence, governance, Concordia Dapp, an
 - **Estimated Delivery:** Month 5
 - **Focus:** Validate external adoption through exactly 2 qualified external teams using CAP-v2 in pilot or production applications.
 - **Deliverables / Value Metrics:**
-  - exactly 2 qualified independent external teams adopting `cap-dapp` or `cap-core`/Concordia primitives from deliverables completed through Milestone 4 in a pilot or production application
-  - qualified adoption of the embedded Concordia microfrontend/Concordia Dapp (`cap-dapp`) earns 30,000 CC per qualifying external team
-  - qualified adoption of `cap-core`/Concordia primitives only earns 20,000 CC per qualifying external team
-  - a qualifying external team earns one mutually exclusive adoption payment: the 30,000 CC `cap-dapp` payment or the 20,000 CC `cap-core`/Concordia-primitives-only payment; payments do not stack
+  - exactly 2 qualified independent external teams adopting either the Concordia Dapp (`cap-dapp`) or the new `cap-core` recurrence-related primitives and reference use case connected to governance primitives from deliverables completed through Milestone 4 in a pilot or production application
+  - qualified adoption of the Concordia Dapp (`cap-dapp`) earns 50,000 CC per qualified team
+  - qualified adoption of the new `cap-core` recurrence-related primitives and reference use case connected to governance primitives earns 35,000 CC per qualified team
+  - each qualified team receives one mutually exclusive, non-stacking adoption payment: 50,000 CC for `cap-dapp` or 35,000 CC for the `cap-core` recurrence-related primitives and reference use case; payments are per qualified team and do not stack
+  - M5 funding is capped at 100,000 CC: 100,000 CC for two `cap-dapp` adopters, 85,000 CC for one adopter of each track, or 70,000 CC for two adopters of the `cap-core` recurrence-related primitives and reference use case
   - confirmation from each adopting team to the Tech & Ops Committee
   - documentation showing substantive reuse, adaptation, or extension of the adopted Concordia deliverables where applicable
   - letters of intent may support evaluation but do not satisfy this milestone
@@ -456,13 +457,13 @@ Each one-month milestone advances the recurrence, governance, Concordia Dapp, an
 - **Focus:** Reward additional external adoption beyond Milestone 5.
 - **Deliverables / Value Metrics:**
   - up to 10 additional qualified independent external teams beyond Milestone 5 adopting `cap-dapp` or `cap-core`/Concordia primitives from deliverables completed through Milestone 4 in a pilot or production application
-  - qualified adoption of the embedded Concordia microfrontend/Concordia Dapp (`cap-dapp`) earns 30,000 CC per qualifying external team
-  - qualified adoption of `cap-core`/Concordia primitives only earns 20,000 CC per qualifying external team
-  - a qualifying external team earns one mutually exclusive adoption payment: the 30,000 CC `cap-dapp` payment or the 20,000 CC `cap-core`/Concordia-primitives-only payment; payments do not stack
+  - qualified adoption of the embedded Concordia microfrontend/Concordia Dapp (`cap-dapp`) earns 40,000 CC per qualifying external team
+  - qualified adoption of `cap-core`/Concordia primitives only earns 30,000 CC per qualifying external team
+  - a qualifying external team earns one mutually exclusive, non-stacking adoption payment: 40,000 CC for `cap-dapp` or 30,000 CC for `cap-core`/Concordia-primitives-only adoption
   - portfolio breadth premium of 50,000 CC if at least 5 additional qualified external teams are accepted by the end of the milestone period
   - additional portfolio breadth premium of 50,000 CC if 10 additional qualified external teams are accepted by the end of the milestone period
   - the breadth premiums are separate, non-duplicative portfolio incentives: each is paid once for the accepted M6 cohort, is not a per-adopter award, and does not replace either mutually exclusive individual adoption track; acceptance of 10 additional teams earns both breadth premiums, for 100,000 CC in total breadth premiums
-  - total Milestone 6 funding is capped at 400,000 CC
+  - total Milestone 6 funding is capped at 500,000 CC
   - each accepted additional team must provide confirmation to the Tech & Ops Committee and substantive documentation of reuse, adaptation, or extension of the adopted Concordia deliverables where applicable
   - letters of intent may support evaluation but do not satisfy this milestone
   - validation is based on documented evidence of use, traceability to the adopted deliverables, and adopter confirmation; strict binary package traceability is not required
@@ -479,51 +480,55 @@ The Tech & Ops Committee will evaluate completion based on:
 - Documentation and knowledge transfer provided
 - Alignment with stated value metrics
 
-Project-wide acceptance requires:
+Project validation:
 
-- **P-AC1 First-release foundation:** M1 includes a usable `cap-recurrence` prototype, iterated recurrence-first `cap-core` design, a usable `cap-dapp` mockup or prototype, and Splice SV governance and Validator Wallet discovery with confirmed procedures and dependency boundaries.
-- **P-AC2 Strict reference interfaces:** M2 through M4 demonstrate recurrence and governance reference flows through strict shared `cap-core` interfaces, with documented support boundaries and canonical authorized routes.
-- **P-AC3 SV procedure integration:** M2 through M4 document and, where approved and available, integrate existing Splice SV procedures for proposal preparation and initiation, review, voting, lifecycle, status and attribution, and allocation-governance lifecycle.
-- **P-AC4 Coordination and governance boundary:** Proposed Splice work coordinates with Splice maintainers, FCS, and Avro without duplicating their work, remains contingent on applicable maintainer and governance agreement, and does not claim a separate governance system.
-- **P-AC5 Dapp, wallet, and fallback:** M2 through M4 iterate the `cap-dapp` advisory and action-preparation experience, preserve binding human approval/signing boundaries, validate end-to-end recovery and observability, and provide either approved and available Splice Validator Wallet embedding or the standalone Dapp fallback.
-- **P-AC6 Migration:** M1 through M4 provide compatible migration design, a new SV governance package path if needed, and migration and rollback preparation for supported flows.
-- **P-AC7 Independent adoption and reuse:** M5 and M6 require qualified independent external teams to provide adopter confirmation and substantive documented reuse, adaptation, or extension of completed Concordia V2 deliverables from M4 in pilot or production applications; letters of intent alone do not satisfy acceptance. Each qualifying adopter receives one mutually exclusive payment: 30,000 CC for qualified adoption of the embedded Concordia microfrontend/Concordia Dapp (`cap-dapp`) or 20,000 CC for qualified adoption of `cap-core`/Concordia primitives only. These payments do not stack. M6 separately awards a 50,000 CC portfolio breadth premium at at least 5 accepted additional qualified external teams and an additional 50,000 CC at 10 accepted additional qualified external teams; neither premium is a per-adopter award or replaces an individual adoption track, and acceptance of 10 additional teams earns both premiums for 100,000 CC in total breadth premiums. Acceptance requires documented evidence of use and traceability to the adopted deliverables.
+- **Working implementation.** A working `cap-core` provides the relevant recurrence, governance, allocation, executable-outcome, and expiry primitives.
+- **Reference modules.** Working `cap-governance`, `cap-auctions`, and `cap-recurrence` are built on the shared `cap-core` interfaces; V2 changes preserve the existing reference modules outside its active implementation scope.
+- **End-to-end flows.** Governance, allocation, and recurrent-allocation flows are delivered end-to-end on a Canton sandbox and pass the applicable Daml script and sandbox tests.
+- **Shared core.** The reference modules use the shared `cap-core` packages rather than duplicating core interfaces.
+- **SV Governance path.** The delivered integration or package is coordinated with the relevant Splice maintainers, FCS, and Avro without claiming a separate governance system. Where use requires SV approval or acceptance, evidence that the applicable approval or acceptance has been obtained is required; code completion alone does not represent external approval.
+- **Dapp and Validator Wallet outcome.** The Concordia Dapp preserves binding human approval and signing boundaries and provides either approved and available Validator Wallet embedding or a standalone Dapp fallback. The fallback is a standalone outcome and does not constitute successful upstream integration.
+- **Migration.** Any unavoidable impact on supported flows preserves backward compatibility where possible and provides a clear migration and rollback path.
+- **Documentation and release.** Documentation is sufficient for another team to build, run, understand, and extend Concordia V2. Source and open-release conditions are met where applicable.
+- **External adoption.** Qualified independent external teams provide adopter confirmation and substantive documented reuse, adaptation, or extension of completed Concordia V2 deliverables in pilot or production applications. Letters of intent alone do not satisfy acceptance.
+- **Adoption funding qualification.** M5 and M6 adoption-linked funding is accepted only when the milestone's qualified-team eligibility, documented evidence and traceability, mutually exclusive non-stacking adoption tracks, funding caps, and portfolio-breadth conditions are satisfied.
 
 ---
 
 ## Funding
 
-**Total Funding Request:** TBD CC
-**Milestone Percentages:** TBD
+**Base Funding Request:** 630,000 CC
+**Adoption-Linked Additional Funding:** up to 600,000 CC
+**Total Funding Cap:** 1,230,000 CC
 
 Each milestone is earned only after its deliverables, acceptance criteria, and required evidence are accepted through the applicable Development Fund process.
 
+Compared with V1, V2 requires a parallelized effort across Splice and Concordia workstreams. At the time of this proposal, CC is priced at approximately USD 0.09, compared with approximately USD 0.14–0.15 at the time of the initial V1 proposal. V2 adoption-linked funding is reduced because V2 materially focuses on building Splice-related activity, which may not be straightforward to leverage as independent external adoption; it acts in addition to, rather than as a replacement for, V1 adoption funding.
+
 ### Payment Breakdown by Milestone
 
-- Milestone 1 _(Discovery, Design, and Prototypes)_: TBD CC upon committee acceptance
-- Milestone 2 _(First Runtime Slices in Both V2 Proving Domains)_: TBD CC upon committee acceptance
-- Milestone 3 _(Runtime Reference Flows and Splice SV Governance Integration)_: TBD CC upon committee acceptance
-- Milestone 4 _(End-to-End Composition and Release Readiness)_: TBD CC upon committee acceptance
-- Milestone 5 _(External Adoption Validation)_: up to 60,000 CC upon committee acceptance for exactly 2 qualified independent external teams, paid once per qualifying adopter under the mutually exclusive 30,000 CC `cap-dapp` or 20,000 CC `cap-core`/Concordia-primitives-only terms in the milestone deliverables
-- Milestone 6 _(Extended External Adoption)_: up to 400,000 CC upon committee acceptance for up to 10 additional qualified independent external teams beyond Milestone 5: up to 300,000 CC in mutually exclusive 30,000 CC `cap-dapp` or 20,000 CC `cap-core`/Concordia-primitives-only per-adopter payments, plus a separate 50,000 CC portfolio breadth premium at at least 5 accepted additional qualified external teams and an additional 50,000 CC portfolio breadth premium at 10 accepted additional qualified external teams
-
-### Adopter Bounty
-
-Unlockit proposes a transparent bounty for eligible third-party technical evaluation or integration. The bounty is paid by Unlockit only after the corresponding Development Fund milestone funds have been earned and received by Unlockit. Eligibility, evidence requirements, amounts or calculation rules, conflict disclosures, payment records, taxes, sanctions, procurement, and payment responsibility must be published before launch.
-
-The mechanism remains subject to Foundation governance and legal confirmation. It does not redirect or split Foundation payments, promise payment, bind the Foundation, grant adopter rights, or create a contractual claim. If it is not approved, the parties must agree on a compliant alternative before any bounty is represented as active.
+- Milestone 1 _(Discovery, Design, and Prototypes)_: 150,000 CC upon committee acceptance
+- Milestone 2 _(First Runtime Slices in Both V2 Proving Domains)_: 180,000 CC upon committee acceptance
+- Milestone 3 _(Runtime Reference Flows and Splice SV Governance Integration)_: 180,000 CC upon committee acceptance
+- Milestone 4 _(End-to-End Composition and Release Readiness)_: 120,000 CC upon committee acceptance
+- Milestone 5 _(External Adoption Validation)_: up to 100,000 CC upon committee acceptance for exactly 2 qualified independent external teams. Each qualified team receives one mutually exclusive, non-stacking payment: 50,000 CC for `cap-dapp` adoption or 35,000 CC for adoption of the new `cap-core` recurrence-related primitives and reference use case connected to governance primitives.
+- Milestone 6 _(Extended External Adoption)_: up to 500,000 CC upon committee acceptance for up to 10 additional qualified independent external teams beyond Milestone 5: up to 400,000 CC in mutually exclusive, non-stacking 40,000 CC `cap-dapp` or 30,000 CC `cap-core`/Concordia-primitives-only per-adopter payments, plus a separate 50,000 CC portfolio breadth premium at at least 5 accepted additional qualified external teams and an additional 50,000 CC portfolio breadth premium at 10 accepted additional qualified external teams
 
 ### Volatility Stipulation
 
-Funding amounts and the delivery duration remain TBD. If delivery exceeds six months, the final proposal must define how material CC volatility affects unearned and undisbursed milestones. Any treatment must be prospective, transparent, and approved through the applicable governance and legal process. It may not retroactively change an earned milestone or imply an automatic Foundation top-up, discount, repricing, or obligation.
+Funding amounts and estimated delivery months are defined; material scope changes may require funding review/revision subject to applicable governance and funding approval. Exact calendar dates will be set or updated upon approval. If delivery exceeds six months, the final proposal must define how material CC volatility affects unearned and undisbursed milestones. Any treatment must be prospective, transparent, and approved through the applicable governance and legal process. It may not retroactively change an earned milestone or imply an automatic Foundation top-up, discount, repricing, or obligation.
 
 ### Open Funding Decisions
 
-- total funding request and CC amount per milestone
-- milestone percentages and exact delivery dates
+- exact calendar delivery dates
 - evidence and approval requirements for each payout
-- compliant adopter-bounty terms
 - treatment of material CC volatility
+
+### Funding Locking
+
+Unlockit will retain at least 25% of the funding received for non-adoption milestones M1-M4 through the full grant period, and at least 50% of adoption-linked funding received for M5/M6 for one additional year after grant closure. Unlockit may retain more than these minimum amounts. This is a funding-retention commitment, not escrow, third-party custody, or on-ledger locking.
+
+For this commitment, the grant period runs from approval/start through final milestone closure; grant closure follows final milestone acceptance.
 
 ---
 
@@ -573,16 +578,7 @@ Concordia V2 addresses recurring financial-workflow problems relevant to grant-f
 
 ## Maintenance
 
-Unlockit proposes to maintain the shared packages, tests, documentation, security reporting, and issue triage for a **TBD** period after final acceptance. Before final release, the proposal or milestone evidence will define:
-
-- supported package and interface versions
-- response expectations and security-disclosure routes
-- release ownership and signing
-- contribution and review procedures
-- public backlog and deprecation policy
-- succession or handoff if Unlockit can no longer maintain the project
-
-Maintenance of Unlockit-specific integrations, commercial user interfaces, customer customizations, hosted operations, and managed services remains outside grant scope.
+Unlockit will maintain this work throughout the grant period. After grant finalization, continued maintenance is tied to Unlockit's continued product use in the Real Estate vertical, where governance and allocation problems are foreseen or already applicable. Unlockit is open to maintaining the work jointly with other interested stakeholders. This does not commit to a fixed post-grant duration, SLA, staffing level, funding, or roadmap.
 
 ---
 
@@ -590,13 +586,12 @@ Maintenance of Unlockit-specific integrations, commercial user interfaces, custo
 
 The proposal champion remains **TBD**. The proposal uses the `financial-workflows-composability` and `onchain-governance` SIG labels.
 
-Material scope, milestone, funding, licensing, or adopter-bounty changes must follow the applicable Development Fund governance process. Technical design decisions will be recorded publicly. Maintainer authority, contribution review, release signing, dispute handling, and security disclosure procedures will be documented before final release.
+Material scope, milestone, funding, or licensing changes must follow the applicable Development Fund governance process. Technical design decisions will be recorded publicly. Maintainer authority, contribution review, release signing, dispute handling, and security disclosure procedures will be documented before final release.
 
 Open decisions before submission:
 
 - total funding, CC amounts, percentages, and exact dates
 - Foundation milestone-evidence and payout-approval requirements
-- adopter-bounty governance and legal confirmation
 - interfaces with related token, governance, payroll, and settlement projects
 - maintenance term and service expectations
 - volatility treatment if the project runs beyond six months
@@ -629,6 +624,5 @@ These references are potentially complementary, not confirmed dependencies or en
 - **Time and rounding semantics:** Effective time, clock assumptions, precision, rounding, pauses, corrections, and schedules require deterministic definitions and tests.
 - **Termination authority:** Authorized unilateral routes are domain-sensitive. The core executes supplied policy and does not invent legal rights.
 - **Adoption evidence:** A third-party prototype is stronger than stated interest, but adopter availability is outside Unlockit's control. The Foundation must confirm acceptable equivalent evidence.
-- **Adopter bounty:** Governance, legal, tax, sanctions, procurement, conflicts, and payment mechanics remain unresolved. No bounty will be advertised as active before approval.
 - **Maintenance:** Duration, funding, response expectations, and succession remain TBD.
 - **Funding and volatility:** CC amounts, percentages, dates, and treatment beyond six months remain open.
