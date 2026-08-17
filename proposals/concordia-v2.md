@@ -48,13 +48,13 @@ This proposal extends CAP V1's shared submission, resolution, outcome execution,
 
 The project extends the CAP V1 implementation with recurring allocations and a reusable reference application.
 
-The descriptions of `cap-core`, `cap-governance`, and `cap-auctions` below reiterate relevant parts of Concordia V1 for context. They do not redefine or expand the approved V1 scope except where a V2 extension is stated explicitly.
+The descriptions of `cap-core`, `cap-governance`, `cap-recurrence`, and `cap-dapp` below cover V2's active scope. `cap-auctions` remains a V1 reference module with no V2 implementation work planned.
 
 The implementation preserves the modular structure established in V1:
 
 - `cap-core` provides submission, resolution, outcome execution, and expiry mechanics
 - `cap-governance` remains the V1 governance-oriented reference implementation, providing proposals, voting, approval rules, and authorized execution
-- `cap-auctions` remains an existing V1 proving domain
+- `cap-auctions` remains the V1 reference proving domain for auctions
 - `cap-recurrence` adds allocations governed by recurring rules
 - `cap-dapp` provides the open-source reference application for interacting with supported CAP workflows
 
@@ -81,6 +81,8 @@ Deadlines, notice periods, and effective intervals are modeled explicitly. Expir
 #### Governance Module: `cap-governance`
 
 The governance module remains the governance-oriented reference implementation built on `cap-core`, unless `cap-recurrence` integration identifies a need to extend an existing interface.
+
+Authorized governance actions initialize, amend, suspend, resume, terminate, or finalize a recurring rule. Each action follows the approval rules defined by the applicable workflow and may produce subsequent or final allocations through `cap-core` outcome execution.
 
 It covers:
 
