@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_01_concordia_recurrent_allocation" targetNamespace="https://unlockit.io/concordia-v2/bpmn" exporter="Concordia V2 deterministic renderer" exporterVersion="1.0">
+  <bpmn:message id="Message_Proposal" name="Rule proposal" />
+  <bpmn:process id="Process_ConcordiaRecurrence" isExecutable="false">
+    <bpmn:documentation>Illustrative BPMN for the CAP V2 allocation lifecycle between two stakeholders: Policyholder (the party who proposes the rule, governs it, triggers it, and places tokens to be settled) and Counterparty (the party who receives the rule proposal, acknowledges it, and triggers settlement of each cycle). After acknowledgement, two routes are available: a governance fix route (amend, suspend, resume, terminate the rule itself) and a rule triggering route (trigger, place token, trigger settlement, next cycle). CAP System (cap-core + cap-recurrence) executes the rule mechanics between the two stakeholder actions; it is not modelled as a lane because it is the processing substrate, not a participant. Canton Token Standard is the external settlement boundary, invoked when the Policyholder places a token and the Counterparty triggers settlement; it is not modelled as a lane because it is an external settlement standard, not a participant. cap-core carries authority for outcome execution; participant approval and signing remain authoritative. cap-recurrence defines the rule and accrual mechanics; cap-governance authorizes lifecycle changes. Settlement is an external boundary via existing Canton Token Standards; CAP does not introduce a separate token, transfer, or settlement standard. This BPMN is illustrative and does not claim implementation, payment execution, or signing authority.</bpmn:documentation>
+    <bpmn:laneSet id="Lanes_ConcordiaRecurrence">
+      <bpmn:lane id="Lane_Policyholder" name="Policyholder">
+        <bpmn:flowNodeRef>Start_PolicyholderDecide</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Policyholder_ProposeRule</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Event_Policyholder_ProposalSent</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Event_134h1my</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Event_1dsogex</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_Counterparty" name="Counterparty">
+        <bpmn:flowNodeRef>Event_Counterparty_ProposalReceived</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Counterparty_Acknowledge</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_Counterparty_NextAction</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Event_1ii116s</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Event_150df0p</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_1lfia3o</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_02zy9q8</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="Start_PolicyholderDecide" name="Policyholder decides to propose a recurring rule">
+      <bpmn:outgoing>Flow_Start_Propose</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:task id="Task_Policyholder_ProposeRule" name="Propose recurring rule (rate, schedule, asset, effective date)">
+      <bpmn:incoming>Flow_Start_Propose</bpmn:incoming>
+      <bpmn:outgoing>Flow_Propose_Throw</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:intermediateThrowEvent id="Event_Policyholder_ProposalSent" name="Rule proposal sent">
+      <bpmn:incoming>Flow_Propose_Throw</bpmn:incoming>
+      <bpmn:outgoing>Flow_Throw_Catch</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageDef_Proposal" messageRef="Message_Proposal" />
+    </bpmn:intermediateThrowEvent>
+    <bpmn:intermediateCatchEvent id="Event_Counterparty_ProposalReceived" name="Rule proposal received">
+      <bpmn:incoming>Flow_Throw_Catch</bpmn:incoming>
+      <bpmn:outgoing>Flow_Catch_Ack</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageDef_ProposalCatch" messageRef="Message_Proposal" />
+    </bpmn:intermediateCatchEvent>
+    <bpmn:task id="Task_Counterparty_Acknowledge" name="Acknowledge and agree to recurring rule">
+      <bpmn:incoming>Flow_Catch_Ack</bpmn:incoming>
+      <bpmn:outgoing>Flow_Ack_Next</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="Gateway_Counterparty_NextAction" name="Trigger Rule By Whom?">
+      <bpmn:incoming>Flow_Ack_Next</bpmn:incoming>
+      <bpmn:outgoing>Flow_1i3dc2l</bpmn:outgoing>
+      <bpmn:outgoing>Flow_15tsj0q</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_Start_Propose" sourceRef="Start_PolicyholderDecide" targetRef="Task_Policyholder_ProposeRule" />
+    <bpmn:sequenceFlow id="Flow_Propose_Throw" sourceRef="Task_Policyholder_ProposeRule" targetRef="Event_Policyholder_ProposalSent" />
+    <bpmn:sequenceFlow id="Flow_Throw_Catch" sourceRef="Event_Policyholder_ProposalSent" targetRef="Event_Counterparty_ProposalReceived" />
+    <bpmn:sequenceFlow id="Flow_Catch_Ack" sourceRef="Event_Counterparty_ProposalReceived" targetRef="Task_Counterparty_Acknowledge" />
+    <bpmn:sequenceFlow id="Flow_Ack_Next" sourceRef="Task_Counterparty_Acknowledge" targetRef="Gateway_Counterparty_NextAction" />
+    <bpmn:exclusiveGateway id="Gateway_02zy9q8">
+      <bpmn:incoming>Flow_0iqncty</bpmn:incoming>
+      <bpmn:outgoing>Flow_157v3f0</bpmn:outgoing>
+      <bpmn:outgoing>Flow_08makak</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_157v3f0" sourceRef="Gateway_02zy9q8" targetRef="Event_150df0p" />
+    <bpmn:task id="Activity_1lfia3o" name="Trigger recurring rule">
+      <bpmn:incoming>Flow_15tsj0q</bpmn:incoming>
+      <bpmn:outgoing>Flow_0iqncty</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:sequenceFlow id="Flow_1i3dc2l" name="Propose Policy Change By Whom?" sourceRef="Gateway_Counterparty_NextAction" targetRef="Event_1ii116s" />
+    <bpmn:intermediateThrowEvent id="Event_1ii116s">
+      <bpmn:incoming>Flow_1i3dc2l</bpmn:incoming>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_1owlklc" />
+    </bpmn:intermediateThrowEvent>
+    <bpmn:intermediateCatchEvent id="Event_134h1my" name="Trigger Rule Received">
+      <bpmn:messageEventDefinition id="MessageEventDefinition_057odhn" messageRef="Message_Proposal" />
+    </bpmn:intermediateCatchEvent>
+    <bpmn:sequenceFlow id="Flow_0iqncty" sourceRef="Activity_1lfia3o" targetRef="Gateway_02zy9q8" />
+    <bpmn:intermediateThrowEvent id="Event_1dsogex">
+      <bpmn:incoming>Flow_08makak</bpmn:incoming>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_0gwcfsc" />
+    </bpmn:intermediateThrowEvent>
+    <bpmn:intermediateThrowEvent id="Event_150df0p">
+      <bpmn:incoming>Flow_157v3f0</bpmn:incoming>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_02060ce" />
+    </bpmn:intermediateThrowEvent>
+    <bpmn:sequenceFlow id="Flow_15tsj0q" sourceRef="Gateway_Counterparty_NextAction" targetRef="Activity_1lfia3o" />
+    <bpmn:sequenceFlow id="Flow_08makak" sourceRef="Gateway_02zy9q8" targetRef="Event_1dsogex" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_ConcordiaRecurrence">
+    <bpmndi:BPMNPlane id="BPMNPlane_ConcordiaRecurrence" bpmnElement="Process_ConcordiaRecurrence">
+      <bpmndi:BPMNShape id="Lane_Counterparty_di" bpmnElement="Lane_Counterparty" isHorizontal="true">
+        <dc:Bounds x="150" y="600" width="1660" height="280" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Policyholder_di" bpmnElement="Lane_Policyholder" isHorizontal="true">
+        <dc:Bounds x="150" y="40" width="1660" height="560" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Start_PolicyholderDecide_di" bpmnElement="Start_PolicyholderDecide">
+        <dc:Bounds x="200" y="80" width="40" height="40" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="160" y="20" width="120" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Policyholder_ProposeRule_di" bpmnElement="Task_Policyholder_ProposeRule">
+        <dc:Bounds x="320" y="70" width="140" height="60" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="320" y="130" width="140" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_Policyholder_ProposalSent_di" bpmnElement="Event_Policyholder_ProposalSent">
+        <dc:Bounds x="540" y="80" width="40" height="40" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="520" y="40" width="80" height="20" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_Counterparty_ProposalReceived_di" bpmnElement="Event_Counterparty_ProposalReceived">
+        <dc:Bounds x="200" y="640" width="40" height="40" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="186" y="689.5" width="68" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Counterparty_Acknowledge_di" bpmnElement="Task_Counterparty_Acknowledge">
+        <dc:Bounds x="280" y="630" width="180" height="60" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="280" y="690" width="180" height="20" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_Counterparty_NextAction_di" bpmnElement="Gateway_Counterparty_NextAction" isMarkerVisible="true">
+        <dc:Bounds x="535" y="635" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="591" y="627" width="77" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0uyt060_di" bpmnElement="Event_1ii116s">
+        <dc:Bounds x="642" y="772" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_0iy4kz7" bpmnElement="Event_134h1my">
+        <dc:Bounds x="200" y="230" width="40" height="40" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="190" y="280" width="61" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_06cyaxj_di" bpmnElement="Event_1dsogex">
+        <dc:Bounds x="992" y="492" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_03hwqx3_di" bpmnElement="Event_150df0p">
+        <dc:Bounds x="992" y="732" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_1dmxu2g" bpmnElement="Activity_1lfia3o">
+        <dc:Bounds x="690" y="620" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_02zy9q8_di" bpmnElement="Gateway_02zy9q8" isMarkerVisible="true">
+        <dc:Bounds x="985" y="635" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_Start_Propose_di" bpmnElement="Flow_Start_Propose">
+        <di:waypoint x="240" y="100" />
+        <di:waypoint x="320" y="100" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Propose_Throw_di" bpmnElement="Flow_Propose_Throw">
+        <di:waypoint x="460" y="100" />
+        <di:waypoint x="540" y="100" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Throw_Catch_di" bpmnElement="Flow_Throw_Catch">
+        <di:waypoint x="560" y="120" />
+        <di:waypoint x="560" y="180" />
+        <di:waypoint x="50" y="180" />
+        <di:waypoint x="50" y="660" />
+        <di:waypoint x="200" y="660" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Catch_Ack_di" bpmnElement="Flow_Catch_Ack">
+        <di:waypoint x="240" y="660" />
+        <di:waypoint x="280" y="660" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Ack_Next_di" bpmnElement="Flow_Ack_Next">
+        <di:waypoint x="460" y="660" />
+        <di:waypoint x="535" y="660" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_157v3f0_di" bpmnElement="Flow_157v3f0">
+        <di:waypoint x="1010" y="685" />
+        <di:waypoint x="1010" y="732" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1i3dc2l_di" bpmnElement="Flow_1i3dc2l">
+        <di:waypoint x="560" y="685" />
+        <di:waypoint x="560" y="790" />
+        <di:waypoint x="642" y="790" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="563" y="722" width="74" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0iqncty_di" bpmnElement="Flow_0iqncty">
+        <di:waypoint x="790" y="660" />
+        <di:waypoint x="985" y="660" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_15tsj0q_di" bpmnElement="Flow_15tsj0q">
+        <di:waypoint x="585" y="660" />
+        <di:waypoint x="690" y="660" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_08makak_di" bpmnElement="Flow_08makak">
+        <di:waypoint x="1010" y="635" />
+        <di:waypoint x="1010" y="528" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
