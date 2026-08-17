@@ -145,7 +145,7 @@ Integration with existing Splice and wallet governance work will be coordinated 
 
 **Conceptual sequence: CAP V2 allocation lifecycle**
 
-The allocation lifecycle is illustrated in BPMN at [`assets/01-concordia-recurrent-allocation-and-governance.bpmn`](assets/01-concordia-recurrent-allocation-and-governance.bpmn). It is illustrative and does not claim implementation, payment execution, or signing authority. Side controls (amend, suspend, resume, terminate) are part of the authorized governance surface described in `cap-recurrence`.
+The allocation lifecycle is illustrated in BPMN at [`assets/01-concordia-recurrent-allocation-and-governance.bpmn`](assets/01-concordia-recurrent-allocation-and-governance.bpmn) and rendered to [`assets/01-concordia-recurrent-allocation-and-governance.svg`](assets/01-concordia-recurrent-allocation-and-governance.svg). It is illustrative and does not claim implementation, payment execution, or signing authority. Side controls (amend, suspend, resume, terminate) are part of the authorized governance surface described in `cap-recurrence`. The same conceptual sequence applies to the Employment and Rental illustrations below.
 
 **Employment**
 
