@@ -1,0 +1,199 @@
+<?xml version='1.0' encoding='utf-8'?>
+<ns0:definitions xmlns:ns0="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:ns1="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:ns2="http://www.omg.org/spec/DD/20100524/DC" xmlns:ns3="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_veridica_reward_allocation" targetNamespace="https://unlockit.io/veridica/bpmn" exporter="Veridica deterministic renderer" exporterVersion="2.0"><ns0:collaboration id="Collaboration"><ns0:participant id="Participant_Process_RewardConsumer" name="Data Consumer" processRef="Process_RewardConsumer" /><ns0:participant id="Participant_Process_RewardOperator" name="Operator Party" processRef="Process_RewardOperator" /><ns0:participant id="Participant_Process_RewardContributor" name="Contributor" processRef="Process_RewardContributor"><ns0:participantMultiplicity minimum="1" maximum="999" /></ns0:participant><ns0:participant id="Participant_Process_RewardVerifier" name="Verifier" processRef="Process_RewardVerifier"><ns0:participantMultiplicity minimum="1" maximum="999" /></ns0:participant><ns0:participant id="Participant_Process_AllocationEffector" name="Allocation Effector" processRef="Process_AllocationEffector" /><ns0:messageFlow id="Message_RW_Payment" name="Fee and usage reference" sourceRef="RW_D_Pay" targetRef="RW_O_Start" /><ns0:messageFlow id="Message_RW_ConNotice" name="Contributor eligibility notice" sourceRef="RW_O_Weights" targetRef="RW_C_Start" /><ns0:messageFlow id="Message_RW_VerNotice" name="Verifier eligibility notice" sourceRef="RW_O_Weights" targetRef="RW_V_Start" /><ns0:messageFlow id="Message_RW_ApprovedCAP" name="Optional CAP Concordia route" sourceRef="RW_O_CAP" targetRef="RW_E_Start" /><ns0:messageFlow id="Message_RW_ApprovedBase" name="Baseline effectuation route" sourceRef="RW_O_Base" targetRef="RW_E_Start" /><ns0:messageFlow id="Message_RW_Receipt" name="Effectuation receipt" sourceRef="RW_E_Receipt" targetRef="RW_O_Audit" /><ns0:messageFlow id="Message_RW_ConReceipt" name="Contributor allocation receipt" sourceRef="RW_E_Receipt" targetRef="RW_C_Receive" /><ns0:messageFlow id="Message_RW_VerReceipt" name="Verifier allocation receipt" sourceRef="RW_E_Receipt" targetRef="RW_V_Receive" /><ns0:messageFlow id="Message_RW_ConsumerReceipt" name="Payment and allocation audit receipt" sourceRef="RW_O_Audit" targetRef="RW_D_Receipt" /></ns0:collaboration><ns0:process id="Process_RewardConsumer" name="Data Consumer process" isExecutable="false"><ns0:laneSet id="LaneSet_Process_RewardConsumer"><ns0:lane id="Lane_Process_RewardConsumer" name="Data Consumer"><ns0:flowNodeRef>RW_D_Start</ns0:flowNodeRef><ns0:flowNodeRef>RW_D_Pay</ns0:flowNodeRef><ns0:flowNodeRef>RW_D_Receipt</ns0:flowNodeRef><ns0:flowNodeRef>RW_D_End</ns0:flowNodeRef></ns0:lane></ns0:laneSet><ns0:startEvent id="RW_D_Start" name="Priced use requested" /><ns0:task id="RW_D_Pay" name="Pay approved fee or satisfy price terms" /><ns0:task id="RW_D_Receipt" name="Receive use and allocation receipt" /><ns0:endEvent id="RW_D_End" name="Payment complete" /><ns0:dataObject id="Data_Payment_Object" /><ns0:dataObjectReference id="Data_Payment" name="Fee payment and use reference" dataObjectRef="Data_Payment_Object" /><ns0:association id="Association_Data_Payment" sourceRef="RW_D_Pay" targetRef="Data_Payment" associationDirection="One" /><ns0:sequenceFlow id="RW_D1" sourceRef="RW_D_Start" targetRef="RW_D_Pay" /><ns0:sequenceFlow id="RW_D2" sourceRef="RW_D_Pay" targetRef="RW_D_Receipt" /><ns0:sequenceFlow id="RW_D3" sourceRef="RW_D_Receipt" targetRef="RW_D_End" /></ns0:process><ns0:process id="Process_RewardOperator" name="Operator Party process" isExecutable="false"><ns0:laneSet id="LaneSet_Process_RewardOperator"><ns0:lane id="Lane_Process_RewardOperator" name="Operator Party"><ns0:flowNodeRef>RW_O_Start</ns0:flowNodeRef><ns0:flowNodeRef>RW_O_Pools</ns0:flowNodeRef><ns0:flowNodeRef>RW_O_Total</ns0:flowNodeRef><ns0:flowNodeRef>RW_O_Fix</ns0:flowNodeRef><ns0:flowNodeRef>RW_O_Weights</ns0:flowNodeRef><ns0:flowNodeRef>RW_O_Approve</ns0:flowNodeRef><ns0:flowNodeRef>RW_O_Route</ns0:flowNodeRef><ns0:flowNodeRef>RW_O_CAP</ns0:flowNodeRef><ns0:flowNodeRef>RW_O_Base</ns0:flowNodeRef><ns0:flowNodeRef>RW_O_Audit</ns0:flowNodeRef><ns0:flowNodeRef>RW_O_End</ns0:flowNodeRef></ns0:lane></ns0:laneSet><ns0:startEvent id="RW_O_Start" name="Fee and usage received" /><ns0:task id="RW_O_Pools" name="Load active policy version and apply configured X contributor Y verifier Z operator macro pools" /><ns0:exclusiveGateway id="RW_O_Total" name="Pools total 100 percent" /><ns0:task id="RW_O_Fix" name="Reject or correct allocation policy" /><ns0:task id="RW_O_Weights" name="Apply credential role quality and activity micro weights" /><ns0:task id="RW_O_Approve" name="Approve reward allocation and route" /><ns0:exclusiveGateway id="RW_O_Route" name="Effectuation route" /><ns0:task id="RW_O_CAP" name="Prepare optional Concordia CAP allocation or settlement" /><ns0:task id="RW_O_Base" name="Prepare baseline authorized effectuation" /><ns0:task id="RW_O_Audit" name="Record allocation receipt and audit" /><ns0:endEvent id="RW_O_End" name="Allocation complete" /><ns0:dataObject id="Data_RewardPolicy_Object" /><ns0:dataObjectReference id="Data_RewardPolicy" name="Active versioned participation and reward policy consumed without ad hoc redefinition" dataObjectRef="Data_RewardPolicy_Object" /><ns0:association id="Association_Data_RewardPolicy" sourceRef="RW_O_Pools" targetRef="Data_RewardPolicy" associationDirection="One" /><ns0:dataObject id="Data_Allocation_Object" /><ns0:dataObjectReference id="Data_Allocation" name="Approved allocation and audit record" dataObjectRef="Data_Allocation_Object" /><ns0:association id="Association_Data_Allocation" sourceRef="RW_O_Audit" targetRef="Data_Allocation" associationDirection="One" /><ns0:sequenceFlow id="RW_O1" sourceRef="RW_O_Start" targetRef="RW_O_Pools" /><ns0:sequenceFlow id="RW_O2" sourceRef="RW_O_Pools" targetRef="RW_O_Total" /><ns0:sequenceFlow id="RW_O3" sourceRef="RW_O_Total" targetRef="RW_O_Weights" name="Valid" /><ns0:sequenceFlow id="RW_O4" sourceRef="RW_O_Total" targetRef="RW_O_Fix" name="Invalid" /><ns0:sequenceFlow id="RW_O5" sourceRef="RW_O_Fix" targetRef="RW_O_Pools" name="Correct" /><ns0:sequenceFlow id="RW_O6" sourceRef="RW_O_Weights" targetRef="RW_O_Approve" /><ns0:sequenceFlow id="RW_O7" sourceRef="RW_O_Approve" targetRef="RW_O_Route" /><ns0:sequenceFlow id="RW_O8" sourceRef="RW_O_Route" targetRef="RW_O_CAP" name="CAP interfaces fit" /><ns0:sequenceFlow id="RW_O9" sourceRef="RW_O_Route" targetRef="RW_O_Base" name="Baseline" /><ns0:sequenceFlow id="RW_O10" sourceRef="RW_O_CAP" targetRef="RW_O_Audit" /><ns0:sequenceFlow id="RW_O11" sourceRef="RW_O_Base" targetRef="RW_O_Audit" /><ns0:sequenceFlow id="RW_O12" sourceRef="RW_O_Audit" targetRef="RW_O_End" /></ns0:process><ns0:process id="Process_RewardContributor" name="Contributor process" isExecutable="false"><ns0:laneSet id="LaneSet_Process_RewardContributor"><ns0:lane id="Lane_Process_RewardContributor" name="Contributor"><ns0:flowNodeRef>RW_C_Start</ns0:flowNodeRef><ns0:flowNodeRef>RW_C_Check</ns0:flowNodeRef><ns0:flowNodeRef>RW_C_Receive</ns0:flowNodeRef><ns0:flowNodeRef>RW_C_End</ns0:flowNodeRef></ns0:lane></ns0:laneSet><ns0:startEvent id="RW_C_Start" name="Eligibility notice" /><ns0:task id="RW_C_Check" name="Confirm recognized contribution credential and activity" /><ns0:task id="RW_C_Receive" name="Receive allocation or receipt" /><ns0:endEvent id="RW_C_End" name="Contributor reward recorded" /><ns0:dataObject id="Data_ConEligibility_Object" /><ns0:dataObjectReference id="Data_ConEligibility" name="Contribution eligibility credential and activity" dataObjectRef="Data_ConEligibility_Object" /><ns0:association id="Association_Data_ConEligibility" sourceRef="RW_C_Check" targetRef="Data_ConEligibility" associationDirection="One" /><ns0:sequenceFlow id="RW_C1" sourceRef="RW_C_Start" targetRef="RW_C_Check" /><ns0:sequenceFlow id="RW_C2" sourceRef="RW_C_Check" targetRef="RW_C_Receive" /><ns0:sequenceFlow id="RW_C3" sourceRef="RW_C_Receive" targetRef="RW_C_End" /></ns0:process><ns0:process id="Process_RewardVerifier" name="Verifier process" isExecutable="false"><ns0:laneSet id="LaneSet_Process_RewardVerifier"><ns0:lane id="Lane_Process_RewardVerifier" name="Verifier"><ns0:flowNodeRef>RW_V_Start</ns0:flowNodeRef><ns0:flowNodeRef>RW_V_Check</ns0:flowNodeRef><ns0:flowNodeRef>RW_V_Receive</ns0:flowNodeRef><ns0:flowNodeRef>RW_V_End</ns0:flowNodeRef></ns0:lane></ns0:laneSet><ns0:startEvent id="RW_V_Start" name="Eligibility notice" /><ns0:task id="RW_V_Check" name="Confirm recognized verification credential and activity" /><ns0:task id="RW_V_Receive" name="Receive allocation or receipt" /><ns0:endEvent id="RW_V_End" name="Verifier reward recorded" /><ns0:dataObject id="Data_VerEligibility_Object" /><ns0:dataObjectReference id="Data_VerEligibility" name="Verification eligibility credential and activity" dataObjectRef="Data_VerEligibility_Object" /><ns0:association id="Association_Data_VerEligibility" sourceRef="RW_V_Check" targetRef="Data_VerEligibility" associationDirection="One" /><ns0:sequenceFlow id="RW_V1" sourceRef="RW_V_Start" targetRef="RW_V_Check" /><ns0:sequenceFlow id="RW_V2" sourceRef="RW_V_Check" targetRef="RW_V_Receive" /><ns0:sequenceFlow id="RW_V3" sourceRef="RW_V_Receive" targetRef="RW_V_End" /></ns0:process><ns0:process id="Process_AllocationEffector" name="Allocation Effector process" isExecutable="false"><ns0:laneSet id="LaneSet_Process_AllocationEffector"><ns0:lane id="Lane_Process_AllocationEffector" name="Allocation Effector"><ns0:flowNodeRef>RW_E_Start</ns0:flowNodeRef><ns0:flowNodeRef>RW_E_Effect</ns0:flowNodeRef><ns0:flowNodeRef>RW_E_Receipt</ns0:flowNodeRef><ns0:flowNodeRef>RW_E_End</ns0:flowNodeRef></ns0:lane></ns0:laneSet><ns0:startEvent id="RW_E_Start" name="Approved allocation received" /><ns0:task id="RW_E_Effect" name="Effect allocation through selected authorized route" /><ns0:task id="RW_E_Receipt" name="Issue settlement or allocation receipt" /><ns0:endEvent id="RW_E_End" name="Effectuation complete" /><ns0:dataObject id="Data_Receipt_Object" /><ns0:dataObjectReference id="Data_Receipt" name="Allocation or settlement receipt" dataObjectRef="Data_Receipt_Object" /><ns0:association id="Association_Data_Receipt" sourceRef="RW_E_Receipt" targetRef="Data_Receipt" associationDirection="One" /><ns0:sequenceFlow id="RW_E1" sourceRef="RW_E_Start" targetRef="RW_E_Effect" /><ns0:sequenceFlow id="RW_E2" sourceRef="RW_E_Effect" targetRef="RW_E_Receipt" /><ns0:sequenceFlow id="RW_E3" sourceRef="RW_E_Receipt" targetRef="RW_E_End" /></ns0:process><ns1:BPMNDiagram id="Diagram"><ns1:BPMNPlane id="Plane" bpmnElement="Collaboration"><ns1:BPMNShape id="DI_Participant_Process_RewardConsumer" bpmnElement="Participant_Process_RewardConsumer"><ns2:Bounds x="20" y="30" width="2531.85" height="180" /></ns1:BPMNShape><ns1:BPMNShape id="DI_RW_D_Start" bpmnElement="RW_D_Start"><ns2:Bounds x="69.4444" y="78" width="116" height="42" /></ns1:BPMNShape><ns1:BPMNShape id="DI_RW_D_Pay" bpmnElement="RW_D_Pay"><ns2:Bounds x="244.444" y="78" width="116" height="58" /></ns1:BPMNShape><ns1:BPMNShape id="DI_RW_D_Receipt" bpmnElement="RW_D_Receipt"><ns2:Bounds x="419.444" y="78" width="116" height="58" /></ns1:BPMNShape><ns1:BPMNShape id="DI_RW_D_End" bpmnElement="RW_D_End"><ns2:Bounds x="594.444" y="78" width="116" height="42" /></ns1:BPMNShape><ns1:BPMNShape id="DI_Data_Payment" bpmnElement="Data_Payment"><ns2:Bounds x="244.444" y="150" width="110" height="42" /></ns1:BPMNShape><ns1:BPMNShape id="DI_Participant_Process_RewardOperator" bpmnElement="Participant_Process_RewardOperator"><ns2:Bounds x="20" y="235" width="2531.85" height="180" /></ns1:BPMNShape><ns1:BPMNShape id="DI_RW_O_Start" bpmnElement="RW_O_Start"><ns2:Bounds x="69.4444" y="283" width="116" height="42" /></ns1:BPMNShape><ns1:BPMNShape id="DI_RW_O_Pools" bpmnElement="RW_O_Pools"><ns2:Bounds x="244.444" y="283" width="116" height="58" /></ns1:BPMNShape><ns1:BPMNShape id="DI_RW_O_Total" bpmnElement="RW_O_Total"><ns2:Bounds x="419.444" y="283" width="74" height="58" /></ns1:BPMNShape><ns1:BPMNShape id="DI_RW_O_Fix" bpmnElement="RW_O_Fix"><ns2:Bounds x="594.444" y="283" width="116" height="58" /></ns1:BPMNShape><ns1:BPMNShape id="DI_RW_O_Weights" bpmnElement="RW_O_Weights"><ns2:Bounds x="769.444" y="283" width="116" height="58" /></ns1:BPMNShape><ns1:BPMNShape id="DI_RW_O_Approve" bpmnElement="RW_O_Approve"><ns2:Bounds x="944.444" y="283" width="116" height="58" /></ns1:BPMNShape><ns1:BPMNShape id="DI_RW_O_Route" bpmnElement="RW_O_Route"><ns2:Bounds x="1119.44" y="283" width="74" height="58" /></ns1:BPMNShape><ns1:BPMNShape id="DI_RW_O_CAP" bpmnElement="RW_O_CAP"><ns2:Bounds x="1294.44" y="283" width="116" height="58" /></ns1:BPMNShape><ns1:BPMNShape id="DI_RW_O_Base" bpmnElement="RW_O_Base"><ns2:Bounds x="1469.44" y="283" width="116" height="58" /></ns1:BPMNShape><ns1:BPMNShape id="DI_RW_O_Audit" bpmnElement="RW_O_Audit"><ns2:Bounds x="1644.44" y="283" width="116" height="58" /></ns1:BPMNShape><ns1:BPMNShape id="DI_RW_O_End" bpmnElement="RW_O_End"><ns2:Bounds x="1819.44" y="283" width="116" height="42" /></ns1:BPMNShape><ns1:BPMNShape id="DI_Data_RewardPolicy" bpmnElement="Data_RewardPolicy"><ns2:Bounds x="244.444" y="355" width="110" height="42" /></ns1:BPMNShape><ns1:BPMNShape id="DI_Data_Allocation" bpmnElement="Data_Allocation"><ns2:Bounds x="1644.44" y="355" width="110" height="42" /></ns1:BPMNShape><ns1:BPMNShape id="DI_Participant_Process_RewardContributor" bpmnElement="Participant_Process_RewardContributor"><ns2:Bounds x="20" y="440" width="2531.85" height="180" /></ns1:BPMNShape><ns1:BPMNShape id="DI_RW_C_Start" bpmnElement="RW_C_Start"><ns2:Bounds x="69.4444" y="488" width="116" height="42" /></ns1:BPMNShape><ns1:BPMNShape id="DI_RW_C_Check" bpmnElement="RW_C_Check"><ns2:Bounds x="244.444" y="488" width="116" height="58" /></ns1:BPMNShape><ns1:BPMNShape id="DI_RW_C_Receive" bpmnElement="RW_C_Receive"><ns2:Bounds x="419.444" y="488" width="116" height="58" /></ns1:BPMNShape><ns1:BPMNShape id="DI_RW_C_End" bpmnElement="RW_C_End"><ns2:Bounds x="594.444" y="488" width="116" height="42" /></ns1:BPMNShape><ns1:BPMNShape id="DI_Data_ConEligibility" bpmnElement="Data_ConEligibility"><ns2:Bounds x="244.444" y="560" width="110" height="42" /></ns1:BPMNShape><ns1:BPMNShape id="DI_Participant_Process_RewardVerifier" bpmnElement="Participant_Process_RewardVerifier"><ns2:Bounds x="20" y="645" width="2531.85" height="180" /></ns1:BPMNShape><ns1:BPMNShape id="DI_RW_V_Start" bpmnElement="RW_V_Start"><ns2:Bounds x="69.4444" y="693" width="116" height="42" /></ns1:BPMNShape><ns1:BPMNShape id="DI_RW_V_Check" bpmnElement="RW_V_Check"><ns2:Bounds x="244.444" y="693" width="116" height="58" /></ns1:BPMNShape><ns1:BPMNShape id="DI_RW_V_Receive" bpmnElement="RW_V_Receive"><ns2:Bounds x="419.444" y="693" width="116" height="58" /></ns1:BPMNShape><ns1:BPMNShape id="DI_RW_V_End" bpmnElement="RW_V_End"><ns2:Bounds x="594.444" y="693" width="116" height="42" /></ns1:BPMNShape><ns1:BPMNShape id="DI_Data_VerEligibility" bpmnElement="Data_VerEligibility"><ns2:Bounds x="244.444" y="765" width="110" height="42" /></ns1:BPMNShape><ns1:BPMNShape id="DI_Participant_Process_AllocationEffector" bpmnElement="Participant_Process_AllocationEffector"><ns2:Bounds x="20" y="850" width="2531.85" height="180" /></ns1:BPMNShape><ns1:BPMNShape id="DI_RW_E_Start" bpmnElement="RW_E_Start"><ns2:Bounds x="69.4444" y="898" width="116" height="42" /></ns1:BPMNShape><ns1:BPMNShape id="DI_RW_E_Effect" bpmnElement="RW_E_Effect"><ns2:Bounds x="244.444" y="898" width="116" height="58" /></ns1:BPMNShape><ns1:BPMNShape id="DI_RW_E_Receipt" bpmnElement="RW_E_Receipt"><ns2:Bounds x="419.444" y="898" width="116" height="58" /></ns1:BPMNShape><ns1:BPMNShape id="DI_RW_E_End" bpmnElement="RW_E_End"><ns2:Bounds x="594.444" y="898" width="116" height="42" /></ns1:BPMNShape><ns1:BPMNShape id="DI_Data_Receipt" bpmnElement="Data_Receipt"><ns2:Bounds x="419.444" y="970" width="110" height="42" /></ns1:BPMNShape><ns1:BPMNEdge id="DI_Association_Data_Payment" bpmnElement="Association_Data_Payment">
+  <ns3:waypoint x="299.444" y="136" />
+  <ns3:waypoint x="299.444" y="150" />
+</ns1:BPMNEdge><ns1:BPMNEdge id="DI_RW_D1" bpmnElement="RW_D1">
+  <ns3:waypoint x="185.444" y="107" />
+  <ns3:waypoint x="244.444" y="107" />
+</ns1:BPMNEdge><ns1:BPMNEdge id="DI_RW_D2" bpmnElement="RW_D2">
+  <ns3:waypoint x="360.444" y="107" />
+  <ns3:waypoint x="419.444" y="107" />
+</ns1:BPMNEdge><ns1:BPMNEdge id="DI_RW_D3" bpmnElement="RW_D3">
+  <ns3:waypoint x="535.444" y="99" />
+  <ns3:waypoint x="631.444" y="99" />
+</ns1:BPMNEdge><ns1:BPMNEdge id="DI_Association_Data_RewardPolicy" bpmnElement="Association_Data_RewardPolicy">
+  <ns3:waypoint x="299.444" y="341" />
+  <ns3:waypoint x="299.444" y="355" />
+</ns1:BPMNEdge><ns1:BPMNEdge id="DI_Association_Data_Allocation" bpmnElement="Association_Data_Allocation">
+  <ns3:waypoint x="1699.44" y="341" />
+  <ns3:waypoint x="1699.44" y="355" />
+</ns1:BPMNEdge><ns1:BPMNEdge id="DI_RW_O1" bpmnElement="RW_O1">
+  <ns3:waypoint x="185.444" y="312" />
+  <ns3:waypoint x="244.444" y="312" />
+</ns1:BPMNEdge><ns1:BPMNEdge id="DI_RW_O2" bpmnElement="RW_O2">
+  <ns3:waypoint x="360.444" y="312" />
+  <ns3:waypoint x="419.444" y="312" />
+</ns1:BPMNEdge><ns1:BPMNEdge id="DI_RW_O3" bpmnElement="RW_O3">
+  <ns3:waypoint x="493.444" y="312" />
+  <ns3:waypoint x="493.444" y="265" />
+  <ns3:waypoint x="827.444" y="265" />
+  <ns3:waypoint x="827.444" y="283" />
+</ns1:BPMNEdge><ns1:BPMNEdge id="DI_RW_O4" bpmnElement="RW_O4">
+  <ns3:waypoint x="493.444" y="312" />
+  <ns3:waypoint x="594.444" y="312" />
+</ns1:BPMNEdge><ns1:BPMNEdge id="DI_RW_O5" bpmnElement="RW_O5">
+  <ns3:waypoint x="710.444" y="312" />
+  <ns3:waypoint x="710.444" y="347" />
+  <ns3:waypoint x="302.444" y="347" />
+  <ns3:waypoint x="302.444" y="341" />
+</ns1:BPMNEdge><ns1:BPMNEdge id="DI_RW_O6" bpmnElement="RW_O6">
+  <ns3:waypoint x="885.444" y="312" />
+  <ns3:waypoint x="944.444" y="312" />
+</ns1:BPMNEdge><ns1:BPMNEdge id="DI_RW_O7" bpmnElement="RW_O7">
+  <ns3:waypoint x="1060.44" y="312" />
+  <ns3:waypoint x="1119.44" y="312" />
+</ns1:BPMNEdge><ns1:BPMNEdge id="DI_RW_O8" bpmnElement="RW_O8">
+  <ns3:waypoint x="1193.44" y="312" />
+  <ns3:waypoint x="1294.44" y="312" />
+</ns1:BPMNEdge><ns1:BPMNEdge id="DI_RW_O9" bpmnElement="RW_O9">
+  <ns3:waypoint x="1193.44" y="312" />
+  <ns3:waypoint x="1193.44" y="265" />
+  <ns3:waypoint x="1527.44" y="265" />
+  <ns3:waypoint x="1527.44" y="283" />
+</ns1:BPMNEdge><ns1:BPMNEdge id="DI_RW_O10" bpmnElement="RW_O10">
+  <ns3:waypoint x="1410.44" y="312" />
+  <ns3:waypoint x="1410.44" y="347" />
+  <ns3:waypoint x="1702.44" y="347" />
+  <ns3:waypoint x="1702.44" y="341" />
+</ns1:BPMNEdge><ns1:BPMNEdge id="DI_RW_O11" bpmnElement="RW_O11">
+  <ns3:waypoint x="1585.44" y="312" />
+  <ns3:waypoint x="1644.44" y="312" />
+</ns1:BPMNEdge><ns1:BPMNEdge id="DI_RW_O12" bpmnElement="RW_O12">
+  <ns3:waypoint x="1760.44" y="304" />
+  <ns3:waypoint x="1856.44" y="304" />
+</ns1:BPMNEdge><ns1:BPMNEdge id="DI_Association_Data_ConEligibility" bpmnElement="Association_Data_ConEligibility">
+  <ns3:waypoint x="299.444" y="546" />
+  <ns3:waypoint x="299.444" y="560" />
+</ns1:BPMNEdge><ns1:BPMNEdge id="DI_RW_C1" bpmnElement="RW_C1">
+  <ns3:waypoint x="185.444" y="517" />
+  <ns3:waypoint x="244.444" y="517" />
+</ns1:BPMNEdge><ns1:BPMNEdge id="DI_RW_C2" bpmnElement="RW_C2">
+  <ns3:waypoint x="360.444" y="517" />
+  <ns3:waypoint x="419.444" y="517" />
+</ns1:BPMNEdge><ns1:BPMNEdge id="DI_RW_C3" bpmnElement="RW_C3">
+  <ns3:waypoint x="535.444" y="509" />
+  <ns3:waypoint x="631.444" y="509" />
+</ns1:BPMNEdge><ns1:BPMNEdge id="DI_Association_Data_VerEligibility" bpmnElement="Association_Data_VerEligibility">
+  <ns3:waypoint x="299.444" y="751" />
+  <ns3:waypoint x="299.444" y="765" />
+</ns1:BPMNEdge><ns1:BPMNEdge id="DI_RW_V1" bpmnElement="RW_V1">
+  <ns3:waypoint x="185.444" y="722" />
+  <ns3:waypoint x="244.444" y="722" />
+</ns1:BPMNEdge><ns1:BPMNEdge id="DI_RW_V2" bpmnElement="RW_V2">
+  <ns3:waypoint x="360.444" y="722" />
+  <ns3:waypoint x="419.444" y="722" />
+</ns1:BPMNEdge><ns1:BPMNEdge id="DI_RW_V3" bpmnElement="RW_V3">
+  <ns3:waypoint x="535.444" y="714" />
+  <ns3:waypoint x="631.444" y="714" />
+</ns1:BPMNEdge><ns1:BPMNEdge id="DI_Association_Data_Receipt" bpmnElement="Association_Data_Receipt">
+  <ns3:waypoint x="474.444" y="956" />
+  <ns3:waypoint x="474.444" y="970" />
+</ns1:BPMNEdge><ns1:BPMNEdge id="DI_RW_E1" bpmnElement="RW_E1">
+  <ns3:waypoint x="185.444" y="927" />
+  <ns3:waypoint x="244.444" y="927" />
+</ns1:BPMNEdge><ns1:BPMNEdge id="DI_RW_E2" bpmnElement="RW_E2">
+  <ns3:waypoint x="360.444" y="927" />
+  <ns3:waypoint x="419.444" y="927" />
+</ns1:BPMNEdge><ns1:BPMNEdge id="DI_RW_E3" bpmnElement="RW_E3">
+  <ns3:waypoint x="535.444" y="919" />
+  <ns3:waypoint x="631.444" y="919" />
+</ns1:BPMNEdge><ns1:BPMNEdge id="DI_Message_RW_Payment" bpmnElement="Message_RW_Payment">
+  <ns3:waypoint x="302.444" y="136" />
+  <ns3:waypoint x="302.444" y="142" />
+  <ns3:waypoint x="407.778" y="142" />
+  <ns3:waypoint x="407.778" y="220" />
+  <ns3:waypoint x="2448.15" y="220" />
+  <ns3:waypoint x="2448.15" y="225" />
+  <ns3:waypoint x="232.778" y="225" />
+  <ns3:waypoint x="232.778" y="277" />
+  <ns3:waypoint x="127.444" y="277" />
+  <ns3:waypoint x="127.444" y="283" />
+</ns1:BPMNEdge><ns1:BPMNEdge id="DI_Message_RW_ConNotice" bpmnElement="Message_RW_ConNotice">
+  <ns3:waypoint x="827.444" y="341" />
+  <ns3:waypoint x="827.444" y="347" />
+  <ns3:waypoint x="932.778" y="347" />
+  <ns3:waypoint x="932.778" y="425" />
+  <ns3:waypoint x="2432.59" y="425" />
+  <ns3:waypoint x="2432.59" y="430" />
+  <ns3:waypoint x="232.778" y="430" />
+  <ns3:waypoint x="232.778" y="482" />
+  <ns3:waypoint x="127.444" y="482" />
+  <ns3:waypoint x="127.444" y="488" />
+</ns1:BPMNEdge><ns1:BPMNEdge id="DI_Message_RW_VerNotice" bpmnElement="Message_RW_VerNotice">
+  <ns3:waypoint x="827.444" y="341" />
+  <ns3:waypoint x="827.444" y="347" />
+  <ns3:waypoint x="932.778" y="347" />
+  <ns3:waypoint x="932.778" y="425" />
+  <ns3:waypoint x="2417.04" y="425" />
+  <ns3:waypoint x="2417.04" y="635" />
+  <ns3:waypoint x="232.778" y="635" />
+  <ns3:waypoint x="232.778" y="687" />
+  <ns3:waypoint x="127.444" y="687" />
+  <ns3:waypoint x="127.444" y="693" />
+</ns1:BPMNEdge><ns1:BPMNEdge id="DI_Message_RW_ApprovedCAP" bpmnElement="Message_RW_ApprovedCAP">
+  <ns3:waypoint x="1352.44" y="341" />
+  <ns3:waypoint x="1352.44" y="347" />
+  <ns3:waypoint x="1457.78" y="347" />
+  <ns3:waypoint x="1457.78" y="425" />
+  <ns3:waypoint x="2401.48" y="425" />
+  <ns3:waypoint x="2401.48" y="840" />
+  <ns3:waypoint x="232.778" y="840" />
+  <ns3:waypoint x="232.778" y="892" />
+  <ns3:waypoint x="127.444" y="892" />
+  <ns3:waypoint x="127.444" y="898" />
+</ns1:BPMNEdge><ns1:BPMNEdge id="DI_Message_RW_ApprovedBase" bpmnElement="Message_RW_ApprovedBase">
+  <ns3:waypoint x="1527.44" y="341" />
+  <ns3:waypoint x="1527.44" y="347" />
+  <ns3:waypoint x="1632.78" y="347" />
+  <ns3:waypoint x="1632.78" y="425" />
+  <ns3:waypoint x="2385.93" y="425" />
+  <ns3:waypoint x="2385.93" y="840" />
+  <ns3:waypoint x="232.778" y="840" />
+  <ns3:waypoint x="232.778" y="892" />
+  <ns3:waypoint x="127.444" y="892" />
+  <ns3:waypoint x="127.444" y="898" />
+</ns1:BPMNEdge><ns1:BPMNEdge id="DI_Message_RW_Receipt" bpmnElement="Message_RW_Receipt">
+  <ns3:waypoint x="477.444" y="898" />
+  <ns3:waypoint x="477.444" y="892" />
+  <ns3:waypoint x="582.778" y="892" />
+  <ns3:waypoint x="582.778" y="840" />
+  <ns3:waypoint x="2370.37" y="840" />
+  <ns3:waypoint x="2370.37" y="425" />
+  <ns3:waypoint x="1807.78" y="425" />
+  <ns3:waypoint x="1807.78" y="347" />
+  <ns3:waypoint x="1702.44" y="347" />
+  <ns3:waypoint x="1702.44" y="341" />
+</ns1:BPMNEdge><ns1:BPMNEdge id="DI_Message_RW_ConReceipt" bpmnElement="Message_RW_ConReceipt">
+  <ns3:waypoint x="477.444" y="898" />
+  <ns3:waypoint x="477.444" y="892" />
+  <ns3:waypoint x="582.778" y="892" />
+  <ns3:waypoint x="582.778" y="840" />
+  <ns3:waypoint x="2354.81" y="840" />
+  <ns3:waypoint x="2354.81" y="630" />
+  <ns3:waypoint x="582.778" y="630" />
+  <ns3:waypoint x="582.778" y="552" />
+  <ns3:waypoint x="477.444" y="552" />
+  <ns3:waypoint x="477.444" y="546" />
+</ns1:BPMNEdge><ns1:BPMNEdge id="DI_Message_RW_VerReceipt" bpmnElement="Message_RW_VerReceipt">
+  <ns3:waypoint x="477.444" y="898" />
+  <ns3:waypoint x="477.444" y="892" />
+  <ns3:waypoint x="582.778" y="892" />
+  <ns3:waypoint x="582.778" y="840" />
+  <ns3:waypoint x="2339.26" y="840" />
+  <ns3:waypoint x="2339.26" y="835" />
+  <ns3:waypoint x="582.778" y="835" />
+  <ns3:waypoint x="582.778" y="757" />
+  <ns3:waypoint x="477.444" y="757" />
+  <ns3:waypoint x="477.444" y="751" />
+</ns1:BPMNEdge><ns1:BPMNEdge id="DI_Message_RW_ConsumerReceipt" bpmnElement="Message_RW_ConsumerReceipt">
+  <ns3:waypoint x="1702.44" y="283" />
+  <ns3:waypoint x="1702.44" y="277" />
+  <ns3:waypoint x="1807.78" y="277" />
+  <ns3:waypoint x="1807.78" y="225" />
+  <ns3:waypoint x="2323.7" y="225" />
+  <ns3:waypoint x="2323.7" y="220" />
+  <ns3:waypoint x="582.778" y="220" />
+  <ns3:waypoint x="582.778" y="142" />
+  <ns3:waypoint x="477.444" y="142" />
+  <ns3:waypoint x="477.444" y="136" />
+</ns1:BPMNEdge></ns1:BPMNPlane></ns1:BPMNDiagram></ns0:definitions>

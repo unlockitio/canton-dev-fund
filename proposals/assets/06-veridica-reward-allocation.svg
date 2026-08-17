@@ -1,0 +1,165 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2571.85" height="1060" viewBox="0 0 2571.85 1060" role="img" aria-labelledby="title desc">
+<title id="title">Veridica reward allocation</title>
+<desc id="desc">Data consumer, operator party, multiple contributors, multiple verifiers, and an allocation effector apply validated macro pools and governed micro weights before optional CAP or baseline effectuation and audited receipts.</desc>
+<defs><marker id="arrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><path d="M0,0 L10,3.5 L0,7 z" fill="#334155" /></marker><style>.pool{fill:#f8fafc;stroke:#334155;stroke-width:2}.task{fill:#fff;stroke:#2563eb;stroke-width:1.5}.event{fill:#fff;stroke:#0f766e;stroke-width:3}.gateway{fill:#fff7ed;stroke:#c2410c;stroke-width:2}.data{fill:#eff6ff;stroke:#64748b;stroke-width:1.2}.t{font:12px Arial,sans-serif;fill:#0f172a}.s{font:10px Arial,sans-serif;fill:#0f172a}.flow{fill:none;stroke:#334155;stroke-width:1.35;marker-end:url(#arrow)}.msg{fill:none;stroke:#7c3aed;stroke-width:1.25;stroke-dasharray:6 4;marker-end:url(#arrow)}.assoc{fill:none;stroke:#64748b;stroke-width:1;stroke-dasharray:3 3;marker-end:url(#arrow)}</style></defs>
+<rect class="pool" x="20" y="30" width="2531.85" height="180" rx="4" />
+<text class="t" x="28" y="48">Data Consumer</text>
+<circle class="event" cx="127.444" cy="99.0" r="21.0" />
+<text class="s" text-anchor="middle" x="127.444" y="99.0">Priced use requested</text>
+<rect class="task" x="244.444" y="78" width="116" height="58" rx="8" />
+<text class="s" text-anchor="middle" x="302.444" y="101.0">Pay approved fee or</text>
+<text class="s" text-anchor="middle" x="302.444" y="113.0">satisfy price terms</text>
+<rect class="task" x="419.444" y="78" width="116" height="58" rx="8" />
+<text class="s" text-anchor="middle" x="477.444" y="101.0">Receive use and</text>
+<text class="s" text-anchor="middle" x="477.444" y="113.0">allocation receipt</text>
+<circle class="event" cx="652.444" cy="99.0" r="21.0" />
+<text class="s" text-anchor="middle" x="652.444" y="99.0">Payment complete</text>
+<path class="data" d="M244.444,150 H339.444 L310,209.444 V192 H244.444 Z M295,194.444 V165 H354.444" />
+<text class="s" text-anchor="middle" x="299.444" y="165.0">Fee payment and use</text>
+<text class="s" text-anchor="middle" x="299.444" y="177.0">reference</text>
+<rect class="pool" x="20" y="235" width="2531.85" height="180" rx="4" />
+<text class="t" x="28" y="253">Operator Party</text>
+<circle class="event" cx="127.444" cy="304.0" r="21.0" />
+<text class="s" text-anchor="middle" x="127.444" y="298.0">Fee and usage</text>
+<text class="s" text-anchor="middle" x="127.444" y="310.0">received</text>
+<rect class="task" x="244.444" y="283" width="116" height="58" rx="8" />
+<text class="s" text-anchor="middle" x="302.444" y="288.0">Load active policy</text>
+<text class="s" text-anchor="middle" x="302.444" y="300.0">version and apply</text>
+<text class="s" text-anchor="middle" x="302.444" y="312.0">configured X</text>
+<text class="s" text-anchor="middle" x="302.444" y="324.0">contributor Y</text>
+<text class="s" text-anchor="middle" x="302.444" y="336.0">verifier Z operator</text>
+<polygon class="gateway" points="456.444,283 493.444,312 456.444,341 419.444,312" />
+<text class="s" text-anchor="middle" x="456.444" y="306.0">Pools total 100</text>
+<text class="s" text-anchor="middle" x="456.444" y="318.0">percent</text>
+<rect class="task" x="594.444" y="283" width="116" height="58" rx="8" />
+<text class="s" text-anchor="middle" x="652.444" y="306.0">Reject or correct</text>
+<text class="s" text-anchor="middle" x="652.444" y="318.0">allocation policy</text>
+<rect class="task" x="769.444" y="283" width="116" height="58" rx="8" />
+<text class="s" text-anchor="middle" x="827.444" y="300.0">Apply credential role</text>
+<text class="s" text-anchor="middle" x="827.444" y="312.0">quality and activity</text>
+<text class="s" text-anchor="middle" x="827.444" y="324.0">micro weights</text>
+<rect class="task" x="944.444" y="283" width="116" height="58" rx="8" />
+<text class="s" text-anchor="middle" x="1002.44" y="306.0">Approve reward</text>
+<text class="s" text-anchor="middle" x="1002.44" y="318.0">allocation and route</text>
+<polygon class="gateway" points="1156.44,283 1193.44,312 1156.44,341 1119.44,312" />
+<text class="s" text-anchor="middle" x="1156.44" y="312.0">Effectuation route</text>
+<rect class="task" x="1294.44" y="283" width="116" height="58" rx="8" />
+<text class="s" text-anchor="middle" x="1352.44" y="294.0">Prepare optional</text>
+<text class="s" text-anchor="middle" x="1352.44" y="306.0">Concordia CAP</text>
+<text class="s" text-anchor="middle" x="1352.44" y="318.0">allocation or</text>
+<text class="s" text-anchor="middle" x="1352.44" y="330.0">settlement</text>
+<rect class="task" x="1469.44" y="283" width="116" height="58" rx="8" />
+<text class="s" text-anchor="middle" x="1527.44" y="300.0">Prepare baseline</text>
+<text class="s" text-anchor="middle" x="1527.44" y="312.0">authorized</text>
+<text class="s" text-anchor="middle" x="1527.44" y="324.0">effectuation</text>
+<rect class="task" x="1644.44" y="283" width="116" height="58" rx="8" />
+<text class="s" text-anchor="middle" x="1702.44" y="306.0">Record allocation</text>
+<text class="s" text-anchor="middle" x="1702.44" y="318.0">receipt and audit</text>
+<circle class="event" cx="1877.44" cy="304.0" r="21.0" />
+<text class="s" text-anchor="middle" x="1877.44" y="304.0">Allocation complete</text>
+<path class="data" d="M244.444,355 H339.444 L310,414.444 V397 H244.444 Z M295,399.444 V370 H354.444" />
+<text class="s" text-anchor="middle" x="299.444" y="352.0">Active versioned</text>
+<text class="s" text-anchor="middle" x="299.444" y="364.0">participation and</text>
+<text class="s" text-anchor="middle" x="299.444" y="376.0">reward policy</text>
+<text class="s" text-anchor="middle" x="299.444" y="388.0">consumed without ad</text>
+<text class="s" text-anchor="middle" x="299.444" y="400.0">hoc redefinition</text>
+<path class="data" d="M1644.44,355 H1739.44 L1390,734.444 V397 H1644.44 Z M1375,719.444 V370 H1754.44" />
+<text class="s" text-anchor="middle" x="1699.44" y="370.0">Approved allocation</text>
+<text class="s" text-anchor="middle" x="1699.44" y="382.0">and audit record</text>
+<rect class="pool" x="20" y="440" width="2531.85" height="180" rx="4" />
+<text class="t" x="28" y="458">Contributor (multiple)</text>
+<circle class="event" cx="127.444" cy="509.0" r="21.0" />
+<text class="s" text-anchor="middle" x="127.444" y="509.0">Eligibility notice</text>
+<rect class="task" x="244.444" y="488" width="116" height="58" rx="8" />
+<text class="s" text-anchor="middle" x="302.444" y="499.0">Confirm recognized</text>
+<text class="s" text-anchor="middle" x="302.444" y="511.0">contribution</text>
+<text class="s" text-anchor="middle" x="302.444" y="523.0">credential and</text>
+<text class="s" text-anchor="middle" x="302.444" y="535.0">activity</text>
+<rect class="task" x="419.444" y="488" width="116" height="58" rx="8" />
+<text class="s" text-anchor="middle" x="477.444" y="511.0">Receive allocation or</text>
+<text class="s" text-anchor="middle" x="477.444" y="523.0">receipt</text>
+<circle class="event" cx="652.444" cy="509.0" r="21.0" />
+<text class="s" text-anchor="middle" x="652.444" y="503.0">Contributor reward</text>
+<text class="s" text-anchor="middle" x="652.444" y="515.0">recorded</text>
+<path class="data" d="M244.444,560 H339.444 L310,619.444 V602 H244.444 Z M295,604.444 V575 H354.444" />
+<text class="s" text-anchor="middle" x="299.444" y="563.0">Contribution</text>
+<text class="s" text-anchor="middle" x="299.444" y="575.0">eligibility</text>
+<text class="s" text-anchor="middle" x="299.444" y="587.0">credential and</text>
+<text class="s" text-anchor="middle" x="299.444" y="599.0">activity</text>
+<rect class="pool" x="20" y="645" width="2531.85" height="180" rx="4" />
+<text class="t" x="28" y="663">Verifier (multiple)</text>
+<circle class="event" cx="127.444" cy="714.0" r="21.0" />
+<text class="s" text-anchor="middle" x="127.444" y="714.0">Eligibility notice</text>
+<rect class="task" x="244.444" y="693" width="116" height="58" rx="8" />
+<text class="s" text-anchor="middle" x="302.444" y="704.0">Confirm recognized</text>
+<text class="s" text-anchor="middle" x="302.444" y="716.0">verification</text>
+<text class="s" text-anchor="middle" x="302.444" y="728.0">credential and</text>
+<text class="s" text-anchor="middle" x="302.444" y="740.0">activity</text>
+<rect class="task" x="419.444" y="693" width="116" height="58" rx="8" />
+<text class="s" text-anchor="middle" x="477.444" y="716.0">Receive allocation or</text>
+<text class="s" text-anchor="middle" x="477.444" y="728.0">receipt</text>
+<circle class="event" cx="652.444" cy="714.0" r="21.0" />
+<text class="s" text-anchor="middle" x="652.444" y="708.0">Verifier reward</text>
+<text class="s" text-anchor="middle" x="652.444" y="720.0">recorded</text>
+<path class="data" d="M244.444,765 H339.444 L310,824.444 V807 H244.444 Z M295,809.444 V780 H354.444" />
+<text class="s" text-anchor="middle" x="299.444" y="768.0">Verification</text>
+<text class="s" text-anchor="middle" x="299.444" y="780.0">eligibility</text>
+<text class="s" text-anchor="middle" x="299.444" y="792.0">credential and</text>
+<text class="s" text-anchor="middle" x="299.444" y="804.0">activity</text>
+<rect class="pool" x="20" y="850" width="2531.85" height="180" rx="4" />
+<text class="t" x="28" y="868">Allocation Effector</text>
+<circle class="event" cx="127.444" cy="919.0" r="21.0" />
+<text class="s" text-anchor="middle" x="127.444" y="913.0">Approved allocation</text>
+<text class="s" text-anchor="middle" x="127.444" y="925.0">received</text>
+<rect class="task" x="244.444" y="898" width="116" height="58" rx="8" />
+<text class="s" text-anchor="middle" x="302.444" y="915.0">Effect allocation</text>
+<text class="s" text-anchor="middle" x="302.444" y="927.0">through selected</text>
+<text class="s" text-anchor="middle" x="302.444" y="939.0">authorized route</text>
+<rect class="task" x="419.444" y="898" width="116" height="58" rx="8" />
+<text class="s" text-anchor="middle" x="477.444" y="921.0">Issue settlement or</text>
+<text class="s" text-anchor="middle" x="477.444" y="933.0">allocation receipt</text>
+<circle class="event" cx="652.444" cy="919.0" r="21.0" />
+<text class="s" text-anchor="middle" x="652.444" y="919.0">Effectuation complete</text>
+<path class="data" d="M419.444,970 H514.444 L445,1069.44 V1012 H419.444 Z M430,1054.44 V985 H529.444" />
+<text class="s" text-anchor="middle" x="474.444" y="985.0">Allocation or</text>
+<text class="s" text-anchor="middle" x="474.444" y="997.0">settlement receipt</text>
+<path class="assoc" d="M 299.444,136 L 299.444,150" />
+<path class="flow" d="M 185.444,107 L 244.444,107" />
+<path class="flow" d="M 360.444,107 L 419.444,107" />
+<path class="flow" d="M 535.444,99 L 631.444,99" />
+<path class="assoc" d="M 299.444,341 L 299.444,355" />
+<path class="assoc" d="M 1699.44,341 L 1699.44,355" />
+<path class="flow" d="M 185.444,312 L 244.444,312" />
+<path class="flow" d="M 360.444,312 L 419.444,312" />
+<path class="flow" d="M 493.444,312 L 493.444,265 L 827.444,265 L 827.444,283" />
+<path class="flow" d="M 493.444,312 L 594.444,312" />
+<path class="flow" d="M 710.444,312 L 710.444,347 L 302.444,347 L 302.444,341" />
+<path class="flow" d="M 885.444,312 L 944.444,312" />
+<path class="flow" d="M 1060.44,312 L 1119.44,312" />
+<path class="flow" d="M 1193.44,312 L 1294.44,312" />
+<path class="flow" d="M 1193.44,312 L 1193.44,265 L 1527.44,265 L 1527.44,283" />
+<path class="flow" d="M 1410.44,312 L 1410.44,347 L 1702.44,347 L 1702.44,341" />
+<path class="flow" d="M 1585.44,312 L 1644.44,312" />
+<path class="flow" d="M 1760.44,304 L 1856.44,304" />
+<path class="assoc" d="M 299.444,546 L 299.444,560" />
+<path class="flow" d="M 185.444,517 L 244.444,517" />
+<path class="flow" d="M 360.444,517 L 419.444,517" />
+<path class="flow" d="M 535.444,509 L 631.444,509" />
+<path class="assoc" d="M 299.444,751 L 299.444,765" />
+<path class="flow" d="M 185.444,722 L 244.444,722" />
+<path class="flow" d="M 360.444,722 L 419.444,722" />
+<path class="flow" d="M 535.444,714 L 631.444,714" />
+<path class="assoc" d="M 474.444,956 L 474.444,970" />
+<path class="flow" d="M 185.444,927 L 244.444,927" />
+<path class="flow" d="M 360.444,927 L 419.444,927" />
+<path class="flow" d="M 535.444,919 L 631.444,919" />
+<path class="msg" d="M 302.444,136 L 302.444,142 L 407.778,142 L 407.778,220 L 2448.15,220 L 2448.15,225 L 232.778,225 L 232.778,277 L 127.444,277 L 127.444,283" />
+<path class="msg" d="M 827.444,341 L 827.444,347 L 932.778,347 L 932.778,425 L 2432.59,425 L 2432.59,430 L 232.778,430 L 232.778,482 L 127.444,482 L 127.444,488" />
+<path class="msg" d="M 827.444,341 L 827.444,347 L 932.778,347 L 932.778,425 L 2417.04,425 L 2417.04,635 L 232.778,635 L 232.778,687 L 127.444,687 L 127.444,693" />
+<path class="msg" d="M 1352.44,341 L 1352.44,347 L 1457.78,347 L 1457.78,425 L 2401.48,425 L 2401.48,840 L 232.778,840 L 232.778,892 L 127.444,892 L 127.444,898" />
+<path class="msg" d="M 1527.44,341 L 1527.44,347 L 1632.78,347 L 1632.78,425 L 2385.93,425 L 2385.93,840 L 232.778,840 L 232.778,892 L 127.444,892 L 127.444,898" />
+<path class="msg" d="M 477.444,898 L 477.444,892 L 582.778,892 L 582.778,840 L 2370.37,840 L 2370.37,425 L 1807.78,425 L 1807.78,347 L 1702.44,347 L 1702.44,341" />
+<path class="msg" d="M 477.444,898 L 477.444,892 L 582.778,892 L 582.778,840 L 2354.81,840 L 2354.81,630 L 582.778,630 L 582.778,552 L 477.444,552 L 477.444,546" />
+<path class="msg" d="M 477.444,898 L 477.444,892 L 582.778,892 L 582.778,840 L 2339.26,840 L 2339.26,835 L 582.778,835 L 582.778,757 L 477.444,757 L 477.444,751" />
+<path class="msg" d="M 1702.44,283 L 1702.44,277 L 1807.78,277 L 1807.78,225 L 2323.7,225 L 2323.7,220 L 582.778,220 L 582.778,142 L 477.444,142 L 477.444,136" />
+</svg>
