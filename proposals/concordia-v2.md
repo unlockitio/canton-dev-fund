@@ -110,9 +110,7 @@ It supports:
 - termination and finalization
 - subsequent and final allocations
 
-A recurring rule determines how an allocation evolves over time. Governance determines which participants may modify that rule and what outcomes each authorized action produces.
-
-Authorized governance actions initialize, amend, suspend, resume, terminate, or finalize a recurring rule. Each action follows the approval rules defined by the applicable workflow and may produce subsequent or final allocations through `cap-core` outcome execution.
+A recurring rule determines how an allocation evolves over time. Governance determines which participants may modify that rule and what outcomes each authorized action produces. Each authorized action follows the approval rules defined by the applicable workflow and produces subsequent or final allocations through `cap-core` outcome execution.
 
 Recurrence does not create domain-specific rights. Employment, rental, subscription, or other policies determine who may act, which governance routes are available, and what outcome each route produces.
 
@@ -147,64 +145,7 @@ Integration with existing Splice and wallet governance work will be coordinated 
 
 **Conceptual sequence: CAP V2 allocation lifecycle**
 
-The following conceptual sequence diagram shows how an authorized recurring allocation evolves through `cap-core` and produces settlement handoff to the existing Canton Token Standards. It is illustrative and does not claim implementation, payment execution, or signing authority. Side controls (amend, suspend, resume, terminate) are part of the authorized governance surface described in `cap-recurrence`.
-
-```plantuml
-@startuml
-title CAP V2 allocation lifecycle
-
-skinparam shadowing false
-skinparam monochrome false
-skinparam sequenceArrowThickness 2
-skinparam ParticipantPadding 12
-skinparam BoxPadding 8
-skinparam noteFontSize 11
-
-participant "Policy /\nGovernance" as Policy
-participant "Recurrence Rule" as Rule
-participant "Accrued Allocation" as Accrued
-participant "Authorized Final\nAllocation" as Final
-participant "Canton Token\nStandard" as Canton
-participant "Settlement" as Settlement
-
-== Initialization ==
-Policy -> Rule : initialize(rate/schedule,\neffective date, asset, policy)
-activate Rule
-
-== Lifecycle ==
-loop over effective interval
-  Rule -> Accrued : accrue per agreed rule\n(deterministic calculation)
-  note over Rule,Accrued
-    Calculated and settled amounts
-    are recorded independently.
-  end note
-end
-
-Policy -> Rule : amend
-Policy -> Rule : suspend
-Policy -> Rule : resume
-Policy -> Rule : terminate
-
-== Finalization ==
-Rule -> Final : produce authorized\nfinal allocation
-deactivate Rule
-
-== Settlement ==
-Final -> Canton : invoke settlement handoff\nexisting token standard boundary
-activate Canton
-Canton -> Settlement : transfer per\nCanton Token Standard
-deactivate Canton
-
-note over Policy,Settlement
-  `cap-core` carries authority for outcome execution.
-  Participant approval and signing remain authoritative.
-  Settlement is an external boundary via existing
-  Canton Token Standards; CAP does not introduce a
-  separate token, transfer, or settlement standard.
-end note
-
-@enduml
-```
+The allocation lifecycle is illustrated in BPMN at [`assets/01-concordia-recurrent-allocation-and-governance.bpmn`](assets/01-concordia-recurrent-allocation-and-governance.bpmn). It is illustrative and does not claim implementation, payment execution, or signing authority. Side controls (amend, suspend, resume, terminate) are part of the authorized governance surface described in `cap-recurrence`.
 
 **Employment**
 
