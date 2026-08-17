@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_veridica_participant_lifecycle" targetNamespace="https://unlockit.io/veridica/bpmn" exporter="Veridica deterministic renderer" exporterVersion="4.0">
-  <bpmn:message id="Message_RoleBinding" name="Role-binding authorization" />
   <bpmn:message id="Message_ChassisDelivery" name="Chassis lifecycle delivery" />
   <bpmn:collaboration id="Collaboration_02">
-    <bpmn:participant id="Participant_Governance_External" name="Consortium Governance (01B, external source of role-binding authorizations)">
-      <bpmn:participantMultiplicity minimum="1" maximum="999" />
-    </bpmn:participant>
     <bpmn:participant id="Participant_VeridicaPlatform" name="Veridica Platform (chassis)" processRef="Process_VeridicaPlatform" />
     <bpmn:participant id="Participant_Process_ContributorParty" name="Contributor Party (multiplicity 1..999)" processRef="Process_ContributorParty">
       <bpmn:participantMultiplicity minimum="1" maximum="999" />
@@ -19,10 +15,6 @@
     <bpmn:participant id="Participant_Process_ConsumerParty" name="Consumer Party (multiplicity 1..999)" processRef="Process_ConsumerParty">
       <bpmn:participantMultiplicity minimum="1" maximum="999" />
     </bpmn:participant>
-    <bpmn:messageFlow id="MF_RoleBinding_Contributor" name="Role-binding authorization" sourceRef="Participant_Governance_External" targetRef="CP_RoleBindingReceived" />
-    <bpmn:messageFlow id="MF_RoleBinding_Aggregator" name="Role-binding authorization" sourceRef="Participant_Governance_External" targetRef="AG_RoleBindingReceived" />
-    <bpmn:messageFlow id="MF_RoleBinding_Verifier" name="Role-binding authorization" sourceRef="Participant_Governance_External" targetRef="VR_RoleBindingReceived" />
-    <bpmn:messageFlow id="MF_RoleBinding_Consumer" name="Role-binding authorization" sourceRef="Participant_Governance_External" targetRef="CS_RoleBindingReceived" />
     <bpmn:messageFlow id="MF_ChassisDelivery_Contributor" name="Chassis lifecycle delivery" sourceRef="VP_NotifySent" targetRef="CP_ChassisDeliveryReceived" />
     <bpmn:messageFlow id="MF_ChassisDelivery_Aggregator" name="Chassis lifecycle delivery" sourceRef="VP_NotifySent" targetRef="AG_ChassisDeliveryReceived" />
     <bpmn:messageFlow id="MF_ChassisDelivery_Verifier" name="Chassis lifecycle delivery" sourceRef="VP_NotifySent" targetRef="VR_ChassisDeliveryReceived" />
@@ -32,6 +24,7 @@
     <bpmn:laneSet id="Lanes_VeridicaPlatform">
       <bpmn:lane id="Lane_VeridicaPlatform" name="Veridica Platform (chassis)">
         <bpmn:flowNodeRef>VP_DecisionReceived</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>DataObject_ActiveMechanism</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>VP_Validate</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>VP_Execute</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>VP_GovernanceInterruption</bpmn:flowNodeRef>
@@ -45,21 +38,26 @@
         <bpmn:flowNodeRef>VP_End</bpmn:flowNodeRef>
       </bpmn:lane>
     </bpmn:laneSet>
-    <bpmn:startEvent id="VP_DecisionReceived" name="Lifecycle decision received">
+    <bpmn:startEvent id="VP_DecisionReceived" name="Access request received">
       <bpmn:outgoing>VP1</bpmn:outgoing>
-      <bpmn:messageEventDefinition messageRef="Message_RoleBinding" />
     </bpmn:startEvent>
-    <bpmn:task id="VP_Validate" name="Validate bounded decision version and authorization">
+    <bpmn:dataObject id="DataObject_ActiveMechanism" name="Active Governance Mechanism">
+      <bpmn:extensionElements>
+        <bpmn:documentation xml:space="preserve">Specifies the active mechanism (CAP): the ballot, resolution and verification rules that govern participant admission. Issued and version-pinned by governance (01B). The Veridica Platform consults this document to admit contributors, aggregators, verifiers or consumers.</bpmn:documentation>
+      </bpmn:extensionElements>
+    </bpmn:dataObject>
+    <bpmn:task id="VP_Validate" name="Validate request against active governance mechanism">
       <bpmn:incoming>VP1</bpmn:incoming>
       <bpmn:outgoing>VP2</bpmn:outgoing>
     </bpmn:task>
+    <bpmn:association id="Assoc_MechanismToValidate" associationDirection="One" sourceRef="DataObject_ActiveMechanism" targetRef="VP_Validate" />
     <bpmn:task id="VP_Execute" name="Execute chassis action: admit, assign role, suspend, remove, or rotate credential">
       <bpmn:incoming>VP2</bpmn:incoming>
       <bpmn:outgoing>VP3</bpmn:outgoing>
     </bpmn:task>
     <bpmn:boundaryEvent id="VP_GovernanceInterruption" name="Governance-mandated interruption" attachedToRef="VP_Execute">
       <bpmn:outgoing>VP_BI1</bpmn:outgoing>
-      <bpmn:messageEventDefinition messageRef="Message_RoleBinding" />
+      <bpmn:messageEventDefinition messageRef="Message_ChassisDelivery" />
     </bpmn:boundaryEvent>
     <bpmn:task id="VP_ApplyInterruption" name="Apply governance-mandated suspension, rotation, or decommission">
       <bpmn:incoming>VP_BI1</bpmn:incoming>
@@ -105,496 +103,332 @@
   <bpmn:process id="Process_ContributorParty" isExecutable="false">
     <bpmn:laneSet id="Lanes_ContributorParty">
       <bpmn:lane id="Lane_ContributorParty" name="Contributor Party">
-        <bpmn:flowNodeRef>CP_RoleBindingReceived</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>CP_Apply</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>CP_ChassisDeliveryReceived</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>CP_ApplyDelivery</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>CP_End</bpmn:flowNodeRef>
       </bpmn:lane>
     </bpmn:laneSet>
-    <bpmn:startEvent id="CP_RoleBindingReceived" name="Role-binding authorization received">
+    <bpmn:intermediateCatchEvent id="CP_ChassisDeliveryReceived" name="Chassis lifecycle delivery received">
       <bpmn:outgoing>CP1</bpmn:outgoing>
-      <bpmn:messageEventDefinition messageRef="Message_RoleBinding" />
-    </bpmn:startEvent>
-    <bpmn:task id="CP_Apply" name="Apply Contributor role and register Daml party">
+      <bpmn:messageEventDefinition messageRef="Message_ChassisDelivery" />
+    </bpmn:intermediateCatchEvent>
+    <bpmn:task id="CP_ApplyDelivery" name="Apply chassis action as Contributor per active mechanism">
       <bpmn:incoming>CP1</bpmn:incoming>
       <bpmn:outgoing>CP2</bpmn:outgoing>
     </bpmn:task>
-    <bpmn:intermediateCatchEvent id="CP_ChassisDeliveryReceived" name="Chassis lifecycle delivery received">
-      <bpmn:incoming>CP2</bpmn:incoming>
-      <bpmn:outgoing>CP3</bpmn:outgoing>
-      <bpmn:messageEventDefinition messageRef="Message_ChassisDelivery" />
-    </bpmn:intermediateCatchEvent>
-    <bpmn:task id="CP_ApplyDelivery" name="Apply suspension, removal, or credential rotation per delivery">
-      <bpmn:incoming>CP3</bpmn:incoming>
-      <bpmn:outgoing>CP4</bpmn:outgoing>
-    </bpmn:task>
     <bpmn:endEvent id="CP_End" name="Contributor lifecycle stage complete">
-      <bpmn:incoming>CP4</bpmn:incoming>
+      <bpmn:incoming>CP2</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:sequenceFlow id="CP1" sourceRef="CP_RoleBindingReceived" targetRef="CP_Apply" />
-    <bpmn:sequenceFlow id="CP2" sourceRef="CP_Apply" targetRef="CP_ChassisDeliveryReceived" />
-    <bpmn:sequenceFlow id="CP3" sourceRef="CP_ChassisDeliveryReceived" targetRef="CP_ApplyDelivery" />
-    <bpmn:sequenceFlow id="CP4" sourceRef="CP_ApplyDelivery" targetRef="CP_End" />
+    <bpmn:sequenceFlow id="CP1" sourceRef="CP_ChassisDeliveryReceived" targetRef="CP_ApplyDelivery" />
+    <bpmn:sequenceFlow id="CP2" sourceRef="CP_ApplyDelivery" targetRef="CP_End" />
   </bpmn:process>
   <bpmn:process id="Process_AggregatorParty" isExecutable="false">
     <bpmn:laneSet id="Lanes_AggregatorParty">
       <bpmn:lane id="Lane_AggregatorParty" name="Aggregator Party">
-        <bpmn:flowNodeRef>AG_RoleBindingReceived</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>AG_Apply</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>AG_ChassisDeliveryReceived</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>AG_ApplyDelivery</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>AG_End</bpmn:flowNodeRef>
       </bpmn:lane>
     </bpmn:laneSet>
-    <bpmn:startEvent id="AG_RoleBindingReceived" name="Role-binding authorization received">
+    <bpmn:intermediateCatchEvent id="AG_ChassisDeliveryReceived" name="Chassis lifecycle delivery received">
       <bpmn:outgoing>AG1</bpmn:outgoing>
-      <bpmn:messageEventDefinition messageRef="Message_RoleBinding" />
-    </bpmn:startEvent>
-    <bpmn:task id="AG_Apply" name="Apply Aggregator role and register Daml party">
+      <bpmn:messageEventDefinition messageRef="Message_ChassisDelivery" />
+    </bpmn:intermediateCatchEvent>
+    <bpmn:task id="AG_ApplyDelivery" name="Apply chassis action as Aggregator per active mechanism">
       <bpmn:incoming>AG1</bpmn:incoming>
       <bpmn:outgoing>AG2</bpmn:outgoing>
     </bpmn:task>
-    <bpmn:intermediateCatchEvent id="AG_ChassisDeliveryReceived" name="Chassis lifecycle delivery received">
-      <bpmn:incoming>AG2</bpmn:incoming>
-      <bpmn:outgoing>AG3</bpmn:outgoing>
-      <bpmn:messageEventDefinition messageRef="Message_ChassisDelivery" />
-    </bpmn:intermediateCatchEvent>
-    <bpmn:task id="AG_ApplyDelivery" name="Apply suspension, removal, or credential rotation per delivery">
-      <bpmn:incoming>AG3</bpmn:incoming>
-      <bpmn:outgoing>AG4</bpmn:outgoing>
-    </bpmn:task>
     <bpmn:endEvent id="AG_End" name="Aggregator lifecycle stage complete">
-      <bpmn:incoming>AG4</bpmn:incoming>
+      <bpmn:incoming>AG2</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:sequenceFlow id="AG1" sourceRef="AG_RoleBindingReceived" targetRef="AG_Apply" />
-    <bpmn:sequenceFlow id="AG2" sourceRef="AG_Apply" targetRef="AG_ChassisDeliveryReceived" />
-    <bpmn:sequenceFlow id="AG3" sourceRef="AG_ChassisDeliveryReceived" targetRef="AG_ApplyDelivery" />
-    <bpmn:sequenceFlow id="AG4" sourceRef="AG_ApplyDelivery" targetRef="AG_End" />
+    <bpmn:sequenceFlow id="AG1" sourceRef="AG_ChassisDeliveryReceived" targetRef="AG_ApplyDelivery" />
+    <bpmn:sequenceFlow id="AG2" sourceRef="AG_ApplyDelivery" targetRef="AG_End" />
   </bpmn:process>
   <bpmn:process id="Process_VerifierParty" isExecutable="false">
     <bpmn:laneSet id="Lanes_VerifierParty">
       <bpmn:lane id="Lane_VerifierParty" name="Verifier Party">
-        <bpmn:flowNodeRef>VR_RoleBindingReceived</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>VR_Apply</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>VR_ChassisDeliveryReceived</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>VR_ApplyDelivery</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>VR_End</bpmn:flowNodeRef>
       </bpmn:lane>
     </bpmn:laneSet>
-    <bpmn:startEvent id="VR_RoleBindingReceived" name="Role-binding authorization received">
+    <bpmn:intermediateCatchEvent id="VR_ChassisDeliveryReceived" name="Chassis lifecycle delivery received">
       <bpmn:outgoing>VR1</bpmn:outgoing>
-      <bpmn:messageEventDefinition messageRef="Message_RoleBinding" />
-    </bpmn:startEvent>
-    <bpmn:task id="VR_Apply" name="Apply Verifier role and register Daml party">
+      <bpmn:messageEventDefinition messageRef="Message_ChassisDelivery" />
+    </bpmn:intermediateCatchEvent>
+    <bpmn:task id="VR_ApplyDelivery" name="Apply chassis action as Verifier per active mechanism">
       <bpmn:incoming>VR1</bpmn:incoming>
       <bpmn:outgoing>VR2</bpmn:outgoing>
     </bpmn:task>
-    <bpmn:intermediateCatchEvent id="VR_ChassisDeliveryReceived" name="Chassis lifecycle delivery received">
-      <bpmn:incoming>VR2</bpmn:incoming>
-      <bpmn:outgoing>VR3</bpmn:outgoing>
-      <bpmn:messageEventDefinition messageRef="Message_ChassisDelivery" />
-    </bpmn:intermediateCatchEvent>
-    <bpmn:task id="VR_ApplyDelivery" name="Apply suspension, removal, or credential rotation per delivery">
-      <bpmn:incoming>VR3</bpmn:incoming>
-      <bpmn:outgoing>VR4</bpmn:outgoing>
-    </bpmn:task>
     <bpmn:endEvent id="VR_End" name="Verifier lifecycle stage complete">
-      <bpmn:incoming>VR4</bpmn:incoming>
+      <bpmn:incoming>VR2</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:sequenceFlow id="VR1" sourceRef="VR_RoleBindingReceived" targetRef="VR_Apply" />
-    <bpmn:sequenceFlow id="VR2" sourceRef="VR_Apply" targetRef="VR_ChassisDeliveryReceived" />
-    <bpmn:sequenceFlow id="VR3" sourceRef="VR_ChassisDeliveryReceived" targetRef="VR_ApplyDelivery" />
-    <bpmn:sequenceFlow id="VR4" sourceRef="VR_ApplyDelivery" targetRef="VR_End" />
+    <bpmn:sequenceFlow id="VR1" sourceRef="VR_ChassisDeliveryReceived" targetRef="VR_ApplyDelivery" />
+    <bpmn:sequenceFlow id="VR2" sourceRef="VR_ApplyDelivery" targetRef="VR_End" />
   </bpmn:process>
   <bpmn:process id="Process_ConsumerParty" isExecutable="false">
     <bpmn:laneSet id="Lanes_ConsumerParty">
       <bpmn:lane id="Lane_ConsumerParty" name="Consumer Party">
-        <bpmn:flowNodeRef>CS_RoleBindingReceived</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>CS_Apply</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>CS_ChassisDeliveryReceived</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>CS_ApplyDelivery</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>CS_End</bpmn:flowNodeRef>
       </bpmn:lane>
     </bpmn:laneSet>
-    <bpmn:startEvent id="CS_RoleBindingReceived" name="Role-binding authorization received">
+    <bpmn:intermediateCatchEvent id="CS_ChassisDeliveryReceived" name="Chassis lifecycle delivery received">
       <bpmn:outgoing>CS1</bpmn:outgoing>
-      <bpmn:messageEventDefinition messageRef="Message_RoleBinding" />
-    </bpmn:startEvent>
-    <bpmn:task id="CS_Apply" name="Apply Consumer role and register Daml party">
+      <bpmn:messageEventDefinition messageRef="Message_ChassisDelivery" />
+    </bpmn:intermediateCatchEvent>
+    <bpmn:task id="CS_ApplyDelivery" name="Apply chassis action as Consumer per active mechanism">
       <bpmn:incoming>CS1</bpmn:incoming>
       <bpmn:outgoing>CS2</bpmn:outgoing>
     </bpmn:task>
-    <bpmn:intermediateCatchEvent id="CS_ChassisDeliveryReceived" name="Chassis lifecycle delivery received">
-      <bpmn:incoming>CS2</bpmn:incoming>
-      <bpmn:outgoing>CS3</bpmn:outgoing>
-      <bpmn:messageEventDefinition messageRef="Message_ChassisDelivery" />
-    </bpmn:intermediateCatchEvent>
-    <bpmn:task id="CS_ApplyDelivery" name="Apply suspension, removal, or credential rotation per delivery">
-      <bpmn:incoming>CS3</bpmn:incoming>
-      <bpmn:outgoing>CS4</bpmn:outgoing>
-    </bpmn:task>
     <bpmn:endEvent id="CS_End" name="Consumer lifecycle stage complete">
-      <bpmn:incoming>CS4</bpmn:incoming>
+      <bpmn:incoming>CS2</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:sequenceFlow id="CS1" sourceRef="CS_RoleBindingReceived" targetRef="CS_Apply" />
-    <bpmn:sequenceFlow id="CS2" sourceRef="CS_Apply" targetRef="CS_ChassisDeliveryReceived" />
-    <bpmn:sequenceFlow id="CS3" sourceRef="CS_ChassisDeliveryReceived" targetRef="CS_ApplyDelivery" />
-    <bpmn:sequenceFlow id="CS4" sourceRef="CS_ApplyDelivery" targetRef="CS_End" />
+    <bpmn:sequenceFlow id="CS1" sourceRef="CS_ChassisDeliveryReceived" targetRef="CS_ApplyDelivery" />
+    <bpmn:sequenceFlow id="CS2" sourceRef="CS_ApplyDelivery" targetRef="CS_End" />
   </bpmn:process>
   <bpmndi:BPMNDiagram id="Diagram_02">
     <bpmndi:BPMNPlane id="Plane_02" bpmnElement="Collaboration_02">
-      <bpmndi:BPMNShape id="DI_Governance_External" bpmnElement="Participant_Governance_External" isHorizontal="true">
-        <dc:Bounds x="20" y="20" width="1540" height="80" />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DI_VeridicaPlatform" bpmnElement="Participant_VeridicaPlatform" isHorizontal="true">
-        <dc:Bounds x="20" y="120" width="1540" height="560" />
+        <dc:Bounds x="20" y="20" width="1540" height="580" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DI_VP_DecisionReceived" bpmnElement="VP_DecisionReceived">
-        <dc:Bounds x="120" y="200" width="36" height="36" />
+        <dc:Bounds x="120" y="220" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="80" y="236" width="116" height="27" />
+          <dc:Bounds x="100" y="256" width="100" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_DataObject_ActiveMechanism" bpmnElement="DataObject_ActiveMechanism">
+        <dc:Bounds x="40" y="80" width="220" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="DI_Assoc_MechanismToValidate" bpmnElement="Assoc_MechanismToValidate">
+        <di:waypoint x="260" y="140" />
+        <di:waypoint x="260" y="200" />
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="DI_VP_Validate" bpmnElement="VP_Validate">
-        <dc:Bounds x="220" y="190" width="160" height="56" />
+        <dc:Bounds x="220" y="200" width="220" height="76" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DI_VP_Execute" bpmnElement="VP_Execute">
-        <dc:Bounds x="420" y="190" width="200" height="56" />
+        <dc:Bounds x="480" y="200" width="220" height="76" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DI_VP_GovernanceInterruption" bpmnElement="VP_GovernanceInterruption">
-        <dc:Bounds x="492" y="260" width="36" height="36" />
+        <dc:Bounds x="552" y="290" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="455" y="296" width="110" height="27" />
+          <dc:Bounds x="500" y="326" width="140" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DI_VP_ApplyInterruption" bpmnElement="VP_ApplyInterruption">
-        <dc:Bounds x="420" y="330" width="200" height="56" />
+        <dc:Bounds x="480" y="360" width="220" height="76" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DI_VP_NotifyInterruption" bpmnElement="VP_NotifyInterruption">
-        <dc:Bounds x="680" y="330" width="180" height="56" />
+        <dc:Bounds x="740" y="360" width="200" height="76" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DI_VP_NotifyInterruptionSent" bpmnElement="VP_NotifyInterruptionSent">
-        <dc:Bounds x="900" y="340" width="36" height="36" />
+        <dc:Bounds x="980" y="372" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="860" y="376" width="116" height="27" />
+          <dc:Bounds x="940" y="408" width="116" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DI_VP_AuditInterruption" bpmnElement="VP_AuditInterruption">
-        <dc:Bounds x="980" y="330" width="160" height="56" />
+        <dc:Bounds x="1060" y="360" width="180" height="76" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DI_VP_Decommissioned" bpmnElement="VP_Decommissioned">
-        <dc:Bounds x="1180" y="340" width="36" height="36" />
+        <dc:Bounds x="1280" y="372" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1132" y="376" width="132" height="27" />
+          <dc:Bounds x="1232" y="408" width="132" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DI_VP_Notify" bpmnElement="VP_Notify">
-        <dc:Bounds x="680" y="190" width="180" height="56" />
+        <dc:Bounds x="740" y="200" width="200" height="76" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DI_VP_NotifySent" bpmnElement="VP_NotifySent">
-        <dc:Bounds x="900" y="200" width="36" height="36" />
+        <dc:Bounds x="980" y="218" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="868" y="236" width="100" height="14" />
+          <dc:Bounds x="948" y="254" width="100" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DI_VP_End" bpmnElement="VP_End">
-        <dc:Bounds x="1000" y="200" width="36" height="36" />
+        <dc:Bounds x="1080" y="218" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="966" y="236" width="104" height="14" />
+          <dc:Bounds x="1046" y="254" width="104" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="DI_VP1" bpmnElement="VP1">
-        <di:waypoint x="156" y="218" />
-        <di:waypoint x="220" y="218" />
+        <di:waypoint x="156" y="238" />
+        <di:waypoint x="220" y="238" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_VP2" bpmnElement="VP2">
-        <di:waypoint x="380" y="218" />
-        <di:waypoint x="420" y="218" />
+        <di:waypoint x="440" y="238" />
+        <di:waypoint x="480" y="238" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_VP3" bpmnElement="VP3">
-        <di:waypoint x="620" y="218" />
-        <di:waypoint x="680" y="218" />
+        <di:waypoint x="700" y="238" />
+        <di:waypoint x="740" y="238" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_VP4" bpmnElement="VP4">
-        <di:waypoint x="860" y="218" />
-        <di:waypoint x="900" y="218" />
+        <di:waypoint x="940" y="238" />
+        <di:waypoint x="980" y="238" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_VP5" bpmnElement="VP5">
-        <di:waypoint x="936" y="218" />
-        <di:waypoint x="1000" y="218" />
+        <di:waypoint x="1016" y="238" />
+        <di:waypoint x="1080" y="238" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_VP_BI1" bpmnElement="VP_BI1">
-        <di:waypoint x="510" y="296" />
-        <di:waypoint x="510" y="330" />
+        <di:waypoint x="570" y="326" />
+        <di:waypoint x="570" y="360" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_VP_BI2" bpmnElement="VP_BI2">
-        <di:waypoint x="620" y="358" />
-        <di:waypoint x="680" y="358" />
+        <di:waypoint x="700" y="398" />
+        <di:waypoint x="740" y="398" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_VP_BI3" bpmnElement="VP_BI3">
-        <di:waypoint x="860" y="358" />
-        <di:waypoint x="900" y="358" />
+        <di:waypoint x="940" y="398" />
+        <di:waypoint x="980" y="398" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_VP_BI4" bpmnElement="VP_BI4">
-        <di:waypoint x="936" y="358" />
-        <di:waypoint x="980" y="358" />
+        <di:waypoint x="1016" y="390" />
+        <di:waypoint x="1060" y="390" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_VP_BI5" bpmnElement="VP_BI5">
-        <di:waypoint x="1140" y="358" />
-        <di:waypoint x="1180" y="358" />
+        <di:waypoint x="1240" y="390" />
+        <di:waypoint x="1280" y="390" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="DI_Participant_Process_ContributorParty" bpmnElement="Participant_Process_ContributorParty" isHorizontal="true">
-        <dc:Bounds x="20" y="700" width="1540" height="260" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="DI_CP_RoleBindingReceived" bpmnElement="CP_RoleBindingReceived">
-        <dc:Bounds x="200" y="820" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="160" y="856" width="116" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="DI_CP_Apply" bpmnElement="CP_Apply">
-        <dc:Bounds x="300" y="810" width="200" height="56" />
+        <dc:Bounds x="20" y="640" width="1540" height="220" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DI_CP_ChassisDeliveryReceived" bpmnElement="CP_ChassisDeliveryReceived">
-        <dc:Bounds x="560" y="820" width="36" height="36" />
+        <dc:Bounds x="200" y="730" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="520" y="856" width="116" height="27" />
+          <dc:Bounds x="160" y="766" width="116" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DI_CP_ApplyDelivery" bpmnElement="CP_ApplyDelivery">
-        <dc:Bounds x="660" y="810" width="220" height="56" />
+        <dc:Bounds x="300" y="720" width="280" height="56" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DI_CP_End" bpmnElement="CP_End">
-        <dc:Bounds x="940" y="820" width="36" height="36" />
+        <dc:Bounds x="640" y="730" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="896" y="856" width="124" height="14" />
+          <dc:Bounds x="596" y="766" width="124" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="DI_CP1" bpmnElement="CP1">
-        <di:waypoint x="236" y="838" />
-        <di:waypoint x="300" y="838" />
+        <di:waypoint x="236" y="748" />
+        <di:waypoint x="300" y="748" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_CP2" bpmnElement="CP2">
-        <di:waypoint x="500" y="838" />
-        <di:waypoint x="560" y="838" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="DI_CP3" bpmnElement="CP3">
-        <di:waypoint x="596" y="838" />
-        <di:waypoint x="660" y="838" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="DI_CP4" bpmnElement="CP4">
-        <di:waypoint x="880" y="838" />
-        <di:waypoint x="940" y="838" />
+        <di:waypoint x="580" y="748" />
+        <di:waypoint x="640" y="748" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="DI_Participant_Process_AggregatorParty" bpmnElement="Participant_Process_AggregatorParty" isHorizontal="true">
-        <dc:Bounds x="20" y="980" width="1540" height="260" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="DI_AG_RoleBindingReceived" bpmnElement="AG_RoleBindingReceived">
-        <dc:Bounds x="200" y="1100" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="160" y="1136" width="116" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="DI_AG_Apply" bpmnElement="AG_Apply">
-        <dc:Bounds x="300" y="1090" width="200" height="56" />
+        <dc:Bounds x="20" y="880" width="1540" height="220" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DI_AG_ChassisDeliveryReceived" bpmnElement="AG_ChassisDeliveryReceived">
-        <dc:Bounds x="560" y="1100" width="36" height="36" />
+        <dc:Bounds x="200" y="970" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="520" y="1136" width="116" height="27" />
+          <dc:Bounds x="160" y="1006" width="116" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DI_AG_ApplyDelivery" bpmnElement="AG_ApplyDelivery">
-        <dc:Bounds x="660" y="1090" width="220" height="56" />
+        <dc:Bounds x="300" y="960" width="280" height="56" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DI_AG_End" bpmnElement="AG_End">
-        <dc:Bounds x="940" y="1100" width="36" height="36" />
+        <dc:Bounds x="640" y="970" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="896" y="1136" width="124" height="14" />
+          <dc:Bounds x="596" y="1006" width="124" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="DI_AG1" bpmnElement="AG1">
-        <di:waypoint x="236" y="1118" />
-        <di:waypoint x="300" y="1118" />
+        <di:waypoint x="236" y="988" />
+        <di:waypoint x="300" y="988" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_AG2" bpmnElement="AG2">
-        <di:waypoint x="500" y="1118" />
-        <di:waypoint x="560" y="1118" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="DI_AG3" bpmnElement="AG3">
-        <di:waypoint x="596" y="1118" />
-        <di:waypoint x="660" y="1118" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="DI_AG4" bpmnElement="AG4">
-        <di:waypoint x="880" y="1118" />
-        <di:waypoint x="940" y="1118" />
+        <di:waypoint x="580" y="988" />
+        <di:waypoint x="640" y="988" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="DI_Participant_Process_VerifierParty" bpmnElement="Participant_Process_VerifierParty" isHorizontal="true">
-        <dc:Bounds x="20" y="1260" width="1540" height="260" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="DI_VR_RoleBindingReceived" bpmnElement="VR_RoleBindingReceived">
-        <dc:Bounds x="200" y="1380" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="160" y="1416" width="116" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="DI_VR_Apply" bpmnElement="VR_Apply">
-        <dc:Bounds x="300" y="1370" width="200" height="56" />
+        <dc:Bounds x="20" y="1120" width="1540" height="220" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DI_VR_ChassisDeliveryReceived" bpmnElement="VR_ChassisDeliveryReceived">
-        <dc:Bounds x="560" y="1380" width="36" height="36" />
+        <dc:Bounds x="200" y="1210" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="520" y="1416" width="116" height="27" />
+          <dc:Bounds x="160" y="1246" width="116" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DI_VR_ApplyDelivery" bpmnElement="VR_ApplyDelivery">
-        <dc:Bounds x="660" y="1370" width="220" height="56" />
+        <dc:Bounds x="300" y="1200" width="280" height="56" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DI_VR_End" bpmnElement="VR_End">
-        <dc:Bounds x="940" y="1380" width="36" height="36" />
+        <dc:Bounds x="640" y="1210" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="896" y="1416" width="124" height="14" />
+          <dc:Bounds x="596" y="1246" width="124" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="DI_VR1" bpmnElement="VR1">
-        <di:waypoint x="236" y="1398" />
-        <di:waypoint x="300" y="1398" />
+        <di:waypoint x="236" y="1228" />
+        <di:waypoint x="300" y="1228" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_VR2" bpmnElement="VR2">
-        <di:waypoint x="500" y="1398" />
-        <di:waypoint x="560" y="1398" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="DI_VR3" bpmnElement="VR3">
-        <di:waypoint x="596" y="1398" />
-        <di:waypoint x="660" y="1398" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="DI_VR4" bpmnElement="VR4">
-        <di:waypoint x="880" y="1398" />
-        <di:waypoint x="940" y="1398" />
+        <di:waypoint x="580" y="1228" />
+        <di:waypoint x="640" y="1228" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="DI_Participant_Process_ConsumerParty" bpmnElement="Participant_Process_ConsumerParty" isHorizontal="true">
-        <dc:Bounds x="20" y="1540" width="1540" height="260" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="DI_CS_RoleBindingReceived" bpmnElement="CS_RoleBindingReceived">
-        <dc:Bounds x="200" y="1660" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="160" y="1696" width="116" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="DI_CS_Apply" bpmnElement="CS_Apply">
-        <dc:Bounds x="300" y="1650" width="200" height="56" />
+        <dc:Bounds x="20" y="1360" width="1540" height="220" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DI_CS_ChassisDeliveryReceived" bpmnElement="CS_ChassisDeliveryReceived">
-        <dc:Bounds x="560" y="1660" width="36" height="36" />
+        <dc:Bounds x="200" y="1450" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="520" y="1696" width="116" height="27" />
+          <dc:Bounds x="160" y="1486" width="116" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DI_CS_ApplyDelivery" bpmnElement="CS_ApplyDelivery">
-        <dc:Bounds x="660" y="1650" width="220" height="56" />
+        <dc:Bounds x="300" y="1440" width="280" height="56" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DI_CS_End" bpmnElement="CS_End">
-        <dc:Bounds x="940" y="1660" width="36" height="36" />
+        <dc:Bounds x="640" y="1450" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="896" y="1696" width="124" height="14" />
+          <dc:Bounds x="596" y="1486" width="124" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="DI_CS1" bpmnElement="CS1">
-        <di:waypoint x="236" y="1678" />
-        <di:waypoint x="300" y="1678" />
+        <di:waypoint x="236" y="1468" />
+        <di:waypoint x="300" y="1468" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_CS2" bpmnElement="CS2">
-        <di:waypoint x="500" y="1678" />
-        <di:waypoint x="560" y="1678" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="DI_CS3" bpmnElement="CS3">
-        <di:waypoint x="596" y="1678" />
-        <di:waypoint x="660" y="1678" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="DI_CS4" bpmnElement="CS4">
-        <di:waypoint x="880" y="1678" />
-        <di:waypoint x="940" y="1678" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="DI_MF_RoleBinding_Contributor" bpmnElement="MF_RoleBinding_Contributor">
-        <di:waypoint x="80" y="100" />
-        <di:waypoint x="80" y="690" />
-        <di:waypoint x="218" y="690" />
-        <di:waypoint x="218" y="820" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="20" y="690" width="56" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="DI_MF_RoleBinding_Aggregator" bpmnElement="MF_RoleBinding_Aggregator">
-        <di:waypoint x="90" y="100" />
-        <di:waypoint x="90" y="970" />
-        <di:waypoint x="218" y="970" />
-        <di:waypoint x="218" y="1100" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="20" y="970" width="56" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="DI_MF_RoleBinding_Verifier" bpmnElement="MF_RoleBinding_Verifier">
-        <di:waypoint x="100" y="100" />
-        <di:waypoint x="100" y="1250" />
-        <di:waypoint x="218" y="1250" />
-        <di:waypoint x="218" y="1380" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="20" y="1250" width="56" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="DI_MF_RoleBinding_Consumer" bpmnElement="MF_RoleBinding_Consumer">
-        <di:waypoint x="110" y="100" />
-        <di:waypoint x="110" y="1530" />
-        <di:waypoint x="218" y="1530" />
-        <di:waypoint x="218" y="1660" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="20" y="1530" width="56" height="14" />
-        </bpmndi:BPMNLabel>
+        <di:waypoint x="580" y="1468" />
+        <di:waypoint x="640" y="1468" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_MF_ChassisDelivery_Contributor" bpmnElement="MF_ChassisDelivery_Contributor">
-        <di:waypoint x="918" y="236" />
-        <di:waypoint x="918" y="280" />
-        <di:waypoint x="1280" y="280" />
-        <di:waypoint x="1280" y="900" />
-        <di:waypoint x="596" y="900" />
-        <di:waypoint x="596" y="856" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1100" y="265" width="120" height="14" />
-        </bpmndi:BPMNLabel>
+        <di:waypoint x="998" y="254" />
+        <di:waypoint x="998" y="300" />
+        <di:waypoint x="1340" y="300" />
+        <di:waypoint x="1340" y="850" />
+        <di:waypoint x="236" y="850" />
+        <di:waypoint x="236" y="766" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_MF_ChassisDelivery_Aggregator" bpmnElement="MF_ChassisDelivery_Aggregator">
-        <di:waypoint x="918" y="236" />
-        <di:waypoint x="918" y="290" />
-        <di:waypoint x="1290" y="290" />
-        <di:waypoint x="1290" y="1180" />
-        <di:waypoint x="596" y="1180" />
-        <di:waypoint x="596" y="1136" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1110" y="275" width="120" height="14" />
-        </bpmndi:BPMNLabel>
+        <di:waypoint x="998" y="254" />
+        <di:waypoint x="998" y="310" />
+        <di:waypoint x="1350" y="310" />
+        <di:waypoint x="1350" y="1090" />
+        <di:waypoint x="236" y="1090" />
+        <di:waypoint x="236" y="1006" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_MF_ChassisDelivery_Verifier" bpmnElement="MF_ChassisDelivery_Verifier">
-        <di:waypoint x="918" y="236" />
-        <di:waypoint x="918" y="300" />
-        <di:waypoint x="1300" y="300" />
-        <di:waypoint x="1300" y="1460" />
-        <di:waypoint x="596" y="1460" />
-        <di:waypoint x="596" y="1416" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1120" y="285" width="120" height="14" />
-        </bpmndi:BPMNLabel>
+        <di:waypoint x="998" y="254" />
+        <di:waypoint x="998" y="320" />
+        <di:waypoint x="1360" y="320" />
+        <di:waypoint x="1360" y="1330" />
+        <di:waypoint x="236" y="1330" />
+        <di:waypoint x="236" y="1246" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_MF_ChassisDelivery_Consumer" bpmnElement="MF_ChassisDelivery_Consumer">
-        <di:waypoint x="918" y="236" />
-        <di:waypoint x="918" y="310" />
-        <di:waypoint x="1310" y="310" />
-        <di:waypoint x="1310" y="1740" />
-        <di:waypoint x="596" y="1740" />
-        <di:waypoint x="596" y="1696" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1130" y="295" width="120" height="14" />
-        </bpmndi:BPMNLabel>
+        <di:waypoint x="998" y="254" />
+        <di:waypoint x="998" y="330" />
+        <di:waypoint x="1370" y="330" />
+        <di:waypoint x="1370" y="1570" />
+        <di:waypoint x="236" y="1570" />
+        <di:waypoint x="236" y="1486" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
