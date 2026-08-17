@@ -10,6 +10,8 @@
 
 ## Abstract
 
+Concordia V1 made multi-party decisions reusable. Concordia V2 makes the financial obligations produced by those decisions reusable over time.
+
 Concordia V2 extends **Canton Allocation Primitives (CAP)**, the open-source reference implementation established by Concordia V1 for privacy-preserving multi-party allocation and decision workflows on Canton. CAP provides shared submission, resolution, outcome-execution, and expiry mechanics, with governance and auctions as its initial proving domains.
 
 This proposal adds recurring allocations governed by scheduled or continuous rules. Authorized governance actions can initialize, amend, suspend, terminate, or finalize these allocations and produce subsequent or final outcomes through the existing CAP execution model.
@@ -124,18 +126,79 @@ The application:
 - hands approved actions to the applicable authorization and signing route
 - supports `cap-governance`, `cap-recurrence`, and future compatible CAP modules
 
-`cap-dapp` supports two main modes of operation:
+`cap-dapp` supports two main modes of presentation and interaction:
 
 - **Traditional interaction:** participants inspect governance and allocation activity, receive relevant updates, and initiate or respond to actions through the user interface. The application supports both pull-based access, where participants review current activity, and push-based notifications for proposals, deadlines, state changes, and actions requiring attention.
-- **Agentic assistance:** each participating entity may connect its own LLM and configure its own policies, privacy controls, and operational boundaries. The agent can summarize activity, explain proposals, compare changes, identify pending actions, and prepare non-binding actions for participant review.
+- **Optional LLM-guided interaction:** participants may choose to enable an LLM-assisted presentation and interaction mode in the Concordia Dapp. When enabled, each participating entity may connect its own LLM and configure its own policies, privacy controls, and operational boundaries. The assistant can summarize activity, explain proposals, compare changes, identify pending actions, and prepare non-binding actions for participant review. This is an optional presentation and interaction mode within the Concordia Dapp; it is not a separately funded workstream and does not alter the canonical authorization or signing boundary.
 
-Both modes use the same CAP workflows and authorization boundaries. Agentic assistance does not vote, sign, submit, allocate, or execute on behalf of a participant. Binding actions remain subject to explicit approval and the canonical authorization and signing route.
+Both modes use the same CAP workflows and authorization boundaries. Optional LLM-guided interaction does not vote, sign, submit, allocate, or execute on behalf of a participant. Binding actions remain subject to explicit approval and the canonical authorization and signing route.
 
 Contracts, participant authority, approval rules, and signing mechanisms remain authoritative. `cap-dapp` does not grant authority or execute actions on behalf of a participant.
 
 Integration with existing Splice and wallet governance work will be coordinated with the responsible maintainers. The implementation will extend or reuse existing components where agreed rather than assume ownership of those systems.
 
 #### Illustrative Execution Flows
+
+**Conceptual sequence: CAP V2 allocation lifecycle**
+
+The following conceptual sequence diagram shows how an authorized recurring allocation evolves through `cap-core` and produces settlement handoff to the existing Canton Token Standards. It is illustrative and does not claim implementation, payment execution, or signing authority. Side controls (amend, suspend, resume, terminate) are part of the authorized governance surface described in `cap-recurrence`.
+
+```plantuml
+@startuml
+title CAP V2 allocation lifecycle
+
+skinparam shadowing false
+skinparam monochrome false
+skinparam sequenceArrowThickness 2
+skinparam ParticipantPadding 12
+skinparam BoxPadding 8
+skinparam noteFontSize 11
+
+participant "Policy /\nGovernance" as Policy
+participant "Recurrence Rule" as Rule
+participant "Accrued Allocation" as Accrued
+participant "Authorized Final\nAllocation" as Final
+participant "Canton Token\nStandard" as Canton
+participant "Settlement" as Settlement
+
+== Initialization ==
+Policy -> Rule : initialize(rate/schedule,\neffective date, asset, policy)
+activate Rule
+
+== Lifecycle ==
+loop over effective interval
+  Rule -> Accrued : accrue per agreed rule\n(deterministic calculation)
+  note over Rule,Accrued
+    Calculated and settled amounts
+    are recorded independently.
+  end note
+end
+
+Policy -> Rule : amend
+Policy -> Rule : suspend
+Policy -> Rule : resume
+Policy -> Rule : terminate
+
+== Finalization ==
+Rule -> Final : produce authorized\nfinal allocation
+deactivate Rule
+
+== Settlement ==
+Final -> Canton : invoke settlement handoff\nexisting token standard boundary
+activate Canton
+Canton -> Settlement : transfer per\nCanton Token Standard
+deactivate Canton
+
+note over Policy,Settlement
+  `cap-core` carries authority for outcome execution.
+  Participant approval and signing remain authoritative.
+  Settlement is an external boundary via existing
+  Canton Token Standards; CAP does not introduce a
+  separate token, transfer, or settlement standard.
+end note
+
+@enduml
+```
 
 **Employment**
 
@@ -438,10 +501,10 @@ Each one-month milestone advances the recurrence, governance, Concordia Dapp, an
 
 ### Milestone 5: External Adoption Validation
 
-- **Estimated Delivery:** Month 5
-- **Focus:** Validate external adoption through exactly 2 qualified external teams using CAP-v2 in pilot or production applications.
+- **Estimated Delivery:** Up to 12 months after Milestone 4 acceptance
+- **Focus:** Validate external adoption through at least 2 qualified independent external teams using CAP-v2 in pilot or production applications.
 - **Deliverables / Value Metrics:**
-  - exactly 2 qualified independent external teams adopting either the Concordia Dapp (`cap-dapp`) or the new `cap-core` recurrence-related primitives and reference use case connected to governance primitives from deliverables completed through Milestone 4 in a pilot or production application
+  - at least 2 qualified independent external teams adopting either the Concordia Dapp (`cap-dapp`) or the new `cap-core` recurrence-related primitives and reference use case connected to governance primitives from deliverables completed through Milestone 4 in a pilot or production application
   - qualified adoption of the Concordia Dapp (`cap-dapp`) earns 50,000 CC per qualified team
   - qualified adoption of the new `cap-core` recurrence-related primitives and reference use case connected to governance primitives earns 35,000 CC per qualified team
   - each qualified team receives one mutually exclusive, non-stacking adoption payment: 50,000 CC for `cap-dapp` or 35,000 CC for the `cap-core` recurrence-related primitives and reference use case; payments are per qualified team and do not stack
@@ -453,7 +516,7 @@ Each one-month milestone advances the recurrence, governance, Concordia Dapp, an
 
 ### Milestone 6: Extended External Adoption
 
-- **Estimated Delivery:** Month 6
+- **Estimated Delivery:** Up to 24 months after Milestone 4 acceptance
 - **Focus:** Reward additional external adoption beyond Milestone 5.
 - **Deliverables / Value Metrics:**
   - up to 10 additional qualified independent external teams beyond Milestone 5 adopting `cap-dapp` or `cap-core`/Concordia primitives from deliverables completed through Milestone 4 in a pilot or production application
@@ -511,8 +574,8 @@ Compared with V1, V2 requires a parallelized effort across Splice and Concordia 
 - Milestone 2 _(First Runtime Slices in Both V2 Proving Domains)_: 180,000 CC upon committee acceptance
 - Milestone 3 _(Runtime Reference Flows and Splice SV Governance Integration)_: 180,000 CC upon committee acceptance
 - Milestone 4 _(End-to-End Composition and Release Readiness)_: 120,000 CC upon committee acceptance
-- Milestone 5 _(External Adoption Validation)_: up to 100,000 CC upon committee acceptance for exactly 2 qualified independent external teams. Each qualified team receives one mutually exclusive, non-stacking payment: 50,000 CC for `cap-dapp` adoption or 35,000 CC for adoption of the new `cap-core` recurrence-related primitives and reference use case connected to governance primitives.
-- Milestone 6 _(Extended External Adoption)_: up to 500,000 CC upon committee acceptance for up to 10 additional qualified independent external teams beyond Milestone 5: up to 400,000 CC in mutually exclusive, non-stacking 40,000 CC `cap-dapp` or 30,000 CC `cap-core`/Concordia-primitives-only per-adopter payments, plus a separate 50,000 CC portfolio breadth premium at at least 5 accepted additional qualified external teams and an additional 50,000 CC portfolio breadth premium at 10 accepted additional qualified external teams
+- Milestone 5 _(External Adoption Validation, up to 12 months after Milestone 4 acceptance)_: up to 100,000 CC upon committee acceptance for at least 2 qualified independent external teams. Each qualified team receives one mutually exclusive, non-stacking payment: 50,000 CC for `cap-dapp` adoption or 35,000 CC for adoption of the new `cap-core` recurrence-related primitives and reference use case connected to governance primitives.
+- Milestone 6 _(Extended External Adoption, up to 24 months after Milestone 4 acceptance)_: up to 500,000 CC upon committee acceptance for up to 10 additional qualified independent external teams beyond Milestone 5: up to 400,000 CC in mutually exclusive, non-stacking 40,000 CC `cap-dapp` or 30,000 CC `cap-core`/Concordia-primitives-only per-adopter payments, plus a separate 50,000 CC portfolio breadth premium at at least 5 accepted additional qualified external teams and an additional 50,000 CC portfolio breadth premium at 10 accepted additional qualified external teams
 
 ### Volatility Stipulation
 
@@ -555,6 +618,8 @@ Implementing those mechanics once as public infrastructure can reduce duplicate 
 The proposal also extends the reuse goals of Concordia and CAP. Concordia provides decision and authority mechanics; Concordia V2 turns authorized agreements and decisions into reusable recurring financial workflows while preserving domain-specific policy.
 
 Concordia V2 addresses recurring financial-workflow problems relevant to grant-funded initiatives and workflows involving substantial currency values, creating potential for a broad range of use cases. Meaningful benefits must be measured through actual independent integrations, workflow-family breadth, demonstrated adapter and component reuse, and verified interoperability against documented interface versions.
+
+The boundary with the Zebec payroll and programmable-payments proposal is detailed in Related Projects and Standards.
 
 ---
 
@@ -602,7 +667,7 @@ Open decisions before submission:
 
 - [Concordia proposal, PR #184](https://github.com/canton-foundation/canton-dev-fund/pull/184) and [Concordia repository](https://github.com/unlockitio/concordia). Concordia V2 extends its reusable decision and allocation direction into recurring and time-based allocations. Package boundaries and migration paths require confirmation.
 - [Decentralization Manager Phase 2, PR #530](https://github.com/canton-foundation/canton-dev-fund/pull/530) and [Decentralization Manager repository](https://github.com/DLC-link/decentralization-manager). Governed parties, membership, and reward routing may complement authorization or treasury workflows. Shared authority and reward interfaces remain unresolved.
-- [Zebec payroll proposal, PR #416](https://github.com/canton-foundation/canton-dev-fund/pull/416) and [Zebec Canton payroll repository](https://github.com/Zebec-protocol/zebec-canton-payroll). Zebec addresses a payroll application and operating path, while Concordia V2 proposes reusable cross-domain primitives and policy separation. Overlap, reuse, and settlement interfaces require direct alignment.
+- [Zebec payroll proposal, PR #416](https://github.com/canton-foundation/canton-dev-fund/pull/416) and [Zebec Canton payroll repository](https://github.com/Zebec-protocol/zebec-canton-payroll). Zebec is a payroll and programmable payment-stream product addressing a specific application and operating path; Concordia V2 proposes a reusable, cross-domain recurring-allocation primitive with policy separation. Settlement remains an external boundary for both, addressed through existing Canton Token Standards. Overlap, reuse, and settlement interfaces require direct alignment.
 - [OpenFluid](https://openfluid.xyz/). OpenFluid is relevant adjacent work in programmable financial flows. The precise technical relationship and reusable interfaces have not been confirmed and must be resolved during discovery.
 - [CIP-0056](https://github.com/canton-foundation/cips/blob/main/cip-0056/cip-0056.md). Its requirements will be reviewed for standards alignment. Any claimed interface support must be demonstrated.
 - [CIP-0112](https://github.com/canton-foundation/cips/blob/main/cip-0112/cip-0112.md). Its requirements will be reviewed for standards alignment. Any claimed interface support must be demonstrated.
