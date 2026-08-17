@@ -1,0 +1,660 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_veridica_consumer_actions" targetNamespace="https://unlockit.io/veridica/bpmn" exporter="Veridica deterministic renderer" exporterVersion="4.0">
+  <bpmn:message id="Message_ConsumerAuthorized" name="Consumer_Authorized" />
+  <bpmn:message id="Message_AccessRequest" name="Access_Request" />
+  <bpmn:message id="Message_AccessGranted" name="Access_Granted" />
+  <bpmn:message id="Message_AccessDenied" name="Access_Denied" />
+  <bpmn:message id="Message_UseConfirmationRequested" name="Use_Confirmation_Requested" />
+  <bpmn:message id="Message_UseConfirmation" name="Use_Confirmation" />
+  <bpmn:message id="Message_GovernanceInterruption_02d" name="Governance suspension mid-use" />
+  <bpmn:collaboration id="Collaboration_02d">
+    <bpmn:participant id="Participant_VeridicaPlatform_02d" name="Veridica Platform" processRef="Process_VeridicaPlatform_02d" />
+    <bpmn:participant id="Participant_Process_ConsumerParty" name="Consumer Party (single instance)" processRef="Process_ConsumerParty" />
+    <bpmn:participant id="Participant_Process_PublisherParty" name="Contributor or Product Publisher (multiplicity 1..999)" processRef="Process_PublisherParty">
+      <bpmn:participantMultiplicity minimum="1" maximum="999" />
+    </bpmn:participant>
+    <bpmn:participant id="Participant_Chassis_External_02d" name="Participant lifecycle chassis (02, external source of Consumer_Authorized)">
+      <bpmn:participantMultiplicity minimum="1" maximum="999" />
+    </bpmn:participant>
+    <bpmn:messageFlow id="MF_ConsumerAuthorized" name="Consumer_Authorized" sourceRef="Participant_Chassis_External_02d" targetRef="CM_Authorized" />
+    <bpmn:messageFlow id="MF_AccessRequest" name="Access_Request" sourceRef="CM_AccessRequestSent" targetRef="VP_AccessRequestReceived" />
+    <bpmn:messageFlow id="MF_AccessGranted" name="Access_Granted" sourceRef="VP_AccessGrantedSent" targetRef="CM_AccessGrantedReceived" />
+    <bpmn:messageFlow id="MF_AccessDenied" name="Access_Denied" sourceRef="VP_AccessDeniedSent" targetRef="CM_AccessDeniedReceived" />
+    <bpmn:messageFlow id="MF_UseConfirmationRequested" name="Use_Confirmation_Requested" sourceRef="VP_UseConfirmationRequestedSent" targetRef="CM_UseConfirmationRequestedReceived" />
+    <bpmn:messageFlow id="MF_UseConfirmation" name="Use_Confirmation" sourceRef="CM_UseConfirmationSent" targetRef="VP_UseConfirmationReceived" />
+    <bpmn:messageFlow id="MF_GovernanceInterruption_02d" name="Governance suspension mid-use" sourceRef="Participant_Chassis_External_02d" targetRef="CM_GovernanceInterruption" />
+  </bpmn:collaboration>
+  <bpmn:process id="Process_VeridicaPlatform_02d" isExecutable="false">
+    <bpmn:laneSet id="Lanes_VeridicaPlatform_02d">
+      <bpmn:lane id="Lane_VeridicaPlatform_02d" name="Veridica Platform">
+        <bpmn:flowNodeRef>VP_AccessRequestReceived</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>VP_CheckCredentialPurpose</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>VP_AccessGrantedSent</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>VP_AccessDeniedSent</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>VP_UseConfirmationRequestedSent</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>VP_UseConfirmationReceived</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>VP_RecordUsage</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>VP_End</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:intermediateCatchEvent id="VP_AccessRequestReceived" name="Access_Request received">
+      <bpmn:incoming>VP1</bpmn:incoming>
+      <bpmn:outgoing>VP2</bpmn:outgoing>
+      <bpmn:messageEventDefinition messageRef="Message_AccessRequest" />
+    </bpmn:intermediateCatchEvent>
+    <bpmn:task id="VP_CheckCredentialPurpose" name="Check credential, purpose, policy, and permission">
+      <bpmn:incoming>VP2</bpmn:incoming>
+      <bpmn:outgoing>VP3</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="VP_AccessDecision" name="Access permitted?" gatewayDirection="Diverging">
+      <bpmn:incoming>VP3</bpmn:incoming>
+      <bpmn:outgoing>VP4a</bpmn:outgoing>
+      <bpmn:outgoing>VP4b</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="VP_ApplyPricing" name="Apply product pricing and licensing">
+      <bpmn:incoming>VP4a</bpmn:incoming>
+      <bpmn:outgoing>VP5a</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:intermediateThrowEvent id="VP_AccessGrantedSent" name="Access_Granted sent">
+      <bpmn:incoming>VP5a</bpmn:incoming>
+      <bpmn:messageEventDefinition messageRef="Message_AccessGranted" />
+    </bpmn:intermediateThrowEvent>
+    <bpmn:task id="VP_RecordDenial" name="Record denial reason">
+      <bpmn:incoming>VP4b</bpmn:incoming>
+      <bpmn:outgoing>VP5b</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:intermediateThrowEvent id="VP_AccessDeniedSent" name="Access_Denied sent">
+      <bpmn:incoming>VP5b</bpmn:incoming>
+      <bpmn:messageEventDefinition messageRef="Message_AccessDenied" />
+    </bpmn:intermediateThrowEvent>
+    <bpmn:intermediateThrowEvent id="VP_UseConfirmationRequestedSent" name="Use_Confirmation_Requested sent">
+      <bpmn:incoming>VP6</bpmn:incoming>
+      <bpmn:messageEventDefinition messageRef="Message_UseConfirmationRequested" />
+    </bpmn:intermediateThrowEvent>
+    <bpmn:intermediateCatchEvent id="VP_UseConfirmationReceived" name="Use_Confirmation received">
+      <bpmn:incoming>VP7</bpmn:incoming>
+      <bpmn:outgoing>VP8</bpmn:outgoing>
+      <bpmn:messageEventDefinition messageRef="Message_UseConfirmation" />
+    </bpmn:intermediateCatchEvent>
+    <bpmn:task id="VP_RecordUsage" name="Record permitted usage or reuse">
+      <bpmn:incoming>VP8</bpmn:incoming>
+      <bpmn:outgoing>VP9</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="VP_End" name="Consumer round complete">
+      <bpmn:incoming>VP9</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="VP1" sourceRef="VP_AccessRequestReceived" targetRef="VP_CheckCredentialPurpose" />
+    <bpmn:sequenceFlow id="VP2" sourceRef="VP_CheckCredentialPurpose" targetRef="VP_AccessDecision" />
+    <bpmn:sequenceFlow id="VP3" sourceRef="VP_AccessDecision" targetRef="VP_ApplyPricing" />
+    <bpmn:sequenceFlow id="VP4a" name="Granted" sourceRef="VP_AccessDecision" targetRef="VP_ApplyPricing" />
+    <bpmn:sequenceFlow id="VP4b" name="Denied" sourceRef="VP_AccessDecision" targetRef="VP_RecordDenial" />
+    <bpmn:sequenceFlow id="VP5a" sourceRef="VP_ApplyPricing" targetRef="VP_AccessGrantedSent" />
+    <bpmn:sequenceFlow id="VP5b" sourceRef="VP_RecordDenial" targetRef="VP_AccessDeniedSent" />
+    <bpmn:sequenceFlow id="VP6" sourceRef="VP_AccessGrantedSent" targetRef="VP_UseConfirmationRequestedSent" />
+    <bpmn:sequenceFlow id="VP7" sourceRef="VP_UseConfirmationRequestedSent" targetRef="VP_UseConfirmationReceived" />
+    <bpmn:sequenceFlow id="VP8" sourceRef="VP_UseConfirmationReceived" targetRef="VP_RecordUsage" />
+    <bpmn:sequenceFlow id="VP9" sourceRef="VP_RecordUsage" targetRef="VP_End" />
+  </bpmn:process>
+  <bpmn:process id="Process_ConsumerParty" isExecutable="false">
+    <bpmn:laneSet id="Lanes_ConsumerParty">
+      <bpmn:lane id="Lane_ConsumerParty" name="Consumer Party">
+        <bpmn:flowNodeRef>CM_Authorized</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>CM_DiscoverCatalog</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>CM_SelectProduct</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>CM_SubmitAccessRequest</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>CM_AccessRequestSent</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>CM_Result_Wait</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>CM_AccessGrantedReceived</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>CM_AccessDeniedReceived</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>CM_Result</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>CM_RecordDenied</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>CM_DeniedEnd</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>CM_Path</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>CM_UseNormalVisibility</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>CM_AttachECD</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>CM_UseProduct</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>CM_UseConfirmationRequestedReceived</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>CM_ConfirmUsage</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>CM_UseConfirmationSent</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>CM_GovernanceInterruption</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>CM_ApplyInterruption</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>CM_Interrupted</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>CM_End</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="CM_Authorized" name="Consumer_Authorized received">
+      <bpmn:outgoing>CM1</bpmn:outgoing>
+      <bpmn:messageEventDefinition messageRef="Message_ConsumerAuthorized" />
+    </bpmn:startEvent>
+    <bpmn:task id="CM_DiscoverCatalog" name="Discover privacy-safe catalog">
+      <bpmn:incoming>CM1</bpmn:incoming>
+      <bpmn:outgoing>CM2</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="CM_SelectProduct" name="Select direct or aggregate product">
+      <bpmn:incoming>CM2</bpmn:incoming>
+      <bpmn:outgoing>CM3</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="CM_SubmitAccessRequest" name="Submit credential, purpose, and access request">
+      <bpmn:incoming>CM3</bpmn:incoming>
+      <bpmn:outgoing>CM4</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:intermediateThrowEvent id="CM_AccessRequestSent" name="Access_Request sent">
+      <bpmn:incoming>CM4</bpmn:incoming>
+      <bpmn:messageEventDefinition messageRef="Message_AccessRequest" />
+    </bpmn:intermediateThrowEvent>
+    <bpmn:eventBasedGateway id="CM_Result_Wait" name="Wait for Access_Granted or Access_Denied">
+      <bpmn:incoming>CM5</bpmn:incoming>
+      <bpmn:outgoing>CM5a</bpmn:outgoing>
+      <bpmn:outgoing>CM5b</bpmn:outgoing>
+    </bpmn:eventBasedGateway>
+    <bpmn:intermediateCatchEvent id="CM_AccessGrantedReceived" name="Access_Granted received">
+      <bpmn:incoming>CM5a</bpmn:incoming>
+      <bpmn:outgoing>CM6a</bpmn:outgoing>
+      <bpmn:messageEventDefinition messageRef="Message_AccessGranted" />
+    </bpmn:intermediateCatchEvent>
+    <bpmn:intermediateCatchEvent id="CM_AccessDeniedReceived" name="Access_Denied received">
+      <bpmn:incoming>CM5b</bpmn:incoming>
+      <bpmn:outgoing>CM6b</bpmn:outgoing>
+      <bpmn:messageEventDefinition messageRef="Message_AccessDenied" />
+    </bpmn:intermediateCatchEvent>
+    <bpmn:exclusiveGateway id="CM_Result" name="AC_C_Result: access result (presentation-layer path)" gatewayDirection="Diverging">
+      <bpmn:incoming>CM6a</bpmn:incoming>
+      <bpmn:incoming>CM6b</bpmn:incoming>
+      <bpmn:outgoing>CM7a</bpmn:outgoing>
+      <bpmn:outgoing>CM7b</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="CM_RecordDenied" name="Record denied access outcome">
+      <bpmn:incoming>CM7b</bpmn:incoming>
+      <bpmn:outgoing>CM8b</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="CM_DeniedEnd" name="Access denied; round complete">
+      <bpmn:incoming>CM8b</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:exclusiveGateway id="CM_Path" name="Presentation path" gatewayDirection="Diverging">
+      <bpmn:incoming>CM7a</bpmn:incoming>
+      <bpmn:outgoing>CM9a</bpmn:outgoing>
+      <bpmn:outgoing>CM9b</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="CM_UseNormalVisibility" name="Use normal Daml stakeholder or observer visibility">
+      <bpmn:incoming>CM9a</bpmn:incoming>
+      <bpmn:outgoing>CM10a</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="CM_AttachECD" name="Attach Explicit Contract Disclosure to command">
+      <bpmn:incoming>CM9b</bpmn:incoming>
+      <bpmn:outgoing>CM10b</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="CM_UseMerge" name="" gatewayDirection="Converging">
+      <bpmn:incoming>CM10a</bpmn:incoming>
+      <bpmn:incoming>CM10b</bpmn:incoming>
+      <bpmn:outgoing>CM11</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="CM_UseProduct" name="Use product for approved purpose">
+      <bpmn:incoming>CM11</bpmn:incoming>
+      <bpmn:outgoing>CM12</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:intermediateCatchEvent id="CM_UseConfirmationRequestedReceived" name="Use_Confirmation_Requested received">
+      <bpmn:incoming>CM12</bpmn:incoming>
+      <bpmn:outgoing>CM13</bpmn:outgoing>
+      <bpmn:messageEventDefinition messageRef="Message_UseConfirmationRequested" />
+    </bpmn:intermediateCatchEvent>
+    <bpmn:task id="CM_ConfirmUsage" name="Confirm usage or reuse record">
+      <bpmn:incoming>CM13</bpmn:incoming>
+      <bpmn:outgoing>CM14</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:intermediateThrowEvent id="CM_UseConfirmationSent" name="Use_Confirmation sent">
+      <bpmn:incoming>CM14</bpmn:incoming>
+      <bpmn:messageEventDefinition messageRef="Message_UseConfirmation" />
+    </bpmn:intermediateThrowEvent>
+    <bpmn:boundaryEvent id="CM_GovernanceInterruption" name="Governance suspension mid-use" attachedToRef="CM_UseProduct">
+      <bpmn:outgoing>CM_BI1</bpmn:outgoing>
+      <bpmn:messageEventDefinition messageRef="Message_GovernanceInterruption_02d" />
+    </bpmn:boundaryEvent>
+    <bpmn:task id="CM_ApplyInterruption" name="Apply governance suspension">
+      <bpmn:incoming>CM_BI1</bpmn:incoming>
+      <bpmn:outgoing>CM_BI2</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="CM_Interrupted" name="Consumer suspended by governance">
+      <bpmn:incoming>CM_BI2</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:endEvent id="CM_End" name="Consumer round complete">
+      <bpmn:incoming>CM15</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="CM1" sourceRef="CM_Authorized" targetRef="CM_DiscoverCatalog" />
+    <bpmn:sequenceFlow id="CM2" sourceRef="CM_DiscoverCatalog" targetRef="CM_SelectProduct" />
+    <bpmn:sequenceFlow id="CM3" sourceRef="CM_SelectProduct" targetRef="CM_SubmitAccessRequest" />
+    <bpmn:sequenceFlow id="CM4" sourceRef="CM_SubmitAccessRequest" targetRef="CM_AccessRequestSent" />
+    <bpmn:sequenceFlow id="CM5" sourceRef="CM_AccessRequestSent" targetRef="CM_Result_Wait" />
+    <bpmn:sequenceFlow id="CM5a" sourceRef="CM_Result_Wait" targetRef="CM_AccessGrantedReceived" />
+    <bpmn:sequenceFlow id="CM5b" sourceRef="CM_Result_Wait" targetRef="CM_AccessDeniedReceived" />
+    <bpmn:sequenceFlow id="CM6a" sourceRef="CM_AccessGrantedReceived" targetRef="CM_Result" />
+    <bpmn:sequenceFlow id="CM6b" sourceRef="CM_AccessDeniedReceived" targetRef="CM_Result" />
+    <bpmn:sequenceFlow id="CM7a" sourceRef="CM_Result" targetRef="CM_Path" />
+    <bpmn:sequenceFlow id="CM7b" sourceRef="CM_Result" targetRef="CM_RecordDenied" />
+    <bpmn:sequenceFlow id="CM8b" sourceRef="CM_RecordDenied" targetRef="CM_DeniedEnd" />
+    <bpmn:sequenceFlow id="CM9a" name="Normal visibility" sourceRef="CM_Path" targetRef="CM_UseNormalVisibility" />
+    <bpmn:sequenceFlow id="CM9b" name="Explicit Contract Disclosure" sourceRef="CM_Path" targetRef="CM_AttachECD" />
+    <bpmn:sequenceFlow id="CM10a" sourceRef="CM_UseNormalVisibility" targetRef="CM_UseMerge" />
+    <bpmn:sequenceFlow id="CM10b" sourceRef="CM_AttachECD" targetRef="CM_UseMerge" />
+    <bpmn:sequenceFlow id="CM11" sourceRef="CM_UseMerge" targetRef="CM_UseProduct" />
+    <bpmn:sequenceFlow id="CM12" sourceRef="CM_UseProduct" targetRef="CM_UseConfirmationRequestedReceived" />
+    <bpmn:sequenceFlow id="CM13" sourceRef="CM_UseConfirmationRequestedReceived" targetRef="CM_ConfirmUsage" />
+    <bpmn:sequenceFlow id="CM14" sourceRef="CM_ConfirmUsage" targetRef="CM_UseConfirmationSent" />
+    <bpmn:sequenceFlow id="CM15" sourceRef="CM_UseConfirmationSent" targetRef="CM_End" />
+    <bpmn:sequenceFlow id="CM_BI1" sourceRef="CM_GovernanceInterruption" targetRef="CM_ApplyInterruption" />
+    <bpmn:sequenceFlow id="CM_BI2" sourceRef="CM_ApplyInterruption" targetRef="CM_Interrupted" />
+  </bpmn:process>
+  <bpmn:process id="Process_PublisherParty" isExecutable="false">
+    <bpmn:laneSet id="Lanes_PublisherParty">
+      <bpmn:lane id="Lane_PublisherParty" name="Contributor or Product Publisher">
+        <bpmn:flowNodeRef>PB_PublishCatalog</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>PB_End</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:task id="PB_PublishCatalog" name="Publish catalog metadata, price, and permitted-use terms">
+      <bpmn:outgoing>PB1</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="PB_End" name="Catalog published">
+      <bpmn:incoming>PB1</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="PB1" sourceRef="PB_PublishCatalog" targetRef="PB_End" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="Diagram_02d">
+    <bpmndi:BPMNPlane id="Plane_02d" bpmnElement="Collaboration_02d">
+      <bpmndi:BPMNShape id="DI_Chassis_External_02d" bpmnElement="Participant_Chassis_External_02d" isHorizontal="true">
+        <dc:Bounds x="20" y="20" width="1640" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_VeridicaPlatform_02d" bpmnElement="Participant_VeridicaPlatform_02d" isHorizontal="true">
+        <dc:Bounds x="20" y="90" width="1640" height="280" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_VP_AccessRequestReceived" bpmnElement="VP_AccessRequestReceived">
+        <dc:Bounds x="120" y="190" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="80" y="226" width="156" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_VP_CheckCredentialPurpose" bpmnElement="VP_CheckCredentialPurpose">
+        <dc:Bounds x="220" y="180" width="200" height="56" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_VP_AccessDecision" bpmnElement="VP_AccessDecision" isMarkerVisible="true">
+        <dc:Bounds x="460" y="180" width="56" height="56" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="440" y="146" width="116" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_VP_ApplyPricing" bpmnElement="VP_ApplyPricing">
+        <dc:Bounds x="560" y="150" width="200" height="46" rx="8" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_VP_AccessGrantedSent" bpmnElement="VP_AccessGrantedSent">
+        <dc:Bounds x="800" y="155" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="760" y="191" width="116" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_VP_RecordDenial" bpmnElement="VP_RecordDenial">
+        <dc:Bounds x="560" y="220" width="200" height="46" rx="8" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_VP_AccessDeniedSent" bpmnElement="VP_AccessDeniedSent">
+        <dc:Bounds x="800" y="225" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="760" y="261" width="116" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_VP_UseConfirmationRequestedSent" bpmnElement="VP_UseConfirmationRequestedSent">
+        <dc:Bounds x="800" y="285" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="760" y="321" width="156" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_VP_UseConfirmationReceived" bpmnElement="VP_UseConfirmationReceived">
+        <dc:Bounds x="900" y="200" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="860" y="236" width="156" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_VP_RecordUsage" bpmnElement="VP_RecordUsage">
+        <dc:Bounds x="980" y="190" width="200" height="56" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_VP_End" bpmnElement="VP_End">
+        <dc:Bounds x="1220" y="200" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1180" y="236" width="116" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="DI_VP1" bpmnElement="VP1">
+        <di:waypoint x="156" y="208" />
+        <di:waypoint x="220" y="208" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_VP2" bpmnElement="VP2">
+        <di:waypoint x="420" y="208" />
+        <di:waypoint x="460" y="208" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_VP3" bpmnElement="VP3">
+        <di:waypoint x="488" y="180" />
+        <di:waypoint x="488" y="173" />
+        <di:waypoint x="560" y="173" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_VP4a" bpmnElement="VP4a">
+        <di:waypoint x="516" y="208" />
+        <di:waypoint x="560" y="173" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_VP4b" bpmnElement="VP4b">
+        <di:waypoint x="488" y="236" />
+        <di:waypoint x="488" y="243" />
+        <di:waypoint x="560" y="243" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_VP5a" bpmnElement="VP5a">
+        <di:waypoint x="760" y="173" />
+        <di:waypoint x="800" y="173" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_VP5b" bpmnElement="VP5b">
+        <di:waypoint x="760" y="243" />
+        <di:waypoint x="800" y="243" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_VP6" bpmnElement="VP6">
+        <di:waypoint x="836" y="173" />
+        <di:waypoint x="836" y="285" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_VP7" bpmnElement="VP7">
+        <di:waypoint x="836" y="303" />
+        <di:waypoint x="900" y="218" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_VP8" bpmnElement="VP8">
+        <di:waypoint x="936" y="218" />
+        <di:waypoint x="980" y="218" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_VP9" bpmnElement="VP9">
+        <di:waypoint x="1180" y="218" />
+        <di:waypoint x="1220" y="218" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="DI_Participant_Process_ConsumerParty" bpmnElement="Participant_Process_ConsumerParty" isHorizontal="true">
+        <dc:Bounds x="20" y="390" width="1640" height="440" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_CM_Authorized" bpmnElement="CM_Authorized">
+        <dc:Bounds x="120" y="470" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="80" y="506" width="156" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_CM_DiscoverCatalog" bpmnElement="CM_DiscoverCatalog">
+        <dc:Bounds x="220" y="460" width="200" height="56" rx="8" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_CM_SelectProduct" bpmnElement="CM_SelectProduct">
+        <dc:Bounds x="460" y="460" width="200" height="56" rx="8" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_CM_SubmitAccessRequest" bpmnElement="CM_SubmitAccessRequest">
+        <dc:Bounds x="700" y="460" width="200" height="56" rx="8" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_CM_AccessRequestSent" bpmnElement="CM_AccessRequestSent">
+        <dc:Bounds x="940" y="470" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="900" y="506" width="116" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_CM_Result_Wait" bpmnElement="CM_Result_Wait" isMarkerVisible="true">
+        <dc:Bounds x="1040" y="460" width="56" height="56" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1020" y="416" width="156" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_CM_AccessGrantedReceived" bpmnElement="CM_AccessGrantedReceived">
+        <dc:Bounds x="1160" y="410" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1120" y="446" width="116" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_CM_AccessDeniedReceived" bpmnElement="CM_AccessDeniedReceived">
+        <dc:Bounds x="1160" y="510" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1120" y="546" width="116" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_CM_Result" bpmnElement="CM_Result" isMarkerVisible="true">
+        <dc:Bounds x="1240" y="450" width="56" height="56" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1220" y="406" width="156" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_CM_RecordDenied" bpmnElement="CM_RecordDenied">
+        <dc:Bounds x="1240" y="490" width="180" height="46" rx="8" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_CM_DeniedEnd" bpmnElement="CM_DeniedEnd">
+        <dc:Bounds x="1460" y="495" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1420" y="531" width="116" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_CM_Path" bpmnElement="CM_Path" isMarkerVisible="true">
+        <dc:Bounds x="1340" y="420" width="56" height="56" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1320" y="376" width="156" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_CM_UseNormalVisibility" bpmnElement="CM_UseNormalVisibility">
+        <dc:Bounds x="1440" y="390" width="180" height="46" rx="8" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_CM_AttachECD" bpmnElement="CM_AttachECD">
+        <dc:Bounds x="1440" y="460" width="180" height="46" rx="8" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_CM_UseMerge" bpmnElement="CM_UseMerge" isMarkerVisible="true">
+        <dc:Bounds x="1340" y="580" width="56" height="56" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1320" y="560" width="96" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_CM_UseProduct" bpmnElement="CM_UseProduct">
+        <dc:Bounds x="1440" y="580" width="180" height="56" rx="8" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_CM_UseConfirmationRequestedReceived" bpmnElement="CM_UseConfirmationRequestedReceived">
+        <dc:Bounds x="1440" y="660" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1400" y="696" width="156" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_CM_ConfirmUsage" bpmnElement="CM_ConfirmUsage">
+        <dc:Bounds x="1280" y="700" width="120" height="56" rx="8" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_CM_UseConfirmationSent" bpmnElement="CM_UseConfirmationSent">
+        <dc:Bounds x="1120" y="710" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1080" y="746" width="116" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_CM_GovernanceInterruption" bpmnElement="CM_GovernanceInterruption">
+        <dc:Bounds x="1512" y="560" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1468" y="540" width="156" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_CM_ApplyInterruption" bpmnElement="CM_ApplyInterruption">
+        <dc:Bounds x="1440" y="700" width="180" height="46" rx="8" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_CM_Interrupted" bpmnElement="CM_Interrupted">
+        <dc:Bounds x="1640" y="705" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1600" y="741" width="156" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_CM_End" bpmnElement="CM_End">
+        <dc:Bounds x="1040" y="710" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1000" y="746" width="116" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="DI_CM1" bpmnElement="CM1">
+        <di:waypoint x="156" y="488" />
+        <di:waypoint x="220" y="488" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_CM2" bpmnElement="CM2">
+        <di:waypoint x="420" y="488" />
+        <di:waypoint x="460" y="488" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_CM3" bpmnElement="CM3">
+        <di:waypoint x="660" y="488" />
+        <di:waypoint x="700" y="488" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_CM4" bpmnElement="CM4">
+        <di:waypoint x="900" y="488" />
+        <di:waypoint x="940" y="488" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_CM5" bpmnElement="CM5">
+        <di:waypoint x="976" y="488" />
+        <di:waypoint x="1040" y="488" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_CM5a" bpmnElement="CM5a">
+        <di:waypoint x="1068" y="460" />
+        <di:waypoint x="1068" y="428" />
+        <di:waypoint x="1160" y="428" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_CM5b" bpmnElement="CM5b">
+        <di:waypoint x="1096" y="488" />
+        <di:waypoint x="1160" y="528" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_CM6a" bpmnElement="CM6a">
+        <di:waypoint x="1196" y="428" />
+        <di:waypoint x="1240" y="468" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_CM6b" bpmnElement="CM6b">
+        <di:waypoint x="1196" y="528" />
+        <di:waypoint x="1240" y="488" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_CM7a" bpmnElement="CM7a">
+        <di:waypoint x="1268" y="450" />
+        <di:waypoint x="1240" y="420" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_CM7b" bpmnElement="CM7b">
+        <di:waypoint x="1268" y="506" />
+        <di:waypoint x="1240" y="513" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_CM8b" bpmnElement="CM8b">
+        <di:waypoint x="1420" y="513" />
+        <di:waypoint x="1460" y="513" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_CM9a" bpmnElement="CM9a">
+        <di:waypoint x="1368" y="420" />
+        <di:waypoint x="1368" y="413" />
+        <di:waypoint x="1440" y="413" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_CM9b" bpmnElement="CM9b">
+        <di:waypoint x="1396" y="448" />
+        <di:waypoint x="1440" y="483" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_CM10a" bpmnElement="CM10a">
+        <di:waypoint x="1530" y="436" />
+        <di:waypoint x="1530" y="600" />
+        <di:waypoint x="1396" y="600" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_CM10b" bpmnElement="CM10b">
+        <di:waypoint x="1530" y="506" />
+        <di:waypoint x="1530" y="616" />
+        <di:waypoint x="1396" y="616" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_CM11" bpmnElement="CM11">
+        <di:waypoint x="1368" y="636" />
+        <di:waypoint x="1440" y="608" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_CM12" bpmnElement="CM12">
+        <di:waypoint x="1530" y="636" />
+        <di:waypoint x="1530" y="660" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_CM13" bpmnElement="CM13">
+        <di:waypoint x="1440" y="678" />
+        <di:waypoint x="1400" y="728" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_CM14" bpmnElement="CM14">
+        <di:waypoint x="1280" y="728" />
+        <di:waypoint x="1156" y="728" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_CM15" bpmnElement="CM15">
+        <di:waypoint x="1120" y="728" />
+        <di:waypoint x="1076" y="728" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_CM_BI1" bpmnElement="CM_BI1">
+        <di:waypoint x="1530" y="596" />
+        <di:waypoint x="1530" y="700" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_CM_BI2" bpmnElement="CM_BI2">
+        <di:waypoint x="1620" y="723" />
+        <di:waypoint x="1640" y="723" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="DI_Participant_Process_PublisherParty" bpmnElement="Participant_Process_PublisherParty" isHorizontal="true">
+        <dc:Bounds x="20" y="850" width="1640" height="120" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_PB_PublishCatalog" bpmnElement="PB_PublishCatalog">
+        <dc:Bounds x="220" y="880" width="280" height="56" rx="8" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_PB_End" bpmnElement="PB_End">
+        <dc:Bounds x="540" y="890" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="500" y="926" width="116" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="DI_PB1" bpmnElement="PB1">
+        <di:waypoint x="500" y="908" />
+        <di:waypoint x="540" y="908" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_MF_ConsumerAuthorized" bpmnElement="MF_ConsumerAuthorized">
+        <di:waypoint x="80" y="70" />
+        <di:waypoint x="80" y="380" />
+        <di:waypoint x="138" y="380" />
+        <di:waypoint x="138" y="470" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="20" y="375" width="116" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_MF_AccessRequest" bpmnElement="MF_AccessRequest">
+        <di:waypoint x="958" y="470" />
+        <di:waypoint x="958" y="370" />
+        <di:waypoint x="138" y="370" />
+        <di:waypoint x="138" y="190" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="200" y="355" width="116" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_MF_AccessGranted" bpmnElement="MF_AccessGranted">
+        <di:waypoint x="818" y="155" />
+        <di:waypoint x="818" y="370" />
+        <di:waypoint x="1178" y="370" />
+        <di:waypoint x="1178" y="430" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="860" y="355" width="116" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_MF_AccessDenied" bpmnElement="MF_AccessDenied">
+        <di:waypoint x="818" y="225" />
+        <di:waypoint x="818" y="380" />
+        <di:waypoint x="1178" y="380" />
+        <di:waypoint x="1178" y="490" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="860" y="365" width="116" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_MF_UseConfirmationRequested" bpmnElement="MF_UseConfirmationRequested">
+        <di:waypoint x="818" y="285" />
+        <di:waypoint x="818" y="350" />
+        <di:waypoint x="1358" y="350" />
+        <di:waypoint x="1358" y="660" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="900" y="335" width="156" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_MF_UseConfirmation" bpmnElement="MF_UseConfirmation">
+        <di:waypoint x="1038" y="710" />
+        <di:waypoint x="1038" y="350" />
+        <di:waypoint x="918" y="350" />
+        <di:waypoint x="918" y="200" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="860" y="335" width="116" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_MF_GovernanceInterruption_02d" bpmnElement="MF_GovernanceInterruption_02d">
+        <di:waypoint x="100" y="70" />
+        <di:waypoint x="100" y="380" />
+        <di:waypoint x="1430" y="380" />
+        <di:waypoint x="1430" y="560" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="20" y="375" width="156" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
