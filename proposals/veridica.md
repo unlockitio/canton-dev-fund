@@ -224,6 +224,23 @@ The Consumer Party (single instance) starts on Consumer_Authorized. The consumer
 
 ![2D. Veridica consumer actions BPMN](assets/02d-veridica-consumer-actions.svg)
 
+##### 2.5 Trust-weight admission and weighting
+
+Participation in the Veridica Platform is not a single binary decision. The 02 chassis assigns each admitted participant a trust weight that conditions how their role-binding authorization translates into governance and effectuation influence. The weight is the same primitive used at admission, during continuous monitoring, and on dynamic reassessment, and the model is intended to iterate as policy, evidence, and observed behavior justify revision.
+
+A trust weight combines four dimensions:
+
+- **Actor type**: the structural role the participant is authorized to play (Contributor, Aggregator, Verifier, Consumer), with the role-binding authorization constraining which capabilities are eligible.
+- **Reputation**: externally recognizable standing, including prior verified contributions, attested independence, and absence of unresolved disputes.
+- **History**: the on-ledger record of accepted work, challenges, corrections, suspensions, and re-admissions for the same or related contexts.
+- **Certifications**: credentials, conflict disclosures, and policy-defined attestations that the participant has supplied and that remain within their stated validity.
+
+The weight has two concrete effects. It first sets a relative quota in decisions, so a higher-weight participant carries more influence per role before outcome aggregation. It also acts as an eligibility filter for sensitive roles such as Aggregator or Verifier, where a minimum weight is required before role-binding authorization can be granted or retained.
+
+Weight is also conditioned by capability. Contributors, Verifiers, Aggregators, and Consumers are weighted differently because each capability affects downstream confidence, reuse, and reward differently. Contributors are weighted more than Consumers precisely because consumer flows are the least affected by lower trust, while contributions directly shape evidence, confidence, and downstream reward allocation. Aggregator and Verifier weights sit between the two and are bounded by the mutually exclusive role rule already present in the 02B and 02C workflows.
+
+Weight is evaluated at admission, continuously throughout the lifecycle, and dynamically when a material change (correction, challenge, suspension, credential rotation, or expired eligibility) is recorded. The model is intended to iterate: policy may revise the four dimensions, the quota curve, the eligibility thresholds, and the dynamic reassessment triggers as implementation evidence and governed decisions accumulate, without requiring a BPMN redesign of the 02 chassis.
+
 #### 6. Reward Allocation
 
 The downstream reward workflow is independent of the participant lifecycle above: it consumes the active versioned participation and reward policy that the 02 chassis and 02A-02D role-party actions record and does not redefine it ad hoc. It validates the configured macro pools and applies the approved credential, role, quality, independence, activity, usage, cap, and floor rules within each pool. Governance voting weights do not automatically equal participation, confidence, or reward weights. Approved allocations may use optional Concordia/CAP interfaces where they fit or a baseline authorized route, followed by receipts and audit records. No message flow from the 02 participant-lifecycle or 02A-02D role-party actions reaches 06; 06 reads only the versioned participation and reward policy it is authorized to consume.
