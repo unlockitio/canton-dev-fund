@@ -53,7 +53,7 @@ The descriptions of `cap-core`, `cap-governance`, and `cap-auctions` below reite
 The implementation preserves the modular structure established in V1:
 
 - `cap-core` provides submission, resolution, outcome execution, and expiry mechanics
-- `cap-governance` provides proposals, voting, approval rules, and authorized execution
+- `cap-governance` remains the V1 governance-oriented reference implementation, providing proposals, voting, approval rules, and authorized execution
 - `cap-auctions` remains an existing V1 proving domain
 - `cap-recurrence` adds allocations governed by recurring rules
 - `cap-dapp` provides the open-source reference application for interacting with supported CAP workflows
@@ -80,7 +80,7 @@ Deadlines, notice periods, and effective intervals are modeled explicitly. Expir
 
 #### Governance Module: `cap-governance`
 
-The governance module remains the governance-oriented reference implementation built on `cap-core`.
+The governance module remains the governance-oriented reference implementation built on `cap-core`, unless `cap-recurrence` integration identifies a need to extend an existing interface.
 
 It covers:
 
@@ -90,9 +90,9 @@ It covers:
 - weighted voting
 - downstream execution after approval
 
-Concordia V2 evolves this module so authorized governance actions can initialize, amend, suspend, terminate, or finalize recurring allocations. Each action follows the approval rules defined by the applicable workflow and may produce subsequent or final allocations through `cap-core` outcome execution.
+Authorized governance actions on recurring allocations are exercised by `cap-governance` only through `cap-core` interfaces, without redefining existing approval, voting, or execution semantics.
 
-The module does not create domain-specific rights. Employment, rental, subscription, or other policies determine who may act, which governance routes are available, and what outcome each route produces.
+The governance module does not create domain-specific rights. Employment, rental, subscription, or other policies determine who may act, which governance routes are available, and what outcome each route produces.
 
 #### Recurrence Module: `cap-recurrence`
 
@@ -109,6 +109,10 @@ It supports:
 - subsequent and final allocations
 
 A recurring rule determines how an allocation evolves over time. Governance determines which participants may modify that rule and what outcomes each authorized action produces.
+
+Authorized governance actions initialize, amend, suspend, resume, terminate, or finalize a recurring rule. Each action follows the approval rules defined by the applicable workflow and may produce subsequent or final allocations through `cap-core` outcome execution.
+
+Recurrence does not create domain-specific rights. Employment, rental, subscription, or other policies determine who may act, which governance routes are available, and what outcome each route produces.
 
 Calculated and settled amounts are recorded independently so settlement timing does not change what has already accrued. The module does not introduce a separate token, transfer, or settlement standard.
 
@@ -303,7 +307,7 @@ This catalog identifies the systems and records their roles, relationships to Co
 | End Users | Consume governance and allocation workflows | Use wallet provider apps, third-party projects, and Canton Dev Fund Grants | No direct relationship to CAP V1 or V2 |
 | Wallet Provider Apps | Provide participant applications that embed or integrate CAP capabilities | Embed CAP | Potential adopters or integrators |
 | Other Third-Party Projects | Provide ecosystem applications that reuse governance, auction, or recurrence capabilities | Leverage CAP | Potential adopters or integrators; unconfirmed |
-| Canton Dev Fund Grants | Provide funded ecosystem applications including Avro, DecMan, SyncVotes, and Zebec; the approved in-flight FCS Splice SV UI/UX improvements grant (Canton Dev Fund [PR #444](https://github.com/canton-foundation/canton-dev-fund/pull/444), per-milestone execution via [issue #529](https://github.com/canton-foundation/canton-dev-fund/issues/529)) is coordinated with, not duplicated by, Concordia V2 | CAP reuse opportunity | Proposed reuse opportunity; no confirmed adoption or partnership |
+| Canton Dev Fund Grants | Provide funded ecosystem applications including Avro, DecMan, SyncVotes, and Zebec; the in-flight FCS Splice SV UI/UX improvements grant is coordinated with, not duplicated by, Concordia V2 (see Related Projects and Standards) | CAP reuse opportunity | Proposed reuse opportunity; no confirmed adoption or partnership |
 | Splice | Provides SV governance and Validator Wallet capabilities | CAP leverages Splice code; Concordia V2 proposes to extend/iterate the Splice governance process and Splice Validator Wallet to leverage CAP primitives and incorporate `cap-dapp` | Proposed upstream changes remain contingent on Splice maintainer review and applicable governance agreement; external contracts, authority, and signing remain canonical |
 | CAP / Concordia V2 | Provides reusable governance, allocation, recurrence, outcome execution, and participant application capabilities | Extends V1 and provides primitives that contingent Splice work may leverage | Proposed additive system; no Splice implementation commitment is implied |
 | CAP / Concordia V1 | Provides established CAP primitives reused by V2 | Foundation extended by V2 | Existing CAP foundation, not a third party |
@@ -389,13 +393,6 @@ This catalog records the containers, their responsibilities, and their integrati
 | `cap-dapp` | Provides participant interaction with supported CAP workflows | Composes with `cap-core` and presents approved actions to canonical authorization and signing routes; may support contingent Splice wallet-app work | V2 application/microfrontend; only embeddable CAP container; no direct presentation edge to individual reference modules |
 | LLM | Provides contextual guidance and draft action text to `cap-dapp` from permitted smart-contract and workflow context | `cap-dapp` leverages LLM guidance; generated text returns within that interaction | No autonomous or binding actions; `cap-core` supports execution, and participant approval and signing are required |
 
-**Legend**
-
-- Solid relationships indicate baseline composition or dependency; dashed relationships indicate proposed reuse or integration.
-- The Splice-to-CAP reuse direction represents contingent governance-process and wallet-app work, subject to Splice maintainer and applicable governance agreement.
-- FCS Splice SV UI/UX improvements are listed under the System Context's Canton Dev Fund Grants aggregate: approved and in flight via [PR #444](https://github.com/canton-foundation/canton-dev-fund/pull/444) and [issue #529](https://github.com/canton-foundation/canton-dev-fund/issues/529), coordinated with and not duplicated by Concordia V2.
-- The diagrams show proposed architecture and do not imply endorsement, confirmed partnerships or integrations, accepted upstream changes, or final package boundaries.
-
 
 ### 4. Backward Compatibility
 
@@ -442,7 +439,7 @@ Each one-month milestone advances the recurrence, governance, Concordia Dapp, an
 - **Focus:** Validate `cap-core` early in governance and allocation, including recurrent allocation.
 - **Deliverables / Value Metrics:**
   - **Concordia as Daml**
-    - Deliver governance reference runtime slices built on `cap-core` interfaces implemented by `cap-governance`.
+    - Demonstrate governance reference runtime behavior through `cap-core` interfaces implemented by the V1 `cap-governance`, applied to allocation and recurrent-allocation runtime slices where relevant.
     - Deliver allocation and recurrent-allocation reference runtime slices built on `cap-core` interfaces implemented by `cap-recurrence` where relevant.
     - Demonstrate the explicit authorization and signing boundary for both runtime slices.
     - Provide Daml script and sandbox integration tests for both slices.
@@ -520,13 +517,17 @@ Each one-month milestone advances the recurrence, governance, Concordia Dapp, an
 - **Focus:** Reward additional external adoption beyond Milestone 5.
 - **Deliverables / Value Metrics:**
   - up to 10 additional qualified independent external teams beyond Milestone 5 adopting `cap-dapp` or `cap-core`/Concordia primitives from deliverables completed through Milestone 4 in a pilot or production application
-  - qualified adoption of the embedded Concordia microfrontend/Concordia Dapp (`cap-dapp`) earns 40,000 CC per qualifying external team
-  - qualified adoption of `cap-core`/Concordia primitives only earns 30,000 CC per qualifying external team
-  - a qualifying external team earns one mutually exclusive, non-stacking adoption payment: 40,000 CC for `cap-dapp` or 30,000 CC for `cap-core`/Concordia-primitives-only adoption
+  - qualified adoption of the embedded Concordia microfrontend/Concordia Dapp (`cap-dapp`) in a pilot application earns 20,000 CC per qualifying external team
+  - qualified adoption of the embedded Concordia microfrontend/Concordia Dapp (`cap-dapp`) in a production application earns 40,000 CC per qualifying external team
+  - for the `cap-dapp` track, a qualifying external team is eligible for one adoption payment: either pilot (20,000 CC) or production (40,000 CC); the same team cannot stack pilot and production `cap-dapp` payments within Milestone 6, and the same-team cap across the `cap-dapp` pilot and production payments combined during Milestone 6 is 40,000 CC
+  - qualified adoption of `cap-core`/Concordia primitives only in a pilot application earns 15,000 CC per qualifying external team
+  - qualified adoption of `cap-core`/Concordia primitives only in a production application earns 30,000 CC per qualifying external team
+  - for the `cap-core`/Concordia-primitives-only track, a qualifying external team is eligible for one adoption payment: either pilot (15,000 CC) or production (30,000 CC); the same team cannot stack pilot and production `cap-core`/Concordia-primitives-only payments within Milestone 6, and the same-team cap across the `cap-core`/Concordia-primitives-only pilot and production payments combined during Milestone 6 is 30,000 CC
+  - the four adoption tracks (`cap-dapp` pilot, `cap-dapp` production, `cap-core`/Concordia-primitives-only pilot, `cap-core`/Concordia-primitives-only production) are mutually exclusive per team: a qualifying external team earns adoption payment under at most one of the four tracks in Milestone 6
   - portfolio breadth premium of 50,000 CC if at least 5 additional qualified external teams are accepted by the end of the milestone period
   - additional portfolio breadth premium of 50,000 CC if 10 additional qualified external teams are accepted by the end of the milestone period
-  - the breadth premiums are separate, non-duplicative portfolio incentives: each is paid once for the accepted M6 cohort, is not a per-adopter award, and does not replace either mutually exclusive individual adoption track; acceptance of 10 additional teams earns both breadth premiums, for 100,000 CC in total breadth premiums
-  - total Milestone 6 funding is capped at 500,000 CC
+  - the breadth premiums are separate, non-duplicative portfolio incentives: each is paid once for the accepted M6 cohort, is not a per-adopter award, and does not replace any mutually exclusive individual adoption track; acceptance of 10 additional teams earns both breadth premiums, for 100,000 CC in total breadth premiums
+  - total Milestone 6 funding is capped at 500,000 CC, inclusive of the portfolio breadth premiums (i.e., the 100,000 CC of breadth premiums at 10 accepted teams counts toward the 500,000 CC cap, not in addition to it)
   - each accepted additional team must provide confirmation to the Tech & Ops Committee and substantive documentation of reuse, adaptation, or extension of the adopted Concordia deliverables where applicable
   - letters of intent may support evaluation but do not satisfy this milestone
   - validation is based on documented evidence of use, traceability to the adopted deliverables, and adopter confirmation; strict binary package traceability is not required
@@ -568,6 +569,8 @@ Each milestone is earned only after its deliverables, acceptance criteria, and r
 
 Compared with V1, V2 requires a parallelized effort across Splice and Concordia workstreams. At the time of this proposal, CC is priced at approximately USD 0.09, compared with approximately USD 0.14–0.15 at the time of the initial V1 proposal. V2 adoption-linked funding is reduced because V2 materially focuses on building Splice-related activity, which may not be straightforward to leverage as independent external adoption; it acts in addition to, rather than as a replacement for, V1 adoption funding.
 
+Adoption-linked funding under Milestones 5 and 6 differentiates pilot and production tiers within Milestone 6, with pilot and production non-stacking for the same team on the same track and different tracks mutually exclusive for the same team. Cross-proposal non-stacking with Concordia V1 Milestones 7 and 8 is defined separately under Cross-Proposal Adoption Stacking.
+
 ### Payment Breakdown by Milestone
 
 - Milestone 1 _(Discovery, Design, and Prototypes)_: 150,000 CC upon committee acceptance
@@ -575,7 +578,15 @@ Compared with V1, V2 requires a parallelized effort across Splice and Concordia 
 - Milestone 3 _(Runtime Reference Flows and Splice SV Governance Integration)_: 180,000 CC upon committee acceptance
 - Milestone 4 _(End-to-End Composition and Release Readiness)_: 120,000 CC upon committee acceptance
 - Milestone 5 _(External Adoption Validation, up to 12 months after Milestone 4 acceptance)_: up to 100,000 CC upon committee acceptance for at least 2 qualified independent external teams. Each qualified team receives one mutually exclusive, non-stacking payment: 50,000 CC for `cap-dapp` adoption or 35,000 CC for adoption of the new `cap-core` recurrence-related primitives and reference use case connected to governance primitives.
-- Milestone 6 _(Extended External Adoption, up to 24 months after Milestone 4 acceptance)_: up to 500,000 CC upon committee acceptance for up to 10 additional qualified independent external teams beyond Milestone 5: up to 400,000 CC in mutually exclusive, non-stacking 40,000 CC `cap-dapp` or 30,000 CC `cap-core`/Concordia-primitives-only per-adopter payments, plus a separate 50,000 CC portfolio breadth premium at at least 5 accepted additional qualified external teams and an additional 50,000 CC portfolio breadth premium at 10 accepted additional qualified external teams
+- Milestone 6 _(Extended External Adoption, up to 24 months after Milestone 4 acceptance)_: up to 500,000 CC, inclusive of premiums, upon committee acceptance for up to 10 additional qualified independent external teams beyond Milestone 5: per-adopter payments are mutually exclusive across the four pilot/production tracks (20,000 CC `cap-dapp` pilot, 40,000 CC `cap-dapp` production, 15,000 CC `cap-core`/Concordia-primitives-only pilot, 30,000 CC `cap-core`/Concordia-primitives-only production), with same-team caps of 40,000 CC within `cap-dapp` and 30,000 CC within `cap-core`/Concordia-primitives-only across pilot then production during Milestone 6, plus a separate 50,000 CC portfolio breadth premium at at least 5 accepted additional qualified external teams and an additional 50,000 CC portfolio breadth premium at 10 accepted additional qualified external teams, with the 500,000 CC cap inclusive of both breadth premiums (100,000 CC total when both trigger)
+
+### Timeline Accountability
+
+If a milestone from Milestones 1 through 4 is delayed beyond its stated delivery month for reasons under the proposer's control, the payout for that milestone should be reduced by **10% for each additional 2-week delay**, capped at **20%** for that milestone. After the capped delay penalty has been exhausted, if delays continue for reasons under the proposer's control, become unreasonable, or result in non-delivery, the Foundation or Tech & Ops Committee may refuse acceptance and close the affected milestone, and reserved funds for that milestone return to the Dev Fund pool. If two milestones are closed for those reasons, the Foundation or Tech & Ops Committee may terminate the full proposal, and any remaining reserved funds return to the Dev Fund pool.
+
+Delays caused by Committee-requested scope changes or dependency changes imposed by the Canton ecosystem should not trigger this penalty automatically and should instead be handled through explicit milestone re-planning.
+
+For Milestones 5 and 6, unaccepted or unearned reserved adoption funds return to the Dev Fund pool at their respective milestone deadlines.
 
 ### Volatility Stipulation
 
@@ -592,6 +603,14 @@ Funding amounts and estimated delivery months are defined; material scope change
 Unlockit will retain at least 25% of the funding received for non-adoption milestones M1-M4 through the full grant period, and at least 50% of adoption-linked funding received for M5/M6 for one additional year after grant closure. Unlockit may retain more than these minimum amounts. This is a funding-retention commitment, not escrow, third-party custody, or on-ledger locking.
 
 For this commitment, the grant period runs from approval/start through final milestone closure; grant closure follows final milestone acceptance.
+
+### Cross-Proposal Adoption Stacking
+
+Adoption-linked funding under this proposal's Milestones 5 and 6 is non-stacking with adoption-linked funding under Concordia V1 Milestones 7 and 8 for the same adopting legal entity on the same adopted deliverable. An adopting legal entity may qualify for adoption payments across both proposals only where the adopted Concordia deliverables are materially distinct: for this proposal, materially distinct deliverables mean V2-only deliverables such as `cap-recurrence` primitives, the recurrence-related reference use case connected to governance primitives, or `cap-dapp` introduced by V2; for V1, materially distinct deliverables mean V1-only deliverables such as `cap-core` allocation primitives, `cap-governance`, or `cap-auctions` as established by V1. Adopters confirming adoption under both proposals must identify which deliverable and which proposal the adoption evidence applies to.
+
+If the same adopting legal entity is accepted under both proposals for the same deliverable, the adopting entity selects one proposal's milestone to claim for that adoption; the other proposal's milestone for the same adoption is then unearned for that entity. The selection is documented in the adopter confirmation letter.
+
+This rule does not prevent the same adopting entity from qualifying under both proposals for materially distinct deliverables, nor does it cap the total number of adopting entities across both proposals.
 
 ---
 
@@ -667,6 +686,7 @@ Open decisions before submission:
 
 - [Concordia proposal, PR #184](https://github.com/canton-foundation/canton-dev-fund/pull/184) and [Concordia repository](https://github.com/unlockitio/concordia). Concordia V2 extends its reusable decision and allocation direction into recurring and time-based allocations. Package boundaries and migration paths require confirmation.
 - [Decentralization Manager Phase 2, PR #530](https://github.com/canton-foundation/canton-dev-fund/pull/530) and [Decentralization Manager repository](https://github.com/DLC-link/decentralization-manager). Governed parties, membership, and reward routing may complement authorization or treasury workflows. Shared authority and reward interfaces remain unresolved.
+- [FCS Splice SV UI/UX improvements grant, PR #444](https://github.com/canton-foundation/canton-dev-fund/pull/444), with per-milestone execution tracked via [issue #529](https://github.com/canton-foundation/canton-dev-fund/issues/529). Coordinated with, not duplicated by, Concordia V2.
 - [Zebec payroll proposal, PR #416](https://github.com/canton-foundation/canton-dev-fund/pull/416) and [Zebec Canton payroll repository](https://github.com/Zebec-protocol/zebec-canton-payroll). Zebec is a payroll and programmable payment-stream product addressing a specific application and operating path; Concordia V2 proposes a reusable, cross-domain recurring-allocation primitive with policy separation. Settlement remains an external boundary for both, addressed through existing Canton Token Standards. Overlap, reuse, and settlement interfaces require direct alignment.
 - [OpenFluid](https://openfluid.xyz/). OpenFluid is relevant adjacent work in programmable financial flows. The precise technical relationship and reusable interfaces have not been confirmed and must be resolved during discovery.
 - [CIP-0056](https://github.com/canton-foundation/cips/blob/main/cip-0056/cip-0056.md). Its requirements will be reviewed for standards alignment. Any claimed interface support must be demonstrated.
@@ -675,7 +695,7 @@ Open decisions before submission:
 - [SV Governance dApp proposal #223](https://github.com/canton-foundation/canton-dev-fund/issues/223) and its milestone issues [#286](https://github.com/canton-foundation/canton-dev-fund/issues/286), [#287](https://github.com/canton-foundation/canton-dev-fund/issues/287), [#288](https://github.com/canton-foundation/canton-dev-fund/issues/288), and [#289](https://github.com/canton-foundation/canton-dev-fund/issues/289). Concordia V2 will seek reuse and avoid presenting its common application layer as replacement governance infrastructure.
 - [CIP-0082](https://github.com/canton-foundation/cips/blob/main/cip-0082/cip-0082.md) and [CIP-0100](https://github.com/canton-foundation/cips/blob/main/cip-0100/cip-0100.md). These define Development Fund allocation and governance context.
 
-These references are potentially complementary, not confirmed dependencies or endorsements. The project will avoid duplicate implementation where a stable reusable interface exists. Interface alignment remains unresolved until maintainer review and tests confirm it.
+Concordia V2 proposes shared, reusable primitives and interfaces rather than a competing application. Its priority over adjacent work rests on three points: (a) `cap-core` and `cap-recurrence` are designed as a common substrate that other projects can build on without depending on Concordia product choices; (b) the recurring-allocation lifecycle is anchored in canonical `cap-core` outcome execution, with settlement delegated to existing Canton Token Standards rather than introducing a parallel payment layer; (c) the `cap-dapp` reference UI demonstrates composition and boundary discipline without claiming to replace governance, payroll, or wallet products. Strong points of adjacent work are recognized: Zebec delivers a concrete payroll product with operating depth; Decentralization Manager formalizes governance-membership and reward-routing semantics that may complement Concordia authorization and treasury flows; the SV Governance dApp and FCS Splice SV UI/UX grant hold primary responsibility for the SV governance and Validator Wallet surface that Concordia V2 only proposes to iterate subject to maintainer agreement; CIP-0056, CIP-0082, CIP-0100, and CIP-0112 set the standards and Dev Fund allocation context that any proposal in this space must respect. Where overlap exists, alignment is preferred over duplication; where alignment is not yet established, maintainer review and tests will resolve it.
 
 ---
 
