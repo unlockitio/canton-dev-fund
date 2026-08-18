@@ -1,9 +1,9 @@
 ## Development Fund Proposal
 
-**Author:** Unlockit (luis.marado@unlockit.io)
-**Status:** Draft
-**Created:** 2026-08-05
-**Label:** financial-workflows-composability, onchain-governance
+**Author:** Unlockit (luis.marado@unlockit.io)  
+**Status:** Draft  
+**Created:** 2026-08-05  
+**Label:** financial-workflows-composability, onchain-governance  
 **Champion:** TBD
 
 ---
@@ -64,16 +64,11 @@ The names `cap-recurrence` and `cap-dapp` describe proposed logical components. 
 
 The core captures the common structure of allocation workflows on Canton.
 
-**Submission workflow**
-Each participant submits through a privacy-preserving invite, submit, and close lifecycle. Submissions remain visible only to the submitter and the parties that need to see them. Workflows have deadlines, expired invitations can be reclaimed, and the model remains non-blocking if a participant goes offline.
-
-**Resolution rules**
-The core exposes pluggable resolution hooks that process collected submissions into an outcome. Domain modules implement their own rules, including auction winner selection, governance approval, and recurring allocation calculations.
-
-**Outcome execution**
-The workflow produces an executable outcome carrying the authority collected during the workflow. Where the required parties have authorized the resulting action, the outcome can be exercised atomically.
-
-Outcome execution may initialize or modify governance state, produce subsequent or final allocations, invoke settlement through existing Canton infrastructure, or trigger another authorized downstream action.
+| Core capability | Description |
+|---|---|
+| **Submission workflow** | Each participant submits through a privacy-preserving invite, submit, and close lifecycle. Submissions remain visible only to the submitter and the parties that need to see them. Workflows have deadlines, expired invitations can be reclaimed, and the model remains non-blocking if a participant goes offline. |
+| **Resolution rules** | The core exposes pluggable resolution hooks that process collected submissions into an outcome. Domain modules implement their own rules, including auction winner selection, governance approval, and recurring allocation calculations. |
+| **Outcome execution** | The workflow produces an executable outcome carrying the authority collected during the workflow. Where the required parties have authorized the resulting action, the outcome can be exercised atomically. Outcome execution may initialize or modify governance state, produce subsequent or final allocations, invoke settlement through existing Canton infrastructure, or trigger another authorized downstream action. |
 
 **Expiry handling**
 Deadlines, notice periods, and effective intervals are modeled explicitly. Expired participation paths can be released or reclaimed without changing completed outcomes.
