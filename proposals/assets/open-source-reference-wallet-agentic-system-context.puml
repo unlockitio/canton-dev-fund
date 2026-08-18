@@ -1,0 +1,39 @@
+@startuml
+!include <C4/C4_Context>
+
+LAYOUT_LEFT_RIGHT()
+skinparam shadowing false
+
+title Open Source Reference Wallet Agentic Extension - System Context
+
+Person(users, "End Users", "Inspect wallet state and approve or reject actions")
+System(wallet, "Open Source Reference Wallet", "System being extended: existing Wallet UI plus the new Agentic UX UI")
+System_Ext(sdk, "dApp SDK", "Existing external SDK boundary for supported dApp wallet interaction")
+System_Ext(gateway, "Wallet Gateway", "Existing external mediation and authorization route")
+System_Ext(llmSdk, "LLM SDK", "External library boundary used by the Agentic UX UI")
+System_Ext(llm, "External LLM Service", "Configured model service used for explanation and guidance")
+System_Ext(canton, "Canton Services and Ledger", "Executes existing authorized Canton operations")
+System_Ext(dapps, "Supported dApps", "Request supported wallet interactions")
+
+Rel(users, wallet, "Uses, reviews, approves or rejects")
+Rel(wallet, sdk, "Uses for supported dApp interaction")
+Rel(sdk, wallet, "Provides supported requests and receives responses")
+Rel(wallet, llmSdk, "Agentic UX UI uses for explanation and guidance")
+Rel(llmSdk, llm, "Sends model requests and receives responses")
+Rel(wallet, gateway, "Hands off only explicitly approved actions")
+Rel(sdk, gateway, "Routes supported wallet requests")
+Rel(gateway, canton, "Uses existing wallet route")
+Rel(canton, gateway, "Returns outcome")
+Rel(gateway, wallet, "Returns canonical result")
+Rel(dapps, sdk, "Requests wallet interaction")
+Rel(sdk, dapps, "Returns response")
+
+note right of wallet
+  Approval and signing remain an existing
+  human-controlled boundary inside the wallet.
+  The Agentic UX UI cannot approve, sign,
+  or execute a binding action.
+end note
+
+SHOW_LEGEND()
+@enduml

@@ -1,0 +1,48 @@
+@startuml
+!include <C4/C4_Container>
+
+LAYOUT_LEFT_RIGHT()
+skinparam shadowing false
+
+AddElementTag("proposal", $bgColor="#2F80ED", $fontColor="#FFFFFF", $borderColor="#1B5EAA")
+AddElementTag("existing", $bgColor="#D9D9D9", $fontColor="#222222", $borderColor="#8A8A8A")
+
+ title Open Source Reference Wallet Agentic Extension - Container Diagram
+
+Person(user, "End User", "Uses wallet journeys and explicitly approves or rejects actions")
+System_Boundary(wallet, "Open Source Reference Wallet") {
+    Container(walletUi, "Wallet UI", "Existing wallet application", "Displays balances, assets, history, supported actions, and review screens.", $tags="existing")
+    Container(agent, "Agentic UX UI", "New application UI", "Explains context, guides supported journeys, prepares non-binding actions, and presents them for explicit user approval.", $tags="proposal")
+}
+System_Ext(sdk, "dApp SDK", "External SDK boundary for supported dApp wallet interaction")
+System_Ext(gateway, "Wallet Gateway", "External mediation and authorization route")
+System_Ext(llmSdk, "LLM SDK", "External library boundary used by Agentic UX UI")
+System_Ext(llm, "External LLM Service", "Configured model service for explanation and guidance")
+System_Ext(canton, "Canton Services and Ledger", "Process authorized operations and report outcomes")
+System_Ext(dapps, "Supported dApps", "Request supported wallet interactions through the dApp SDK")
+
+Rel(user, walletUi, "Uses")
+Rel(user, agent, "Uses, reviews, approves or rejects")
+Rel(walletUi, agent, "Provides permitted wallet context")
+Rel(agent, walletUi, "Guides existing screens and submits only approved actions")
+Rel(agent, llmSdk, "Uses for explanation and guidance")
+Rel(llmSdk, llm, "Sends model requests and receives responses")
+Rel(walletUi, sdk, "Uses for relevant dApp interaction")
+Rel(agent, sdk, "Uses for relevant dApp interaction")
+Rel(sdk, gateway, "Routes supported wallet requests")
+Rel(gateway, canton, "Uses existing authorized route")
+Rel(canton, gateway, "Returns canonical outcome")
+Rel(gateway, walletUi, "Returns result")
+Rel(gateway, agent, "Returns status for displayed action")
+Rel(dapps, sdk, "Sends supported request")
+Rel(sdk, dapps, "Returns existing SDK response")
+
+note right of agent
+  Preparation is non-binding.
+  Existing Wallet UI approval/signing remains
+  the human-controlled boundary. The LLM and
+  Agentic UX UI cannot approve, sign, or execute.
+end note
+
+SHOW_LEGEND()
+@enduml

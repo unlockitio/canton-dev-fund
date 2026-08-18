@@ -64,9 +64,9 @@ The implementation is organized around four responsibilities:
 
 The agent is an interaction and presentation layer. Existing wallet contracts, party authority, dApp SDK contracts, Wallet Gateway behavior, approval policy, signing mechanism, and ledger outcomes remain authoritative.
 
-#### Core Layer: `cap-core`
+#### Open Source Reference Wallet
 
-No new ledger or custody core is proposed. The reference implementation will use the current wallet and dApp SDK contracts as the source of truth. A small client-side domain adapter may normalize permitted read context and prepared-action metadata for the agent, but it will not create a competing contract model or signing API.
+The reference implementation will use the current wallet and dApp SDK contracts as the source of truth. A small client-side domain adapter may normalize permitted read context and prepared-action metadata for the agent, but it will not create a competing contract model or signing API.
 
 The adapter will:
 
@@ -78,9 +78,7 @@ The adapter will:
 
 The adapter will not authorize, sign, submit, settle, or mutate Canton state.
 
-#### Governance Module: `cap-governance`
-
-No governance module is proposed. The agent may explain an existing approval requirement shown by the Open Source Reference Wallet or Wallet Gateway and may guide a user to the applicable approval step, but it will not implement SV governance, vote, change governance state, or replace governance-owned interfaces.
+The agent may explain an existing approval requirement shown by the Open Source Reference Wallet or Wallet Gateway and may guide a user to the applicable approval step, but it will not implement governance, vote, change governance state, or replace governance-owned interfaces.
 
 Any approval prompt must make the distinction between:
 
@@ -89,13 +87,9 @@ Any approval prompt must make the distinction between:
 - the user's explicit approval
 - the canonical Wallet Gateway and signing/execution result
 
-#### Recurrence Module: `cap-recurrence`
+Recurring transfers, schedules, subscriptions, and other future financial obligations are out of scope unless the current wallet already exposes a supported journey and the implementation merely explains or guides that journey without adding new semantics. The project will not introduce scheduling, accrual, payment-stream, or settlement primitives.
 
-No recurrence module is proposed. Recurring transfers, schedules, subscriptions, or other future financial obligations are out of scope unless the current wallet already exposes a supported journey and the implementation merely explains or guides that journey without adding new semantics. The project will not introduce scheduling, accrual, payment-stream, or settlement primitives.
-
-#### Reference Application: Open Source Reference Wallet Agentic Extension (`cap-dapp`)
-
-This proposal does not deliver the Concordia Dapp, `cap-dapp`, CAP modules, or Concordia V2. The reference application is the **Open Source Reference Wallet described in the approved Open Source Reference Wallet proposal**, extended with an agentic UX. The current [wallet repository](https://github.com/canton-network/wallet) is cited only as implementation context for that approved reference-wallet work.
+This proposal delivers an agentic UX extension to the **Open Source Reference Wallet described in the approved Open Source Reference Wallet proposal**. The current [wallet repository](https://github.com/canton-network/wallet) is cited only as implementation context for that approved reference-wallet work.
 
 The implementation will be grounded in repository evidence, including as applicable:
 
@@ -138,20 +132,6 @@ The agent may use a configured model or deterministic local interaction logic, b
 
 The agent cannot turn a read-only request into a binding action, cannot approve its own preparation, and cannot retry a rejected binding action without a new explicit user decision.
 
-#### Proposed Splice Work
-
-No new Splice governance or deprecated Validator Wallet implementation is proposed. The work will integrate only with current, documented, and testable wallet interfaces in the current reference wallet repository. Where the Open Source Reference Wallet uses the Wallet Gateway or dApp SDK, the agent will compose with those surfaces rather than replace them.
-
-The proposal explicitly excludes:
-
-- autonomous signing or unattended transaction execution
-- bypassing, replacing, or weakening the Wallet Gateway
-- new custody, ledger, token, or settlement primitives
-- SV governance reimplementation or changes to governance authority
-- deprecated Validator Wallet work
-
-Any upstream change needed in the wallet repository remains contingent on maintainer review and normal contribution processes. This proposal does not assert maintainer approval, partnership, or completed implementation.
-
 ### 3. Architectural Alignment
 
 Open Source Reference Wallet Agentic Extension is application-layer public infrastructure that extends the Open Source Reference Wallet described in the approved Open Source Reference Wallet proposal. It aligns with Canton by preserving multi-party authorization, privacy-aware visibility, explicit party authority, dApp SDK boundaries, Wallet Gateway mediation, and canonical approval/signing behavior.
@@ -169,43 +149,47 @@ The agent does not create authority. It can only present actions already availab
 
 #### Architectural Views
 
-The architectural views for this proposal are expressed through the existing repository structure and its documented runtime boundaries. A release may add diagrams if they improve reviewability, but diagrams will describe the implemented Open Source Reference Wallet integration rather than imply new wallet infrastructure.
+The architectural views are maintained as PlantUML sources under [`proposals/assets/`](assets/) and describe the implemented Open Source Reference Wallet integration without implying new wallet infrastructure:
+
+- ![System Context Diagram](assets/open-source-reference-wallet-agentic-system-context.svg) ([PlantUML source](assets/open-source-reference-wallet-agentic-system-context.puml))
+- ![Container Diagram](assets/open-source-reference-wallet-agentic-container.svg) ([PlantUML source](assets/open-source-reference-wallet-agentic-container.puml))
 
 ##### System Context
 
-The system context includes the end user, the existing Open Source Reference Wallet, the agentic interaction layer, the dApp SDK, the Wallet Gateway, existing approval/signing mechanisms, Canton services, and supported dApps.
-
-The agent receives permitted context from the Open Source Reference Wallet and dApp SDK, provides explanations and prepared drafts back to the user, and sends only explicitly approved actions to the existing Wallet Gateway and signing boundary. Canton services and ledger outcomes remain outside the agent's authority.
+The system context treats the Open Source Reference Wallet as the system being extended. It shows the existing Wallet UI and new Agentic UX UI as parts of that system, while dApp SDK and Wallet Gateway remain external dependencies. The context also shows the external LLM SDK and External LLM Service, Supported dApps, Canton services and ledger, and the end user. The Agentic UX UI receives permitted wallet context, uses the LLM SDK only for explanation and guidance, and sends only explicitly approved actions through the existing Wallet Gateway route. Approval and signing remain an existing human-controlled boundary inside the wallet; neither the LLM nor the Agentic UX UI can approve, sign, or execute.
 
 ###### System Context Box Catalog
 
 | Box | Role | Relationship to the proposal | Status or authority boundary |
 | --- | --- | --- | --- |
 | End Users | Inspect wallet state and approve or reject actions | Use the Open Source Reference Wallet and agentic UX | Sole source of explicit human approval |
-| Open Source Reference Wallet | Open Source Reference Wallet described in the approved reference-wallet proposal | Hosts the agentic UX and existing journeys | Existing application surface; the approved proposal and implementation repository define the boundary |
-| Agentic UX | Explains, guides, and prepares non-binding actions | New application-layer reference capability | No signing, custody, governance, ledger, or settlement authority |
-| dApp SDK | Existing dApp interaction boundary | Supplies and receives supported dApp requests | Existing SDK contracts and tests remain authoritative |
-| Wallet Gateway | Existing wallet mediation and authorization route | Receives approved actions through established integration | Must not be bypassed or replaced |
-| Approval and signing boundary | Existing user-controlled binding step | Final human-controlled gate before execution | Explicit approval required; agent cannot satisfy it |
-| Canton services and ledger | Execute existing authorized Canton operations | Receive effects through existing wallet routes | No new primitive is introduced |
-| Supported dApps | Request supported wallet interactions | Integrate through the existing dApp SDK | Adoption and compatibility require demonstrated interfaces |
+| Open Source Reference Wallet | Open Source Reference Wallet described in the approved reference-wallet proposal, containing the Wallet UI and Agentic UX UI | Hosts the existing journeys and the agentic UX | Approval and signing remain a human-controlled boundary inside the Wallet UI |
+| dApp SDK | External SDK boundary for supported dApp wallet interaction | Supplies and receives supported dApp requests for the Wallet UI and Agentic UX UI | Existing SDK contracts and tests remain authoritative |
+| Wallet Gateway | External wallet mediation and authorization route | Receives supported requests through the established dApp SDK and wallet route | Must not be bypassed or replaced |
+| LLM SDK | External library boundary for model interaction | Connects the Agentic UX UI to the External LLM Service | Provides no wallet authority |
+| External LLM Service | Configured external model service | Provides responses for explanation and guidance through the LLM SDK | Cannot approve, sign, or execute |
+| Canton services and ledger | Execute existing authorized Canton operations | Receive effects through the Wallet Gateway | No new primitive is introduced |
+| Supported dApps | Request supported wallet interactions | Integrate through the external dApp SDK | Adoption and compatibility require demonstrated interfaces |
 
 ##### Container Diagram
 
-The container view contains the existing Open Source Reference Wallet, the agent context and guidance layer, the action preparation/review layer, the existing dApp SDK integration, the existing Wallet Gateway integration, and the existing approval/signing boundary.
+The container view is scoped inside the Open Source Reference Wallet system and contains exactly two containers: the existing **Wallet UI**, shown in gray, and the new/touched **Agentic UX UI**, shown in blue. Agentic explanation, guidance, action preparation, and presentation are encapsulated in Agentic UX UI rather than split into additional containers. The dApp SDK, Wallet Gateway, LLM SDK, External LLM Service, Supported dApps, and Canton services are external systems or libraries shown outside the system boundary. Approval and signing remain an existing human-controlled boundary within the Wallet UI; the LLM and Agentic UX UI cannot approve, sign, or execute.
 
 ###### Container Responsibility Catalog
 
+The catalog uses the same box names as the [Container Diagram](assets/open-source-reference-wallet-agentic-container.puml).
+
 | Box | Responsibility | Dependencies or outputs | Explicit boundary |
 | --- | --- | --- | --- |
-| Open Source Reference Wallet | Displays balances, assets, history, supported actions, and review screens | Existing wallet repository and APIs | Does not delegate approval to the agent |
-| Agent Context Adapter | Selects and normalizes permitted current context | Open Source Reference Wallet state, existing SDK/API reads | Read and presentation context only |
-| Guidance Layer | Explains state, actions, requirements, and errors | Context adapter and documented action catalog | No authority and no binding side effects |
-| Action Preparation and Review | Collects inputs and creates a reviewable draft | Existing supported action schemas | Draft is non-binding until user approval |
-| dApp SDK Integration | Handles supported dApp requests | Existing dApp SDK | No alternate signing route |
-| Wallet Gateway Integration | Sends explicitly approved requests through the current gateway | Existing Wallet Gateway | Gateway cannot be bypassed |
-| Approval and Signing Boundary | Obtains explicit user approval and invokes existing signing behavior | Current wallet implementation | Agent cannot approve, sign, or execute |
-| Existing Canton Services | Process authorized operations and report outcomes | Current wallet and Canton infrastructure | No new ledger or settlement primitive |
+| End User | Uses wallet journeys and explicitly approves or rejects prepared actions | Wallet UI and Agentic UX UI | Sole source of explicit approval |
+| Wallet UI | Displays balances, assets, history, supported actions, and review screens | Existing wallet repository and APIs; dApp SDK; Wallet Gateway | Existing surface; approval and signing remain human-controlled |
+| Agentic UX UI | Explains context, guides supported journeys, and prepares non-binding actions | Wallet UI; dApp SDK; LLM SDK | Cannot approve, sign, submit, or execute |
+| dApp SDK | Provides the external SDK boundary for supported dApp wallet interaction | Wallet UI, Agentic UX UI, Wallet Gateway, Supported dApps | Existing SDK contracts remain authoritative |
+| Wallet Gateway | Mediates and authorizes supported wallet requests | dApp SDK, Wallet UI, Canton services and ledger | Must not be bypassed or replaced |
+| LLM SDK | External library boundary used for model requests | Agentic UX UI and External LLM Service | Provides no wallet authority |
+| External LLM Service | Provides configured model responses for explanation and guidance | LLM SDK | Cannot approve, sign, or execute |
+| Canton Services and Ledger | Process authorized operations and report outcomes | Wallet Gateway | No new ledger or settlement primitive |
+| Supported dApps | Request supported wallet interactions through the dApp SDK | dApp SDK | No direct agent or signing route |
 
 ### 4. Backward Compatibility
 
@@ -217,74 +201,55 @@ Existing Open Source Reference Wallet journeys must remain usable without the ag
 
 ## Milestones and Deliverables
 
-Each milestone advances the existing Open Source Reference Wallet agentic experience while preserving the current wallet boundaries. Exact calendar dates and funding amounts require committee agreement and are intentionally left open pending scope recalculation.
+The milestones mirror the approved Open Source Reference Wallet proposal's four delivery stages. This proposal follows that wallet work closely behind: each agentic milestone depends on the corresponding wallet surface being available and tested, and the agentic work does not lead, replace, or claim coordination with that work. Dates are relative to the approved wallet milestone deliveries and must be replanned if those deliveries or their interfaces move.
 
-### Milestone 1: Discovery, Design, and Prototypes
+### Milestone 1: Agentic Extension for Splice Portfolio dApp UI
 
-- **Estimated Delivery:** Month 1
-- **Focus:** Confirm current wallet surfaces and define the bounded agentic UX.
-- **Deliverables / Value Metrics:**
-  - repository evidence inventory covering `examples/portfolio/`, dApp SDK integration, Wallet Gateway integration, approval/signing boundaries, and relevant tests
-  - interaction design for explanation, guidance, action preparation, explicit approval, rejection, and recovery
-  - threat model and data-minimization plan for agent context
-  - documented in-scope and out-of-scope action catalog
-  - clickable or runnable Open Source Reference Wallet prototype that demonstrates a prepared action without binding execution
-  - tests for context filtering, unsupported requests, and the approval boundary
+- **Estimated Delivery:** After the approved wallet proposal's Milestone 1 acceptance, targeted within one month of the corresponding wallet surface becoming available
+- **Focus:** Add bounded explanation, guidance, and non-binding action preparation to the Splice Portfolio dApp UI surfaces delivered by the approved wallet work.
+- **Dependencies and fallback:** Requires the delivered Portfolio UI, its documented APIs, CIP-0056 support, CIP-0103 integration, Wallet Gateway test surface, and stable reviewable action schemas. If a dependency is late or differs from repository evidence, the agentic scope is limited to the available read and review surfaces, or the milestone is replanned. No upstream approval or coordination is assumed.
+- **Deliverables / Value Metrics and Acceptance Criteria:**
+  - repository evidence inventory mapped to the approved wallet Milestone 1 deliverables
+  - context adapter and guidance flow for permitted portfolio state and supported actions
+  - reviewable, non-binding preparation for at least one wallet action already exposed by the Portfolio UI
+  - tests for context filtering, unsupported requests, stale state, and the explicit approval boundary
+  - public documentation distinguishing reused wallet work from new agentic code
 
-### Milestone 2: First Runtime Slices in Open Source Reference Wallet and dApp Journeys
+### Milestone 2: Agentic Extension Following Splice Portfolio Replacement
 
-- **Estimated Delivery:** Month 2
-- **Focus:** Validate the extension in two bounded interaction contexts: Open Source Reference Wallet actions and dApp-requested actions. It does not deliver Concordia V2 or CAP modules.
-- **Deliverables / Value Metrics:**
-  - Open Source Reference Wallet flow that explains current state and prepares at least one existing supported action for review
-  - dApp SDK flow that explains a supported request and prepares the corresponding review state
-  - explicit approval, rejection, cancellation, stale-state, and Wallet Gateway error paths
-  - unit/component tests for both flows and the no-autonomous-signing invariant
-  - integration or sandbox evidence using the current repository's supported wallet test setup
+- **Estimated Delivery:** After the approved wallet proposal's Milestone 2 acceptance, targeted within one month of the replacement becoming available
+- **Focus:** Extend the agentic UX to the supported default wallet journeys after Splice Portfolio and Wallet Gateway replace the existing default wallet surface.
+- **Dependencies and fallback:** Requires the replacement wallet stack and feature-parity behavior described by the approved wallet Milestone 2. If replacement timing, feature parity, or interfaces change, deliver the agent against the latest documented supported Portfolio surface or defer affected flows through explicit replanning.
+- **Deliverables / Value Metrics and Acceptance Criteria:**
+  - guided explanations for supported Portfolio journeys, including any delivered pre-approval and transaction-history surfaces
+  - action preparation and review for supported actions present in the replacement wallet
+  - explicit approval, rejection, cancellation, and Wallet Gateway error paths
+  - integration or sandbox evidence using the wallet work's available test setup
+  - no claim that the agentic extension replaces or owns the underlying wallet replacement
 
-### Milestone 3: Runtime Reference Flows and Boundary Documentation
+### Milestone 3: Agentic Extension for Splice Wallet Browser Extension
 
-- **Estimated Delivery:** Month 3
-- **Focus:** Harden reference flows and document integration boundaries with adjacent wallet infrastructure and SV governance.
-- **Deliverables / Value Metrics:**
-  - end-to-end Open Source Reference Wallet journeys using the existing Wallet Gateway and signing route
-  - dApp SDK interoperability evidence for supported requests
-  - documentation confirming that no SV governance or deprecated Validator Wallet implementation is included
-  - test evidence that agent output cannot approve, sign, submit, or execute a binding request
-  - maintainer and upstream dependency record for any required wallet repository contribution; no approval is claimed before it exists
+- **Estimated Delivery:** After the approved wallet proposal's Milestone 3 acceptance, targeted within one month of the browser extension becoming available
+- **Focus:** Bring the bounded agentic interaction patterns to the browser extension and its connection to the Portfolio dApp UI.
+- **Dependencies and fallback:** Requires the delivered browser extension, party-management flows, in-browser key-storage boundary, browser compatibility evidence, and the Portfolio connection described by the approved wallet Milestone 3. The agent does not access or manage keys. If those interfaces are unavailable, scope falls back to explanation and review guidance at the Portfolio boundary until the extension surface is testable.
+- **Deliverables / Value Metrics and Acceptance Criteria:**
+  - agent context and guidance for supported browser-extension and Portfolio journeys
+  - non-binding preparation handed to the existing user-controlled approval and signing boundary
+  - end-to-end evidence that agent output cannot approve, sign, submit, or execute a binding request
+  - documentation of integration assumptions and any required maintainer-reviewed contribution, without claiming approval
 
-### Milestone 4: End-to-End Composition and Release Readiness
+### Milestone 4: Agentic Extension for Future Known Wallet Improvements and Release
 
-- **Estimated Delivery:** Month 4
-- **Focus:** Publish a cloneable, documented reference implementation.
-- **Deliverables / Value Metrics:**
-  - open-source implementation in the wallet repository or an agreed companion repository, under a compatible public license
-  - concrete source paths for the Open Source Reference Wallet agent components, action catalog, context adapter, review UI, and tests
-  - setup and run instructions for the existing Open Source Reference Wallet example and agentic flows
-  - unit, component, integration, and end-to-end test evidence appropriate to the current repository
-  - security and privacy review focused on prompt/context handling, injection resistance, data minimization, approval integrity, and fail-closed behavior
-  - release notes that distinguish delivered code, existing reused code, assumptions, and known limitations
+- **Estimated Delivery:** After the approved wallet proposal's Milestone 4 acceptance, targeted within one month of each supported improvement becoming available
+- **Focus:** Document and, where interfaces are stable and tested, extend the agentic reference flows to future known wallet improvements.
+- **Dependencies and fallback:** Depends on the approved wallet work delivering and documenting the relevant traffic-fee payment, WalletConnect, Token Standard v2, or multi-hosting-party surfaces. Unsupported or moving features remain documented integration points rather than promised implementations; affected work is deferred or replanned.
+- **Deliverables / Value Metrics and Acceptance Criteria:**
+  - release-ready open-source agentic reference implementation with setup, source paths, tests, limitations, and security/privacy evidence
+  - supported future-improvement flows only where demonstrated against the delivered wallet interfaces
+  - compatibility record identifying wallet versions, dependencies, and fallback behavior
+  - release notes separating delivered agentic code, reused wallet code, assumptions, and unresolved upstream decisions
 
-### Milestone 5: External Adoption Validation
-
-- **Estimated Delivery:** Up to 12 months after Milestone 4 acceptance
-- **Focus:** Validate reuse by independent wallet or dApp teams.
-- **Deliverables / Value Metrics:**
-  - at least 2 qualified independent teams evaluating or integrating the agentic Open Source Reference Wallet patterns in a pilot or production application
-  - adopter confirmation to the Tech & Ops Committee
-  - documented evidence of substantive reuse or adaptation of the delivered action preparation, review, or boundary patterns
-  - letters of intent may support evaluation but do not satisfy this milestone
-  - exact adoption evidence and funding qualification remain open decisions
-
-### Milestone 6: Extended External Adoption
-
-- **Estimated Delivery:** Up to 24 months after Milestone 4 acceptance
-- **Focus:** Reward additional external adoption beyond Milestone 5.
-- **Deliverables / Value Metrics:**
-  - additional qualified teams using the reference UX or adapting its documented integration patterns
-  - evidence of use in pilot or production applications
-  - adopter confirmation and traceability to delivered artifacts
-  - any per-team payments, breadth premiums, and total cap require recalculation and committee approval after the core scope and funding are agreed
+External adoption is an outcome of the aligned reference implementation, not a separately funded milestone in this proposal. Any adoption-linked funding or evidence requirement requires a later committee-approved revision.
 
 ---
 
@@ -308,28 +273,26 @@ Project validation:
 - **Passing test suite.** Relevant repository unit, component, integration, sandbox, and end-to-end tests pass, including new tests for approval, rejection, stale state, errors, and unsupported requests.
 - **Open-source release.** Source, setup instructions, test commands, and limitations are public and reproducible.
 - **Security and privacy.** Context access, prompt handling, data minimization, and fail-closed behavior are documented and reviewed.
-- **External adoption.** Adoption milestones require documented evidence and adopter confirmation; letters of intent alone do not satisfy acceptance.
+- **External reuse.** Any later adoption or reuse claim requires documented evidence; it is not an acceptance gate for these four implementation milestones.
 
 ---
 
 ## Funding
 
-**Base Funding Request:** Open decision; current Concordia-derived amounts must not be copied without recalculation.
+**Base Funding Request:** Open decision; amounts must be recalculated against the narrowed scope before approval.
 
-**Adoption-Linked Additional Funding:** Open decision.
+**Adoption-Linked Additional Funding:** Not requested in this draft; any future request requires a committee-approved revision.
 
-**Total Funding Cap:** Open decision.
+**Total Funding Limit:** Open decision for the four aligned implementation milestones.
 
-The funding request is intentionally left open because this proposal narrows the scope to an agentic Open Source Reference Wallet and its existing integration boundaries, while excluding the Concordia V2/CAP, governance, recurrence, custody, ledger, settlement, and deprecated Validator Wallet work. The committee should approve a recalculated budget against the milestones above before submission or acceptance. Any amount shown in a later revision must identify engineering, security/privacy review, documentation, and external adoption components separately.
+The funding request is intentionally left open because this proposal narrows the scope to an agentic Open Source Reference Wallet and its existing integration boundaries, while excluding governance, recurrence, custody, ledger, settlement, and deprecated Validator Wallet work. The committee should approve a recalculated budget against the milestones above before submission or acceptance. Any amount shown in a later revision must identify engineering, security/privacy review, documentation, and external adoption components separately.
 
 ### Payment Breakdown by Milestone
 
-- Milestone 1 _(Discovery, Design, and Prototypes)_: Open funding decision
-- Milestone 2 _(First Runtime Slices in Both V2 Proving Domains)_: Open funding decision
-- Milestone 3 _(Runtime Reference Flows and Splice SV Governance Integration)_: Open funding decision
-- Milestone 4 _(End-to-End Composition and Release Readiness)_: Open funding decision
-- Milestone 5 _(External Adoption Validation)_: Open funding decision
-- Milestone 6 _(Extended External Adoption)_: Open funding decision
+- Milestone 1 _(Agentic Extension for Splice Portfolio dApp UI)_: Open funding decision
+- Milestone 2 _(Agentic Extension Following Splice Portfolio Replacement)_: Open funding decision
+- Milestone 3 _(Agentic Extension for Splice Wallet Browser Extension)_: Open funding decision
+- Milestone 4 _(Agentic Extension for Future Known Wallet Improvements and Release)_: Open funding decision
 
 ### Timeline Accountability
 
@@ -344,7 +307,7 @@ The proposal is denominated in CC only after the funding decision is approved. I
 - total funding and per-milestone CC amounts
 - exact calendar dates
 - acceptable security/privacy review evidence
-- adoption qualification and payment caps
+- whether any future adoption-linked funding is appropriate
 - maintenance expectations after release
 - whether any companion repository is preferable to changes in the wallet repository
 
@@ -354,7 +317,7 @@ No funding-locking commitment is proposed in this draft. Any retention or post-g
 
 ### Cross-Proposal Adoption Stacking
 
-No cross-proposal adoption rule is proposed in this draft. If adoption-linked funding is retained, the Foundation should define non-stacking treatment with related wallet, dApp SDK, Wallet Gateway, and reference implementation proposals before approval.
+No cross-proposal adoption rule is proposed in this draft. The agentic work follows the approved wallet proposal and must not claim the wallet proposal's deliverables, funding, adoption evidence, or maintainer approvals as its own.
 
 ---
 
