@@ -1,0 +1,52 @@
+@startuml
+!include <C4/C4_Container>
+
+title CAP / Concordia V2 - Proposed Container View
+
+LAYOUT_TOP_DOWN()
+skinparam ranksep 90
+skinparam nodesep 60
+
+System_Boundary(capBoundary, "CAP / Concordia") {
+    together {
+        Container(capDapp, "cap-dapp [V2]", "Reusable web microfrontend", "Provides participant interaction with supported CAP workflows.")
+        Container(capCore, "cap-core [V1]", "Daml", "Provides governance and allocation primitives.")
+    }
+    Container(capGovernance, "cap-governance [V1]", "Daml", "Provides proposals, voting, approval rules, and authorized lifecycle actions.")
+    Container(capAuctions, "cap-auctions [V1]", "Daml", "Provides auction workflows.")
+    Container(capRecurrence, "cap-recurrence [V2]", "Daml", "Provides scheduled recurrence, continuous accrual, and recurring-allocation lifecycles.")
+
+    ' Layout-only edge keeps the V2 primary surface left of the V1 primary surface.
+    capDapp -[hidden]right- capCore
+
+    Rel_R(capDapp, capCore, "Composes")
+    Rel_U(capGovernance, capCore, "Implements")
+    Rel_U(capAuctions, capCore, "Implements")
+    Rel_U(capRecurrence, capCore, "Implements")
+}
+
+System_Boundary(externalBoundary, "External Peer Systems and Integrations") {
+    together {
+        System_Ext(walletApps, "Wallet Provider Apps", "Provide participant applications that embed cap-dapp.")
+        System_Ext(thirdPartyProjects, "Third-Party Projects", "Provide ecosystem applications that leverage cap-core or embed cap-dapp.")
+        System_Ext(splice, "Splice", "Provides SV governance and Validator Wallet capabilities; proposed V2 work is contingent.")
+    }
+}
+
+System_Ext(entityLlm, "LLM", "Provides contextual guidance and draft action text to cap-dapp from permitted smart-contract and workflow context.")
+
+' Layout-only ordering keeps external peers above CAP and the LLM left of cap-dapp.
+walletApps -[hidden]right- thirdPartyProjects
+thirdPartyProjects -[hidden]right- splice
+walletApps -[hidden]down- entityLlm
+entityLlm -[hidden]right- capDapp
+
+Rel_D(walletApps, capDapp, "Embeds")
+Rel_D(thirdPartyProjects, capCore, "Leverages")
+Rel_D(thirdPartyProjects, capDapp, "Embeds")
+Rel_U(capCore, splice, "Leverages Code")
+Rel_D(splice, capCore, "Leverages Primitives")
+Rel_L(capDapp, entityLlm, "Leverages LLM Guidance")
+
+SHOW_LEGEND()
+@enduml

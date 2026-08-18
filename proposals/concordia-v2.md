@@ -140,9 +140,9 @@ Integration with existing Splice and wallet governance work will be coordinated 
 
 **Conceptual sequence: CAP V2 allocation lifecycle**
 
-The allocation lifecycle is illustrated in BPMN at [`assets/01-concordia-recurrent-allocation-and-governance.bpmn`](assets/01-concordia-recurrent-allocation-and-governance.bpmn) and rendered inline below.
+The allocation lifecycle is illustrated in BPMN at [`assets/bpmn/01-concordia-recurrent-allocation-and-governance.bpmn`](assets/bpmn/01-concordia-recurrent-allocation-and-governance.bpmn) and rendered inline below.
 
-![CAP V2 allocation lifecycle](assets/01-concordia-recurrent-allocation-and-governance.svg)
+![CAP V2 allocation lifecycle](assets/img/01-concordia-recurrent-allocation-and-governance.svg)
 
 It is illustrative and does not claim implementation, payment execution, or signing authority. Side controls (amend, suspend, resume, terminate) are part of the authorized governance surface described in `cap-recurrence` and are not depicted in the diagram above. The same conceptual sequence applies to the Employment and Rental illustrations below.
 
@@ -197,48 +197,7 @@ These diagrams show Concordia V2 at ecosystem and container levels. The catalogs
 
 The System Context shows Concordia V2 in its surrounding ecosystem. Readers see end users, external systems, CAP / Concordia V1 and V2, the LLM, and the relationships among them.
 
-```plantuml
-@startuml
-!include <C4/C4_Context>
-
-title CAP / Concordia V2 - Proposed System Context
-
-LAYOUT_TOP_DOWN()
-skinparam ranksep 180
-skinparam nodesep 20
-
-Person(endUsers, "End Users", "Consume governance and allocation workflows")
-
-System_Ext(walletApps, "Wallet Provider Apps", "Provide participant applications that embed or integrate CAP capabilities")
-System_Ext(otherThirdPartyProjects, "Other Third-Party Projects", "Provide ecosystem applications that reuse governance, auction, or recurrence capabilities")
-System_Ext(devFundGrants, "Canton Dev Fund Grants", "Provide funded ecosystem applications including Avro, DecMan, SyncVotes, and Zebec")
-System_Ext(splice, "Splice", "Provides SV governance and Validator Wallet capabilities; proposed V2 work is contingent")
-
-System_Ext(entityLlm, "LLM", "Provides contextual guidance and draft action text from permitted CAP workflow context")
-System(cap, "CAP / Concordia V2", "Provides reusable governance, allocation, recurrence, outcome execution, and participant application capabilities")
-System(v1, "CAP / Concordia V1", "Provides established CAP primitives reused by V2")
-
-' Layout-only edges establish the external peer row and the LLM/V2/V1 order.
-walletApps -[hidden]right- otherThirdPartyProjects
-otherThirdPartyProjects -[hidden]right- devFundGrants
-devFundGrants -[hidden]right- splice
-entityLlm -[hidden]right- cap
-cap -[hidden]right- v1
-
-Rel_D(endUsers, walletApps, "Uses")
-Rel_D(endUsers, otherThirdPartyProjects, "Uses")
-Rel_D(endUsers, devFundGrants, "Uses")
-Rel_D(walletApps, cap, "Embeds")
-Rel_D(otherThirdPartyProjects, cap, "Leverages")
-Rel_D(devFundGrants, cap, "CAP Reuse Opportunity")
-Rel_R(cap, v1, "Extends")
-Rel_U(cap, splice, "Leverages Code")
-Rel_D(splice, cap, "Leverages Primitives")
-Rel_L(cap, entityLlm, "Leverages LLM Guidance")
-
-SHOW_LEGEND()
-@enduml
-```
+![CAP / Concordia V2 proposed system context](assets/img/02-concordia-v2-system-context.svg)
 
 This context view distinguishes CAP's present reuse of external Splice code from the proposed V2 work in Splice's governance process and wallet app that may reuse CAP primitives. The catalog records the authority and maintainer-agreement limits on that contingent work alongside each system's role.
 
@@ -261,60 +220,7 @@ This catalog identifies the systems and records their roles, relationships to Co
 
 The Container Diagram shows the deployable and logical CAP containers within Concordia V2 and its external peer integrations. It focuses on each container's responsibilities and the integration relationships between them.
 
-```plantuml
-@startuml
-!include <C4/C4_Container>
-
-title CAP / Concordia V2 - Proposed Container View
-
-LAYOUT_TOP_DOWN()
-skinparam ranksep 90
-skinparam nodesep 60
-
-System_Boundary(capBoundary, "CAP / Concordia") {
-    together {
-        Container(capDapp, "cap-dapp [V2]", "Reusable web microfrontend", "Provides participant interaction with supported CAP workflows.")
-        Container(capCore, "cap-core [V1]", "Daml", "Provides governance and allocation primitives.")
-    }
-    Container(capGovernance, "cap-governance [V1]", "Daml", "Provides proposals, voting, approval rules, and authorized lifecycle actions.")
-    Container(capAuctions, "cap-auctions [V1]", "Daml", "Provides auction workflows.")
-    Container(capRecurrence, "cap-recurrence [V2]", "Daml", "Provides scheduled recurrence, continuous accrual, and recurring-allocation lifecycles.")
-
-    ' Layout-only edge keeps the V2 primary surface left of the V1 primary surface.
-    capDapp -[hidden]right- capCore
-
-    Rel_R(capDapp, capCore, "Composes")
-    Rel_U(capGovernance, capCore, "Implements")
-    Rel_U(capAuctions, capCore, "Implements")
-    Rel_U(capRecurrence, capCore, "Implements")
-}
-
-System_Boundary(externalBoundary, "External Peer Systems and Integrations") {
-    together {
-        System_Ext(walletApps, "Wallet Provider Apps", "Provide participant applications that embed cap-dapp.")
-        System_Ext(thirdPartyProjects, "Third-Party Projects", "Provide ecosystem applications that leverage cap-core or embed cap-dapp.")
-        System_Ext(splice, "Splice", "Provides SV governance and Validator Wallet capabilities; proposed V2 work is contingent.")
-    }
-}
-
-System_Ext(entityLlm, "LLM", "Provides contextual guidance and draft action text to cap-dapp from permitted smart-contract and workflow context.")
-
-' Layout-only ordering keeps external peers above CAP and the LLM left of cap-dapp.
-walletApps -[hidden]right- thirdPartyProjects
-thirdPartyProjects -[hidden]right- splice
-walletApps -[hidden]down- entityLlm
-entityLlm -[hidden]right- capDapp
-
-Rel_D(walletApps, capDapp, "Embeds")
-Rel_D(thirdPartyProjects, capCore, "Leverages")
-Rel_D(thirdPartyProjects, capDapp, "Embeds")
-Rel_U(capCore, splice, "Leverages Code")
-Rel_D(splice, capCore, "Leverages Primitives")
-Rel_L(capDapp, entityLlm, "Leverages LLM Guidance")
-
-SHOW_LEGEND()
-@enduml
-```
+![CAP / Concordia V2 proposed container view](assets/img/03-concordia-v2-container.svg)
 
 The container view locates reusable governance and allocation primitives in `cap-core`, while `cap-dapp` remains the participant-facing integration surface. It separates CAP's use of Splice code from the contingent governance-process and wallet-app implementation work that may reuse those primitives, subject to maintainer and governance agreement.
 

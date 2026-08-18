@@ -1,0 +1,40 @@
+@startuml
+!include <C4/C4_Context>
+
+title CAP / Concordia V2 - Proposed System Context
+
+LAYOUT_TOP_DOWN()
+skinparam ranksep 180
+skinparam nodesep 20
+
+Person(endUsers, "End Users", "Consume governance and allocation workflows")
+
+System_Ext(walletApps, "Wallet Provider Apps", "Provide participant applications that embed or integrate CAP capabilities")
+System_Ext(otherThirdPartyProjects, "Other Third-Party Projects", "Provide ecosystem applications that reuse governance, auction, or recurrence capabilities")
+System_Ext(devFundGrants, "Canton Dev Fund Grants", "Provide funded ecosystem applications including Avro, DecMan, SyncVotes, and Zebec")
+System_Ext(splice, "Splice", "Provides SV governance and Validator Wallet capabilities; proposed V2 work is contingent")
+
+System_Ext(entityLlm, "LLM", "Provides contextual guidance and draft action text from permitted CAP workflow context")
+System(cap, "CAP / Concordia V2", "Provides reusable governance, allocation, recurrence, outcome execution, and participant application capabilities")
+System(v1, "CAP / Concordia V1", "Provides established CAP primitives reused by V2")
+
+' Layout-only edges establish the external peer row and the LLM/V2/V1 order.
+walletApps -[hidden]right- otherThirdPartyProjects
+otherThirdPartyProjects -[hidden]right- devFundGrants
+devFundGrants -[hidden]right- splice
+entityLlm -[hidden]right- cap
+cap -[hidden]right- v1
+
+Rel_D(endUsers, walletApps, "Uses")
+Rel_D(endUsers, otherThirdPartyProjects, "Uses")
+Rel_D(endUsers, devFundGrants, "Uses")
+Rel_D(walletApps, cap, "Embeds")
+Rel_D(otherThirdPartyProjects, cap, "Leverages")
+Rel_D(devFundGrants, cap, "CAP Reuse Opportunity")
+Rel_R(cap, v1, "Extends")
+Rel_U(cap, splice, "Leverages Code")
+Rel_D(splice, cap, "Leverages Primitives")
+Rel_L(cap, entityLlm, "Leverages LLM Guidance")
+
+SHOW_LEGEND()
+@enduml
