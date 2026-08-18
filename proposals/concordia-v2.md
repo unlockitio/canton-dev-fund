@@ -177,6 +177,8 @@ Concordia V2 intends to improve and extend the existing Splice SV governance pro
 
 **Governance package migration.** If adoption of a new SV governance package is required as part of this proposed Splice work, a migration path will be provided as needed for SV operators and integrators. This remains contingent on Splice maintainer review and applicable governance agreement, and does not assert approval or completion.
 
+**Validator wallet mockup.** An illustrative mockup of the proposed Concordia route in the Splice Validator Wallet is available [here](mockups/concordia-v2-splice-validator-wallet/index.html). It is a UX exploration of the proposed integration and does not represent an implementation commitment.
+
 ### 3. Architectural Alignment
 
 Concordia V2 is application-layer public infrastructure built on Canton and Daml strengths in multi-party authorization, privacy-aware workflows, deterministic contract state, and auditable lifecycle transitions.
