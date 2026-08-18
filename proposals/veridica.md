@@ -266,78 +266,215 @@ Adapters will be versioned, and unresolved interfaces will be documented rather 
 
 ## Milestones and Deliverables
 
-Delivery dates, CC amounts, and exact percentages are **TBD**. Milestones are separated into core implementation and measurable adoption. Core implementation milestones together may receive **less than 50%** of the total requested allocation. Adoption milestones together must receive **strictly more than 50%** of the total requested allocation. The final arithmetic must satisfy those constraints before submission.
+Delivery dates, CC amounts, and exact percentages are **TBD**. Milestones are separated into core implementation and measurable adoption. Core implementation milestones together must receive **less than 50%** of the total requested allocation. The measurable adoption milestone must receive **strictly more than 50%** of the total requested allocation. The final arithmetic must satisfy those constraints before submission.
 
-### Milestone 1: Interfaces and Executable Core
+This proposal commits to approximately one year of delivery across 12 development milestones plus one measurable adoption milestone. Dates, evidence details, and funding are **TBD** and will be finalized before submission.
+
+### Milestone 1: Architecture, Scope, and Threat Model
 
 - **Estimated Delivery:** TBD
 - **Funding:** TBD CC
 - **Allocation Category:** Core implementation
-- **Focus:** Define the bounded architecture and deliver executable contribution, provenance, verification, confidence, disclosure, reuse, and reward-eligibility primitives.
+- **Focus:** Establish bounded architecture, scope boundaries, authorization model, and threat model for the Veridica primitives.
 - **Deliverables / Value Metrics:**
   - public architecture, authorization model, threat model, and scope boundaries
-  - versioned Daml interfaces and an executable reference package
-  - SDK clients, fixtures, and policy adapter examples
-  - automated lifecycle and authorization tests
+  - documented limitations, privacy assumptions, governance boundaries, and security considerations
   - documented interface assessment for CAPS, CAP/Concordia, and Canton Token Standards
 - **Acceptance Criteria:**
-  - a reviewer can run contribution, independent verification, challenge, confidence update, bounded disclosure, permitted derivation, and reward-eligibility flows using published instructions
-  - tests reject unauthorized disclosure, verification, reuse, reward allocation, and invalid lifecycle transitions
-  - provenance remains linked across the demonstrated derivation flow
+  - the architecture identifies contracts, off-ledger components, roles, authorization boundaries, and supported interface versions
+  - the threat model and scope boundaries are reviewable and preserve the stated limitations
   - no compatibility claim is made without a tested interface and identified version
-  - all funded artifacts delivered in this milestone are publicly available under a **TBD** open-source license acceptable to the Foundation
 
-### Milestone 2: Reusable UI and Reference Governance Composition
+### Milestone 2: Versioned Daml Interfaces
 
 - **Estimated Delivery:** TBD
 - **Funding:** TBD CC
 - **Allocation Category:** Core implementation
-- **Focus:** Deliver reusable UI components, reference workflows, and a bounded CAP/Concordia-backed Development Fund governance demonstration.
+- **Focus:** Define the versioned Daml interfaces for contribution, provenance, verification, confidence, disclosure, reuse, and reward eligibility.
 - **Deliverables / Value Metrics:**
-  - independently runnable generic UI and reusable accessible components
-  - governed contribution, verification, controlled reuse, and rewards reference workflows
-  - CAP/Concordia-backed UI demonstrations for a Development Fund proposal vote and milestone-acceptance decision
-  - explicit CIP-0100 authority labeling and effectuation handoff documentation
-  - integration, accessibility, and end-to-end test suites
+  - versioned Daml interfaces for the core records and policies
+  - documented relations for support, contradiction, correction, replacement, enrichment, derivation, and duplication as claims rather than proof
+  - interface documentation and versioning guidance
+- **Acceptance Criteria:**
+  - the interfaces preserve source, method, policy, authorization, and lifecycle state needed by the reference flows
+  - supported versions and compatibility boundaries are documented
+  - reward eligibility remains policy-controlled and separate from token settlement
+
+### Milestone 3: Executable Reference Package
+
+- **Estimated Delivery:** TBD
+- **Funding:** TBD CC
+- **Allocation Category:** Core implementation
+- **Focus:** Deliver an executable reference package demonstrating the versioned interfaces.
+- **Deliverables / Value Metrics:**
+  - executable reference package with published setup and run instructions
+  - contribution, independent verification, challenge, confidence update, bounded disclosure, permitted derivation, and reward-eligibility examples
+  - automated tests for the demonstrated reference flows
+- **Acceptance Criteria:**
+  - a reviewer can build, run, and exercise the documented reference flows
+  - provenance remains linked across the demonstrated derivation flow
+  - tests cover the supported interface versions and reject invalid reference-flow states
+
+### Milestone 4: SDK Clients, Fixtures, and Policy Adapters
+
+- **Estimated Delivery:** TBD
+- **Funding:** TBD CC
+- **Allocation Category:** Core implementation
+- **Focus:** Make the interfaces reusable through SDK clients, fixtures, and policy adapter examples.
+- **Deliverables / Value Metrics:**
+  - SDK clients and fixtures for the reference interfaces
+  - policy adapter examples for matching, aggregation, confidence, disclosure, reuse, and reward eligibility
+  - documented setup findings and interface reuse guidance
+- **Acceptance Criteria:**
+  - a developer can use the published clients and fixtures to exercise the reference package
+  - policy adapters retain the relevant source, method, and version information
+  - examples do not imply unsupported compatibility or automatic truth, quality, or reward guarantees
+
+### Milestone 5: Lifecycle and Authorization Controls
+
+- **Estimated Delivery:** TBD
+- **Funding:** TBD CC
+- **Allocation Category:** Core implementation
+- **Focus:** Implement lifecycle, role separation, and authorization controls for contribution, verification, disclosure, reuse, and rewards.
+- **Deliverables / Value Metrics:**
+  - automated lifecycle and authorization tests
+  - documented contributor, aggregator, verifier, and consumer role boundaries
+  - controls for suspension, removal, credential rotation, and invalid lifecycle transitions
+- **Acceptance Criteria:**
+  - tests reject unauthorized disclosure, verification, reuse, reward allocation, and invalid lifecycle transitions
+  - the verifier is independent of the contributor in the reference flow
+  - the same party cannot be both aggregator and verifier for the same product
+
+### Milestone 6: Provenance and Derivation
+
+- **Estimated Delivery:** TBD
+- **Funding:** TBD CC
+- **Allocation Category:** Core implementation
+- **Focus:** Preserve inspectable provenance and policy-controlled derivation across information products.
+- **Deliverables / Value Metrics:**
+  - provenance and evidence records linked to source observations and contribution identifiers
+  - derivation examples retaining inputs, policies, methods, and evidence
+  - documentation distinguishing provenance from verification and confidence
+- **Acceptance Criteria:**
+  - provenance remains linked through the tested lifecycle and demonstrated derivation flow
+  - derived products identify their inputs, policies, methods, and evidence
+  - claims such as supports or contradicts are not represented as proof by themselves
+
+### Milestone 7: Controlled Disclosure and Reuse
+
+- **Estimated Delivery:** TBD
+- **Funding:** TBD CC
+- **Allocation Category:** Core implementation
+- **Focus:** Implement need-to-know disclosure and separately authorized reuse and derivative-use boundaries.
+- **Deliverables / Value Metrics:**
+  - normal stakeholder visibility and Explicit Contract Disclosure examples
+  - policy-controlled disclosure, reuse, redistribution, and derivation examples
+  - revocation and learned-information limitations documentation
+- **Acceptance Criteria:**
+  - disclosure and reuse are separately authorized and visibly bounded
+  - tests reject unauthorized disclosure, reuse, and derivation
+  - documentation states that revocation cannot erase information already learned
+
+### Milestone 8: Confidence and Reward Eligibility
+
+- **Estimated Delivery:** TBD
+- **Funding:** TBD CC
+- **Allocation Category:** Core implementation
+- **Focus:** Implement policy-based confidence and governed reward-eligibility records without embedding token settlement.
+- **Deliverables / Value Metrics:**
+  - confidence update and aggregation examples with documented methods
+  - reward-eligibility records based on versioned participation and reward policy
+  - documented boundary to Canton Token Standards and settlement
+- **Acceptance Criteria:**
+  - confidence is policy-based and retains its evidence and method
+  - reward eligibility is not an automatic settlement or truth guarantee
+  - the reward flow is separate from token representation and transfer
+
+### Milestone 9: Reusable UI Components
+
+- **Estimated Delivery:** TBD
+- **Funding:** TBD CC
+- **Allocation Category:** Core implementation
+- **Focus:** Deliver generic, independently runnable, and accessible UI components for the Veridica records and policies.
+- **Deliverables / Value Metrics:**
+  - reusable accessible components
+  - UI views for provenance, verification, confidence, disclosure, reuse, and reward state
+  - documented action discovery and authorized submission routes
 - **Acceptance Criteria:**
   - the UI displays source provenance, verification method and outcome, confidence basis, disclosure scope, reuse limits, and reward state from authoritative contracts
   - action discovery does not grant authority and submissions use only documented authorized routes
-  - the Development Fund demonstrations display proposal evidence, votes, thresholds, outcome, and milestone evidence without describing the demonstration as authoritative governance
-  - tests and UI copy state that `DevelopmentFundCoupon` effectuation does not itself move CIP-0100 authority on-ledger
-  - documentation identifies the approvals, CIP/process changes, identities, and implementation work that would be required before authoritative on-ledger governance could be claimed
+  - accessibility expectations and supported UI behavior are documented and tested
 
-### Milestone 3: Independent Technical Adoption
+### Milestone 10: Reference Participant Workflows
+
+- **Estimated Delivery:** TBD
+- **Funding:** TBD CC
+- **Allocation Category:** Core implementation
+- **Focus:** Compose reference contributor, aggregator, verifier, and consumer workflows using the shared primitives.
+- **Deliverables / Value Metrics:**
+  - governed contribution, verification, controlled reuse, and rewards reference workflows
+  - participant workflow guidance and runnable demonstrations
+  - role-party and execution-model terminology guidance
+- **Acceptance Criteria:**
+  - a reviewer can run the documented participant workflows end to end
+  - contributor, aggregator, verifier, and consumer responsibilities remain distinct
+  - the workflows preserve provenance, authorization, confidence, disclosure, reuse, and reward state
+
+### Milestone 11: Development Fund Governance Demonstration
+
+- **Estimated Delivery:** TBD
+- **Funding:** TBD CC
+- **Allocation Category:** Core implementation
+- **Focus:** Demonstrate bounded CAP/Concordia-backed Development Fund governance workflows while preserving the CIP-0100 authority boundary.
+- **Deliverables / Value Metrics:**
+  - CAP/Concordia-backed UI demonstrations for a Development Fund proposal vote and milestone-acceptance decision
+  - explicit CIP-0100 authority labeling and effectuation handoff documentation
+  - proposal evidence, vote, threshold, outcome, and milestone-evidence views
+- **Acceptance Criteria:**
+  - the demonstration displays proposal evidence, votes, thresholds, outcome, and milestone evidence without describing itself as authoritative governance
+  - tests and UI copy state that `DevelopmentFundCoupon` effectuation does not itself move CIP-0100 authority on-ledger
+  - documentation identifies the approvals, CIP/process changes, identities, and implementation work required before authoritative on-ledger governance could be claimed
+
+### Milestone 12: Integration, Accessibility, and End-to-End Evidence
+
+- **Estimated Delivery:** TBD
+- **Funding:** TBD CC
+- **Allocation Category:** Core implementation
+- **Focus:** Validate the integrated reference package, UI, participant workflows, governance demonstration, accessibility, and end-to-end evidence.
+- **Deliverables / Value Metrics:**
+  - integration, accessibility, and end-to-end test suites
+  - reproducible build, test, and run documentation
+  - public evidence package covering supported versions, limitations, privacy, security, and governance boundaries
+  - all funded artifacts delivered in this milestone are publicly available under a **TBD** open-source license acceptable to the Foundation
+- **Acceptance Criteria:**
+  - a developer can clone, build, test, and run the documented reference workflows
+  - supported Daml, SDK, UI, authorization, and integration tests pass
+  - evidence demonstrates the integrated contribution, verification, provenance, confidence, disclosure, reuse, reward, and governance boundaries
+
+### Milestone 13: Independent Technical Adoption and Ecosystem Reuse
 
 - **Estimated Delivery:** TBD
 - **Funding:** TBD CC
 - **Allocation Category:** Measurable adoption
-- **Focus:** Demonstrate that an independent ecosystem team can evaluate and reuse Veridica.
+- **Focus:** Demonstrate independent technical adoption and measurable ecosystem reuse across two materially different workflow domains.
 - **Deliverables / Value Metrics:**
   - at least one qualified independent team completes a reproducible technical evaluation, pilot, or integration using the public artifacts
-  - adopter-provided confirmation and a public or committee-reviewable evidence package
-  - documented setup findings, interface reuse, defects, and resulting improvements
-- **Acceptance Criteria:**
-  - the Tech & Ops Committee receives evidence that the team ran the software and exercised contribution, verification, provenance, and controlled disclosure or reuse
-  - evidence identifies which Veridica interfaces were reused or adapted and the tested versions
-  - an endorsement, letter of intent, meeting, or internal Unlockit use alone does not satisfy the milestone
-  - any confidential evidence route is agreed with the Committee before acceptance and still demonstrates substantive use
-
-### Milestone 4: Measured Ecosystem Reuse
-
-- **Estimated Delivery:** TBD
-- **Funding:** TBD CC
-- **Allocation Category:** Measurable adoption
-- **Focus:** Validate reuse across more than one domain or organization and publish adoption evidence.
-- **Deliverables / Value Metrics:**
   - a **TBD** bounded number of additional qualified independent pilots or production integrations
   - use across at least two materially different workflow domains in total
-  - public adoption report covering reusable interfaces, integration effort, limitations, and maintained versions
+  - adopter-provided confirmation and a public or committee-reviewable evidence package
+  - public adoption report covering reusable interfaces, integration effort, limitations, maintained versions, and observed improvements
   - technical walkthrough and adopter guidance incorporating observed integration needs
 - **Acceptance Criteria:**
-  - each counted adopter supplies evidence of a running pilot or production integration and substantive reuse of identified Veridica interfaces
+  - the Tech & Ops Committee receives evidence that independent teams ran the software and exercised contribution, verification, provenance, and controlled disclosure or reuse
+  - each counted adopter supplies evidence of a running pilot or production integration and substantive reuse of identified Veridica interfaces and tested versions
+  - an endorsement, letter of intent, meeting, prospective adopter, unexecuted agreement, or internal Unlockit use alone does not satisfy the milestone
   - duplicate deployments by the same controlling organization do not count as separate adopters unless the Committee approves a documented reason
-  - prospective adopters, endorsements, and unexecuted agreements do not count
+  - any confidential evidence route is agreed with the Committee before acceptance and still demonstrates substantive use
   - the Committee accepts the bounded adopter count, evidence method, and per-adoption funding arithmetic before final proposal approval
+
+### Scale Forecast: Real-Estate Use Cases
+
+One real-estate contributor may generate hundreds of thousands of price data points in a 10M-person country, and the model could scale to millions of records across markets. These are capacity and adoption forecasts, not delivery guarantees, adoption guarantees, acceptance criteria, or a funding basis unless later bounded and evidenced.
 
 ---
 
@@ -367,10 +504,19 @@ The Tech & Ops Committee will evaluate completion against the milestone-specific
 
 ### Payment Breakdown by Milestone
 
-- Milestone 1 _(Interfaces and Executable Core)_: TBD CC upon committee acceptance
-- Milestone 2 _(Reusable UI and Reference Governance Composition)_: TBD CC upon committee acceptance
-- Milestone 3 _(Independent Technical Adoption)_: TBD CC upon committee acceptance of adoption evidence
-- Milestone 4 _(Measured Ecosystem Reuse)_: TBD CC according to a bounded, committee-approved adoption schedule
+- Milestone 1 _(Architecture, Scope, and Threat Model)_: TBD CC upon committee acceptance
+- Milestone 2 _(Versioned Daml Interfaces)_: TBD CC upon committee acceptance
+- Milestone 3 _(Executable Reference Package)_: TBD CC upon committee acceptance
+- Milestone 4 _(SDK Clients, Fixtures, and Policy Adapters)_: TBD CC upon committee acceptance
+- Milestone 5 _(Lifecycle and Authorization Controls)_: TBD CC upon committee acceptance
+- Milestone 6 _(Provenance and Derivation)_: TBD CC upon committee acceptance
+- Milestone 7 _(Controlled Disclosure and Reuse)_: TBD CC upon committee acceptance
+- Milestone 8 _(Confidence and Reward Eligibility)_: TBD CC upon committee acceptance
+- Milestone 9 _(Reusable UI Components)_: TBD CC upon committee acceptance
+- Milestone 10 _(Reference Participant Workflows)_: TBD CC upon committee acceptance
+- Milestone 11 _(Development Fund Governance Demonstration)_: TBD CC upon committee acceptance
+- Milestone 12 _(Integration, Accessibility, and End-to-End Evidence)_: TBD CC upon committee acceptance
+- Milestone 13 _(Independent Technical Adoption and Ecosystem Reuse)_: TBD CC upon committee acceptance of adoption evidence
 
 No funding arithmetic is final in this draft. Before submission, milestone amounts must sum exactly to the total request, core implementation must remain below 50%, and measurable adoption must remain strictly above 50%. Adoption funding is earned only for accepted evidence and cannot be reclassified as core implementation without an approved proposal change that preserves the strictly-more-than-50% adoption requirement.
 
@@ -380,7 +526,7 @@ The schedule is TBD. If any milestone is expected six months or more in the futu
 
 ### Funding Locking
 
-Unlockit will retain at least 25% of the funding received for non-adoption milestones M1-M2 through the full grant period, and at least 50% of adoption-linked funding received for M3-M4 for one additional year after grant closure. Unlockit may retain more than these minimum amounts. This is a funding-retention commitment, not escrow, third-party custody, or on-ledger locking.
+Unlockit will retain at least 25% of the funding received for core implementation milestones M1-M12 through the full grant period, and at least 50% of adoption-linked funding received for M13 for one additional year after grant closure. Unlockit may retain more than these minimum amounts. This is a funding-retention commitment, not escrow, third-party custody, or on-ledger locking.
 
 For this commitment, the grant period runs from approval/start through final milestone closure; grant closure follows final milestone acceptance.
 
@@ -430,7 +576,7 @@ Open questions before submission:
 - Which CAP/Concordia interfaces should govern decisions or reward allocations, and which remain reference-only?
 - Which confidence methods and verifier independence criteria should the first release support?
 - What disclosure, revocation, retention, and derivative-use semantics can be represented accurately across off-ledger data stores?
-- What bounded adopter count, evidence standard, confidentiality route, and per-adoption amount should Milestones 3 and 4 use?
+- What bounded adopter count, evidence standard, confidentiality route, and per-adoption amount should Milestone 13 use?
 - What Foundation approvals, CIP/process changes, identities, signatures, and canonical submission routes would be required for authoritative on-ledger Development Fund governance?
 - What maintenance period, supported versions, security disclosure process, and succession plan should apply?
 - How should the operator-versus-role separation be reconciled with the new 03a Aggregator and 03b Verifier mutually-exclusive clause, and with the Veridica Platform chassis owning admission, role assignment, suspension, removal, and credential rotation? In particular, the Execution Model may use a distributed M-of-N operator-party arrangement, a single execution party, a DecMan-backed Canton Decentralized Party, or a compatible future model; the 03a Aggregator and 03b Verifier role-party pools are independent of the Execution Model and the same Party cannot be both an aggregator and a verifier for the same product, but the operator/role terminology overlap across Concordia, the Execution Model, and the participant-lifecycle role-party pools still needs an explicit glossary and governance test before submission.
