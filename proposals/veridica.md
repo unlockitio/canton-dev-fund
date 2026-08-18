@@ -451,26 +451,26 @@ This proposal commits to approximately one year of delivery across 12 developmen
   - supported Daml, SDK, UI, authorization, and integration tests pass
   - evidence demonstrates the integrated contribution, verification, provenance, confidence, disclosure, reuse, reward, and governance boundaries
 
-### Milestone 13: Independent Technical Adoption and Ecosystem Reuse
+### Milestone 13: Qualified Adoption and Ecosystem Reuse
 
 - **Estimated Delivery:** TBD
 - **Funding:** TBD CC
 - **Allocation Category:** Measurable adoption
-- **Focus:** Demonstrate independent technical adoption and measurable ecosystem reuse across two materially different workflow domains.
+- **Focus:** Demonstrate qualified adoption and measurable reuse across two materially different workflow domains, including substantive internal Unlockit use as the intended implementation path and, additionally, external independent adoption where available.
 - **Deliverables / Value Metrics:**
-  - at least one qualified independent team completes a reproducible technical evaluation, pilot, or integration using the public artifacts
-  - a **TBD** bounded number of additional qualified independent pilots or production integrations
+  - at least one qualified internal Unlockit use or qualified external independent team completes a reproducible technical evaluation, pilot, or integration using the delivered Veridica artifacts
+  - a **TBD** bounded number of additional qualified internal uses or external independent pilots or production integrations
   - use across at least two materially different workflow domains in total
   - adopter-provided confirmation and a public or committee-reviewable evidence package
   - public adoption report covering reusable interfaces, integration effort, limitations, maintained versions, and observed improvements
   - technical walkthrough and adopter guidance incorporating observed integration needs
 - **Acceptance Criteria:**
-  - the Tech & Ops Committee receives evidence that independent teams ran the software and exercised contribution, verification, provenance, and controlled disclosure or reuse
-  - each counted adopter supplies evidence of a running pilot or production integration and substantive reuse of identified Veridica interfaces and tested versions
-  - an endorsement, letter of intent, meeting, prospective adopter, unexecuted agreement, or internal Unlockit use alone does not satisfy the milestone
-  - duplicate deployments by the same controlling organization do not count as separate adopters unless the Committee approves a documented reason
-  - any confidential evidence route is agreed with the Committee before acceptance and still demonstrates substantive use
-  - the Committee accepts the bounded adopter count, evidence method, and per-adoption funding arithmetic before final proposal approval
+  - the Tech & Ops Committee receives evidence that each counted internal or external adopter ran the software and substantively exercised the delivered Veridica artifacts, including contribution, verification, provenance, and controlled disclosure or reuse as applicable
+  - each counted adoption supplies evidence of a reproducible running pilot or production integration and substantive reuse of identified Veridica interfaces and tested versions
+  - internal Unlockit use counts when it satisfies these evidence requirements; software development alone, an internal demo, endorsement, letter of intent, meeting, prospective adopter, unexecuted agreement, or unexecuted plan does not satisfy the milestone
+  - duplicate deployments by the same controlling organization do not count as separate adoptions unless the Committee approves a documented reason
+  - any confidential evidence route is agreed with the Committee before acceptance and still demonstrates substantive use, contribution, verification, provenance, and controlled disclosure or reuse as applicable
+  - the Committee accepts the bounded adoption count, evidence method, and per-adoption funding arithmetic before final proposal approval
 
 ### Scale Forecast: Real-Estate Use Cases
 
@@ -516,7 +516,7 @@ The Tech & Ops Committee will evaluate completion against the milestone-specific
 - Milestone 10 _(Reference Participant Workflows)_: TBD CC upon committee acceptance
 - Milestone 11 _(Development Fund Governance Demonstration)_: TBD CC upon committee acceptance
 - Milestone 12 _(Integration, Accessibility, and End-to-End Evidence)_: TBD CC upon committee acceptance
-- Milestone 13 _(Independent Technical Adoption and Ecosystem Reuse)_: TBD CC upon committee acceptance of adoption evidence
+- Milestone 13 _(Qualified Adoption and Ecosystem Reuse)_: TBD CC upon committee acceptance of adoption evidence
 
 No funding arithmetic is final in this draft. Before submission, milestone amounts must sum exactly to the total request, core implementation must remain below 50%, and measurable adoption must remain strictly above 50%. Adoption funding is earned only for accepted evidence and cannot be reclassified as core implementation without an approved proposal change that preserves the strictly-more-than-50% adoption requirement.
 
@@ -542,7 +542,7 @@ Subject to Foundation agreement, Unlockit proposes a public technical walkthroug
 
 Canton applications can benefit from a shared layer between raw data and downstream decisions. A provenance record without independent verification may be insufficient; verification without disclosure controls may reveal too much; access without reuse policy may leave downstream rights unclear; and a reward mechanism without governed evidence may reward volume rather than utility.
 
-Veridica addresses these concerns as composable primitives rather than one vertical data marketplace. Its common-good value is measured by independent reuse. For that reason, strictly more than half of requested funding is reserved for measurable adoption rather than delivery alone.
+Veridica addresses these concerns as composable primitives rather than one vertical data marketplace. Its common-good value is measured by qualified, substantively evidenced reuse, including internal implementation use and external reuse where available. For that reason, strictly more than half of requested funding is reserved for measurable adoption rather than delivery alone.
 
 CAPS provides relevant and constructive groundwork for selective access and signed records. Veridica broadens the application model around that work, while CAP/Concordia provides potentially reusable governance and allocation mechanics. Keeping those projects distinct makes their composition reviewable and avoids turning any one interface into an unsupported universal standard.
 
@@ -558,7 +558,7 @@ CAPS provides relevant and constructive groundwork for selective access and sign
 
 **Why demonstrate CAP/Concordia governance.** Proposal and milestone decisions are useful proving workflows for evidence-backed governance UI. The demonstration can test reusable decision and allocation mechanics while accurately preserving current CIP-0100 authority and the distinction between governance and effectuation.
 
-**Why weight funding toward adoption.** Public code publication alone does not demonstrate ecosystem utility. Independent, evidenced reuse tests whether the interfaces are understandable, portable, and valuable outside Unlockit.
+**Why weight funding toward adoption.** Public code publication alone does not demonstrate ecosystem utility. Qualified, evidenced reuse, including external reuse where available, tests whether the interfaces are understandable, portable, and valuable in practice.
 
 ---
 
