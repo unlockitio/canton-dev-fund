@@ -1,17 +1,11 @@
-# Development Fund Proposal: Open Source Reference Wallet Agentic Extension
+## Development Fund Proposal
 
-| Field | Value |
-| :---- | :---- |
-| Author | Unlockit |
-| Org | Unlockit |
-| Status | Draft |
-| Created | 2026-08-18 |
-| Champion | TBD |
-| Primary repository | [Current wallet repository](https://github.com/canton-network/wallet) (implementation context) |
-| Related proposal | [Approved Open Source Reference Wallet proposal](https://github.com/canton-foundation/canton-dev-fund/blob/main/proposals/2026-03-DA-proposal-open-source-reference-wallet.md) |
-| Proposal name | Open Source Reference Wallet Agentic Extension |
+**Author:** Unlockit (luis.marado@unlockit.io)
+**Status:** Draft
+**Created:** 2026-08-19
+**Label:** wallet-apps
+**[Champion](https://github.com/canton-foundation/canton-dev-fund/blob/main/sig-directory.md):** need Champion
 
----
 
 ## Abstract
 
@@ -149,14 +143,13 @@ The agent does not create authority. It can only present actions already availab
 
 #### Architectural Views
 
-The architectural views are maintained as PlantUML sources under [`proposals/assets/`](assets/) and describe the implemented Open Source Reference Wallet integration without implying new wallet infrastructure:
-
-- ![System Context Diagram](assets/open-source-reference-wallet-agentic-system-context.svg) ([PlantUML source](assets/open-source-reference-wallet-agentic-system-context.puml))
-- ![Container Diagram](assets/open-source-reference-wallet-agentic-container.svg) ([PlantUML source](assets/open-source-reference-wallet-agentic-container.puml))
+The architectural views are maintained as PlantUML sources under [`proposals/assets/puml/`](assets/puml/) and describe the implemented Open Source Reference Wallet integration without implying new wallet infrastructure:
 
 ##### System Context
 
 The system context treats the Open Source Reference Wallet as the system being extended. It shows the existing Wallet UI and new Agentic UX UI as parts of that system, while dApp SDK and Wallet Gateway remain external dependencies. The context also shows the external LLM SDK and External LLM Service, Supported dApps, Canton services and ledger, and the end user. The Agentic UX UI receives permitted wallet context, uses the LLM SDK only for explanation and guidance, and sends only explicitly approved actions through the existing Wallet Gateway route. Approval and signing remain an existing human-controlled boundary inside the wallet; neither the LLM nor the Agentic UX UI can approve, sign, or execute.
+
+![System Context Diagram](assets/img/open-source-reference-wallet-agentic-system-context.svg) ([PlantUML source](assets/puml/open-source-reference-wallet-agentic-system-context.puml))
 
 ###### System Context Box Catalog
 
@@ -175,9 +168,11 @@ The system context treats the Open Source Reference Wallet as the system being e
 
 The container view is scoped inside the Open Source Reference Wallet system and contains exactly two containers: the existing **Wallet UI**, shown in gray, and the new/touched **Agentic UX UI**, shown in blue. Agentic explanation, guidance, action preparation, and presentation are encapsulated in Agentic UX UI rather than split into additional containers. The dApp SDK, Wallet Gateway, LLM SDK, External LLM Service, Supported dApps, and Canton services are external systems or libraries shown outside the system boundary. Approval and signing remain an existing human-controlled boundary within the Wallet UI; the LLM and Agentic UX UI cannot approve, sign, or execute.
 
+![Container Diagram](assets/img/open-source-reference-wallet-agentic-container.svg) ([PlantUML source](assets/puml/open-source-reference-wallet-agentic-container.puml))
+
 ###### Container Responsibility Catalog
 
-The catalog uses the same box names as the [Container Diagram](assets/open-source-reference-wallet-agentic-container.puml).
+The catalog uses the same box names as the [Container Diagram](assets/puml/open-source-reference-wallet-agentic-container.puml).
 
 | Box | Responsibility | Dependencies or outputs | Explicit boundary |
 | --- | --- | --- | --- |
@@ -300,20 +295,15 @@ Any delay treatment, acceptance evidence, and return of unearned funds should be
 
 ### Volatility Stipulation
 
-The proposal is denominated in CC only after the funding decision is approved. If delivery or adoption extends beyond the core implementation period, any treatment of material CC volatility must be prospective, transparent, approved through the applicable process, and must not create an automatic top-up or alter an earned milestone.
+The grant is denominated in fixed Canton Coin and Unlockit assumes the risk of ordinary price volatility. The agentic implementation follows the approved wallet proposal's delivery sequence, and the planned timing for each milestone is tied to the corresponding wallet surface becoming available and testable. If Committee-requested scope changes, Wallet Gateway or dApp SDK dependency changes, or upstream maintainer decisions extend the planned implementation timeline, the remaining unearned milestones may be renegotiated to account for material USD/CC price volatility.
 
-### Open Funding Decisions
-
-- total funding and per-milestone CC amounts
-- exact calendar dates
-- acceptable security/privacy review evidence
-- whether any future adoption-linked funding is appropriate
-- maintenance expectations after release
-- whether any companion repository is preferable to changes in the wallet repository
+Any treatment of material CC volatility must be prospective, transparent, and approved through the applicable Foundation or Tech & Ops Committee process. It does not create an automatic top-up, alter an earned milestone, or convert external adoption into a funding entitlement. Adoption-linked funding, if later proposed, requires a committee-approved revision with its own terms and evidence requirements.
 
 ### Funding Locking
 
-No funding-locking commitment is proposed in this draft. Any retention or post-grant funding condition is an open committee decision and must not be inferred from this proposal.
+Unlockit will retain at least 25% of the funding received for non-adoption milestones M1-M4 through the full grant period, and at least 50% of adoption-linked funding received for M5/M6 for one additional year after grant closure. Unlockit may retain more than these minimum amounts. This is a funding-retention commitment, not escrow, third-party custody, or on-ledger locking.
+
+For this commitment, the grant period runs from approval/start through final milestone closure; grant closure follows final milestone acceptance.
 
 ### Cross-Proposal Adoption Stacking
 
