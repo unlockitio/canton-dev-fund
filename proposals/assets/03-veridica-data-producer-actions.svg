@@ -1,59 +1,35 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="760" viewBox="0 0 1800 760" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" width="1720" height="820" viewBox="0 0 1720 820" role="img" aria-labelledby="title desc">
   <title id="title">03 Veridica Data Producer Actions</title>
-  <desc id="desc">One producer-originated workflow with distinct Contributor, Aggregator, and independent Verifier lanes. It covers contribution validation, eligible aggregation inputs, aggregate verification, corrections, publication, and mutual eligibility exclusion without a platform or participant lifecycle actor. Governance interruption paths are detailed in the canonical BPMN source.</desc>
+  <desc id="desc">Happy-path choreography across Contributor, Aggregator, and independent Verifier lanes.</desc>
   <defs>
-    <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#344054"/></marker>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#334155"/></marker>
     <style>
-      text{font-family:Arial,sans-serif;fill:#101828} .title{font-size:24px;font-weight:700}.lane-title{font-size:18px;font-weight:700}.task{fill:#fff;stroke:#344054;stroke-width:2;rx:8}.event{fill:#fff;stroke:#344054;stroke-width:3}.gateway{fill:#fff;stroke:#344054;stroke-width:2}.flow{fill:none;stroke:#344054;stroke-width:2;marker-end:url(#arrow)}.handoff{fill:none;stroke:#175cd3;stroke-width:2;stroke-dasharray:7 5;marker-end:url(#arrow)}.label{font-size:13px}.small{font-size:12px}.note{fill:#fffaeb;stroke:#dc6803;stroke-width:1.5}.lane-a{fill:#f9fafb;stroke:#98a2b3}.lane-b{fill:#f2f4f7;stroke:#98a2b3}
+      .lane{fill:#f8fafc;stroke:#64748b;stroke-width:1.5}.lane-label{font:700 18px system-ui,sans-serif;fill:#0f172a}.task{fill:#fff;stroke:#2563eb;stroke-width:2;rx:8}.task-text{font:600 14px system-ui,sans-serif;fill:#0f172a;text-anchor:middle}.flow{fill:none;stroke:#334155;stroke-width:2;marker-end:url(#arrow)}.event{fill:#fff;stroke:#0f766e;stroke-width:3}.event-end{fill:#fff;stroke:#0f766e;stroke-width:5}.note{fill:#fffbea;stroke:#a16207;stroke-width:1.5}.note-text{font:12px system-ui,sans-serif;fill:#422006}.assoc{fill:none;stroke:#a16207;stroke-width:1.5;stroke-dasharray:5 4}.handoff{font:11px system-ui,sans-serif;fill:#475569}.heading{font:700 24px system-ui,sans-serif;fill:#0f172a}.subtitle{font:14px system-ui,sans-serif;fill:#475569}
     </style>
   </defs>
-  <text x="30" y="35" class="title">03 Veridica Data Producer Actions</text>
-  <text x="30" y="58" class="small">Authorized producers start their own role paths. External authorization and governance context are inputs, not actor lanes.</text>
+  <text class="heading" x="20" y="30">03 Veridica Data Producer Actions</text>
+  <text class="subtitle" x="20" y="52">Focused happy path with one meaningful task per lane at each handoff</text>
 
-  <rect x="25" y="80" width="1750" height="205" class="lane-a"/><rect x="25" y="285" width="1750" height="215" class="lane-b"/><rect x="25" y="500" width="1750" height="230" class="lane-a"/>
-  <text x="42" y="108" class="lane-title">Contributor</text><text x="42" y="313" class="lane-title">Aggregator</text><text x="42" y="528" class="lane-title">Verifier</text>
+  <rect class="lane" x="20" y="70" width="1680" height="210"/><rect class="lane" x="20" y="280" width="1680" height="260"/><rect class="lane" x="20" y="540" width="1680" height="250"/>
+  <text class="lane-label" x="34" y="98">Contributor</text><text class="lane-label" x="34" y="308">Aggregator</text><text class="lane-label" x="34" y="568">Verifier</text>
 
-  <circle cx="120" cy="165" r="18" class="event"/><text x="88" y="137" class="small">Authorized</text>
-  <rect x="170" y="130" width="165" height="70" class="task"/><text x="188" y="157" class="label">Select standard version</text><text x="185" y="176" class="label">and Observation Key policy</text>
-  <rect x="380" y="130" width="180" height="70" class="task"/><text x="407" y="157" class="label">Submit contribution,</text><text x="397" y="176" class="label">provenance, and evidence</text>
-  <polygon points="625,140 650,165 625,190 600,165" class="gateway"/><text x="585" y="215" class="small">Wait for Verifier action</text>
-  <rect x="710" y="112" width="165" height="58" class="task"/><text x="733" y="137" class="label">Respond using the</text><text x="724" y="155" class="label">submission contract version</text>
-  <circle cx="950" cy="165" r="18" class="event"/><circle cx="950" cy="165" r="14" fill="none" stroke="#344054" stroke-width="2"/><text x="895" y="137" class="small">Validation complete</text>
-  <circle cx="1115" cy="165" r="18" class="event"/><text x="1073" y="137" class="small">Input request</text>
-  <rect x="1170" y="130" width="180" height="70" class="task"/><text x="1192" y="157" class="label">Prepare eligible input</text><text x="1210" y="176" class="label">data and evidence</text>
-  <circle cx="1415" cy="165" r="18" class="event"/><circle cx="1415" cy="165" r="14" fill="none" stroke="#344054" stroke-width="2"/><text x="1374" y="137" class="small">Input ready</text>
-  <path d="M138 165H170M335 165H380M560 165H600M650 165H710M875 165H932M1133 165H1170M1350 165H1397" class="flow"/>
-  <path d="M792 170V242H625V190" class="flow"/><text x="652" y="238" class="small">Evidence_Resubmitted</text>
+  <circle class="event" cx="115" cy="165" r="18"/><text class="handoff" x="72" y="204">Authorized</text>
+  <rect class="task" x="175" y="125" width="175" height="80"/><text class="task-text" x="262" y="158"><tspan x="262">Submit contribution</tspan><tspan x="262" dy="19">package</tspan></text>
+  <rect class="task" x="420" y="595" width="185" height="80"/><text class="task-text" x="512" y="628"><tspan x="512">Validate and attest</tspan><tspan x="512" dy="19">contribution</tspan></text>
+  <rect class="task" x="665" y="335" width="185" height="80"/><text class="task-text" x="757" y="368"><tspan x="757">Prepare aggregation</tspan><tspan x="757" dy="19">round</tspan></text>
+  <rect class="task" x="910" y="125" width="175" height="80"/><text class="task-text" x="997" y="158"><tspan x="997">Provide eligible</tspan><tspan x="997" dy="19">input</tspan></text>
+  <rect class="task" x="1150" y="335" width="185" height="80"/><text class="task-text" x="1242" y="368"><tspan x="1242">Build traceable</tspan><tspan x="1242" dy="19">aggregate</tspan></text>
+  <rect class="task" x="1390" y="595" width="185" height="80"/><text class="task-text" x="1482" y="628"><tspan x="1482">Independently review</tspan><tspan x="1482" dy="19">aggregate</tspan></text>
+  <rect class="task" x="1575" y="335" width="105" height="80"/><text class="task-text" x="1627" y="359"><tspan x="1627">Publish</tspan><tspan x="1627" dy="18">reviewed</tspan><tspan x="1627" dy="18">aggregate</tspan></text>
+  <circle class="event-end" cx="1680" cy="305" r="18"/>
 
-  <circle cx="120" cy="380" r="18" class="event"/><text x="88" y="352" class="small">Authorized</text>
-  <rect x="170" y="345" width="155" height="70" class="task"/><text x="189" y="372" class="label">Publish privacy-safe</text><text x="192" y="391" class="label">availability record</text>
-  <rect x="365" y="345" width="175" height="70" class="task"/><text x="385" y="372" class="label">Apply named versioned</text><text x="380" y="391" class="label">exact or semantic policy</text>
-  <rect x="580" y="345" width="160" height="70" class="task"/><text x="602" y="372" class="label">Manual review or</text><text x="618" y="391" class="label">keep separate</text>
-  <rect x="780" y="345" width="170" height="70" class="task"/><text x="800" y="372" class="label">Invite eligible</text><text x="794" y="391" class="label">independent Verifier</text>
-  <rect x="990" y="335" width="170" height="90" class="task"/><text x="1010" y="360" class="label">Select eligible inputs;</text><text x="1008" y="379" class="label">normalize; handle outliers,</text><text x="1010" y="398" class="label">missing data, recency,</text><text x="1021" y="417" class="label">and independence</text>
-  <rect x="1200" y="345" width="175" height="70" class="task"/><text x="1219" y="372" class="label">Calculate confidence</text><text x="1228" y="391" class="label">and traceability</text>
-  <polygon points="1440,355 1465,380 1440,405 1415,380" class="gateway"/><text x="1399" y="430" class="small">Verifier response</text>
-  <rect x="1515" y="345" width="165" height="70" class="task"/><text x="1532" y="372" class="label">Publish aggregate under</text><text x="1528" y="391" class="label">governed access controls</text>
-  <circle cx="1720" cy="380" r="18" class="event"/><circle cx="1720" cy="380" r="14" fill="none" stroke="#344054" stroke-width="2"/>
-  <path d="M138 380H170M325 380H365M540 380H580M740 380H780M950 380H990M1160 380H1200M1375 380H1415M1465 380H1515M1680 380H1702" class="flow"/>
-  <path d="M1440 405V465H1288V415" class="flow"/><text x="1305" y="459" class="small">Correction: revise inputs or method</text>
+  <path class="flow" d="M133 165 H175"/><path class="flow" d="M350 165 H385 V635 H420"/><path class="flow" d="M605 635 H635 V375 H665"/><path class="flow" d="M850 375 H880 V165 H910"/><path class="flow" d="M1085 165 H1120 V375 H1150"/><path class="flow" d="M1335 375 H1360 V635 H1390"/><path class="flow" d="M1575 635 H1560 V375 H1575"/><path class="flow" d="M1627 335 V305 H1662"/>
+  <text class="handoff" x="356" y="150">Contribution + evidence</text><text class="handoff" x="610" y="620">Attestation</text><text class="handoff" x="855" y="360">Input request</text><text class="handoff" x="1090" y="150">Authorized input</text><text class="handoff" x="1340" y="360">Review request</text><text class="handoff" x="1578" y="620">Completed review</text>
 
-  <circle cx="120" cy="610" r="18" class="event"/><text x="88" y="582" class="small">Authorized</text>
-  <polygon points="215,585 240,610 215,635 190,610" class="gateway"/><text x="170" y="658" class="small">Wait for work</text>
-  <rect x="300" y="545" width="195" height="70" class="task"/><text x="317" y="572" class="label">Evaluate contribution evidence</text><text x="316" y="591" class="label">for validation, independence,</text><text x="350" y="608" class="label">and conflicts</text>
-  <polygon points="560,555 585,580 560,605 535,580" class="gateway"/>
-  <rect x="635" y="535" width="190" height="90" class="task"/><text x="654" y="558" class="label">Verifier independently:</text><text x="652" y="577" class="label">request evidence, challenge,</text><text x="649" y="596" class="label">correct with history, or issue</text><text x="663" y="615" class="label">accountable attestation</text>
-  <rect x="300" y="650" width="195" height="65" class="task"/><text x="319" y="676" class="label">Validate aggregate method,</text><text x="312" y="695" class="label">inputs, evidence, confidence</text>
-  <polygon points="560,658 585,683 560,708 535,683" class="gateway"/>
-  <rect x="635" y="645" width="190" height="75" class="task"/><text x="657" y="670" class="label">Attest with limitations</text><text x="649" y="689" class="label">or challenge method/input</text><text x="676" y="708" class="small">Return to Aggregator</text>
-  <path d="M138 610H190M240 610L300 580M495 580H535M585 580H635M240 610L300 683M495 683H535M585 683H635" class="flow"/>
-
-  <path d="M470 200V515H300V580" class="handoff"/><text x="317" y="525" class="small" fill="#175cd3">Contribution_Submit / Evidence_Resubmitted</text>
-  <path d="M635 535V265H625V190" class="handoff"/><text x="642" y="292" class="small" fill="#175cd3">Evidence_Request / Challenge / Correction / Attestation</text>
-  <path d="M950 380V260H1115V183" class="handoff"/><text x="975" y="280" class="small" fill="#175cd3">Input_Requested</text>
-  <path d="M1415 183V300H1075V335" class="handoff"/><text x="1200" y="294" class="small" fill="#175cd3">Input_Ready</text>
-  <path d="M1375 380V480H397V650" class="handoff"/><text x="855" y="474" class="small" fill="#175cd3">Verification_Request</text>
-  <path d="M825 683H1440V405" class="handoff"/><text x="1020" y="672" class="small" fill="#175cd3">Review_Complete or Correction_Received</text>
-
-  <path d="M850 520h850v145h-850z" class="note"/><text x="870" y="548" class="label" font-weight="700">Governed eligibility and semantic constraints</text><text x="870" y="574" class="small">• A Contributor cannot verify its own contribution where independence is required.</text><text x="870" y="596" class="small">• The same party cannot be Aggregator and Verifier for the same product.</text><text x="870" y="618" class="small">• Matching and confidence are named, policy-defined, and versioned.</text><text x="870" y="640" class="small">• Matching, aggregation, and attestation do not guarantee truth, quality, agreement, reward, or governance outcome.</text>
+  <rect class="note" x="165" y="220" width="205" height="48"/><text class="note-text" x="175" y="238"><tspan x="175">Versioned policy, Contribution ID,</tspan><tspan x="175" dy="15">provenance, evidence, contract version.</tspan></text><path class="assoc" d="M262 205 V220"/>
+  <rect class="note" x="385" y="700" width="255" height="72"/><text class="note-text" x="395" y="718"><tspan x="395">Independent validation, conflict checks,</tspan><tspan x="395" dy="15">and accountable attestation. Review</tspan><tspan x="395" dy="15">exceptions stay outside this happy path;</tspan><tspan x="395" dy="15">corrections preserve history and reasons.</tspan></text><path class="assoc" d="M512 675 V700"/>
+  <rect class="note" x="635" y="440" width="245" height="76"/><text class="note-text" x="645" y="458"><tspan x="645">Privacy-safe availability, named versioned</tspan><tspan x="645" dy="15">Matching Policy, independent Verifier, and</tspan><tspan x="645" dy="15">input request. Review ambiguous matches</tspan><tspan x="645" dy="15">or keep separate. Matching proves no truth.</tspan></text><path class="assoc" d="M757 415 V440"/>
+  <rect class="note" x="1110" y="440" width="265" height="76"/><text class="note-text" x="1120" y="458"><tspan x="1120">Versioned inputs, Information Standard, and</tspan><tspan x="1120" dy="15">Aggregation Policy; outliers, missing data,</tspan><tspan x="1120" dy="15">recency, minimum independence, policy-based</tspan><tspan x="1120" dy="15">confidence, and traceability.</tspan></text><path class="assoc" d="M1242 415 V440"/>
+  <rect class="note" x="1355" y="700" width="255" height="72"/><text class="note-text" x="1365" y="718"><tspan x="1365">Validate method, inputs, independence,</tspan><tspan x="1365" dy="15">evidence, and confidence. Record review</tspan><tspan x="1365" dy="15">with limitations. No truth, reward, or</tspan><tspan x="1365" dy="15">governance outcome is guaranteed.</tspan></text><path class="assoc" d="M1482 675 V700"/>
+  <rect class="note" x="1475" y="440" width="185" height="76"/><text class="note-text" x="1485" y="458"><tspan x="1485">Publish after independent review</tspan><tspan x="1485" dy="15">under access, pricing, and</tspan><tspan x="1485" dy="15">licensing controls. No handoff</tspan><tspan x="1485" dy="15">reaches Workflow 05.</tspan></text><path class="assoc" d="M1632 415 V440"/>
 </svg>
