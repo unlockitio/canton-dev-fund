@@ -2,136 +2,150 @@
 <bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_veridica_contributor_actions" targetNamespace="https://unlockit.io/veridica/bpmn" exporter="Veridica deterministic renderer" exporterVersion="4.0">
   <bpmn:message id="Message_ContributorAuthorized" name="Contributor_Authorized" />
   <bpmn:message id="Message_ContributionSubmit" name="Contribution_Submit" />
-  <bpmn:message id="Message_ContributionRespond" name="Contribution_Respond" />
   <bpmn:message id="Message_EvidenceRequest" name="Evidence_Request" />
   <bpmn:message id="Message_Challenge" name="Challenge" />
   <bpmn:message id="Message_Correction" name="Correction" />
   <bpmn:message id="Message_EvidenceResubmitted" name="Evidence_Resubmitted" />
+  <bpmn:message id="Message_VerifierAttestation" name="Verifier_Attestation" />
   <bpmn:message id="Message_GovernanceInterruption" name="Governance suspension or rotation" />
-  <bpmn:collaboration id="Collaboration_02a">
-    <bpmn:participant id="Participant_VeridicaPlatform_02a" name="Veridica Platform" processRef="Process_VeridicaPlatform_02a" />
-    <bpmn:participant id="Participant_Verifier_External_02a" name="Verifier Party (03b, external owner of contribution validation)">
+  <bpmn:collaboration id="Collaboration_03">
+    <bpmn:participant id="Participant_Verifier_03" name="Verifier Party (multiplicity 1..999)" processRef="Process_Verifier_03">
       <bpmn:participantMultiplicity minimum="1" maximum="999" />
     </bpmn:participant>
-    <bpmn:participant id="Participant_Process_ContributorParty_02a" name="Contributor Party (multiplicity 1..999)" processRef="Process_ContributorParty_02a">
+    <bpmn:participant id="Participant_Contributor_03" name="Contributor Party (multiplicity 1..999)" processRef="Process_Contributor_03">
       <bpmn:participantMultiplicity minimum="1" maximum="999" />
     </bpmn:participant>
     <bpmn:participant id="Participant_Chassis_External" name="Participant lifecycle chassis (02, external source of Contributor_Authorized)">
       <bpmn:participantMultiplicity minimum="1" maximum="999" />
     </bpmn:participant>
     <bpmn:messageFlow id="MF_ContributorAuthorized" name="Contributor_Authorized" sourceRef="Participant_Chassis_External" targetRef="CT_Authorized" />
-    <bpmn:messageFlow id="MF_ContributionSubmit" name="Contribution_Submit" sourceRef="CT_ContributionSubmitSent" targetRef="VP_SubmissionReceived" />
-    <bpmn:messageFlow id="MF_ContributionRespond" name="Contribution_Respond" sourceRef="CT_ContributionRespondSent" targetRef="VP_ResponseReceived" />
-    <bpmn:messageFlow id="MF_InitialContribution" name="Contribution_Submit" sourceRef="VP_ProcessSubmission" targetRef="Participant_Verifier_External_02a" />
-    <bpmn:messageFlow id="MF_EvidenceResubmitted" name="Evidence_Resubmitted" sourceRef="VP_ProcessResponse" targetRef="Participant_Verifier_External_02a" />
-    <bpmn:messageFlow id="MF_EvidenceRequest" name="Evidence_Request" sourceRef="Participant_Verifier_External_02a" targetRef="VP_RequestEvidence" />
-    <bpmn:messageFlow id="MF_Challenge" name="Challenge" sourceRef="Participant_Verifier_External_02a" targetRef="VP_Challenge" />
-    <bpmn:messageFlow id="MF_Correction" name="Correction" sourceRef="Participant_Verifier_External_02a" targetRef="VP_RequestCorrection" />
-    <bpmn:messageFlow id="MF_ForwardEvidenceRequest" name="Evidence_Request" sourceRef="VP_EvidenceRequestSent" targetRef="CT_EvidenceRequestReceived" />
-    <bpmn:messageFlow id="MF_ForwardChallenge" name="Challenge" sourceRef="VP_ChallengeSent" targetRef="CT_ChallengeReceived" />
-    <bpmn:messageFlow id="MF_ForwardCorrection" name="Correction" sourceRef="VP_CorrectionSent" targetRef="CT_CorrectionReceived" />
+    <bpmn:messageFlow id="MF_ContributionSubmit" name="Contribution_Submit" sourceRef="CT_ContributionSubmitSent" targetRef="VR_SubmissionReceived" />
+    <bpmn:messageFlow id="MF_EvidenceResubmitted" name="Evidence_Resubmitted" sourceRef="CT_EvidenceResubmittedSent" targetRef="VR_ResponseReceived" />
+    <bpmn:messageFlow id="MF_EvidenceRequest" name="Evidence_Request" sourceRef="VR_EvidenceRequestSent" targetRef="CT_EvidenceRequestReceived" />
+    <bpmn:messageFlow id="MF_Challenge" name="Challenge" sourceRef="VR_ChallengeSent" targetRef="CT_ChallengeReceived" />
+    <bpmn:messageFlow id="MF_Correction" name="Correction" sourceRef="VR_CorrectionSent" targetRef="CT_CorrectionReceived" />
+    <bpmn:messageFlow id="MF_VerifierAttestation" name="Verifier_Attestation" sourceRef="VR_AttestationSent" targetRef="CT_AttestationReceived" />
     <bpmn:messageFlow id="MF_GovernanceInterruption" name="Governance suspension or rotation" sourceRef="Participant_Chassis_External" targetRef="CT_GovernanceInterruption" />
   </bpmn:collaboration>
-  <bpmn:process id="Process_VeridicaPlatform_02a" isExecutable="false">
-    <bpmn:laneSet id="Lanes_VeridicaPlatform_02a">
-      <bpmn:lane id="Lane_VeridicaPlatform_02a" name="Veridica Platform">
-        <bpmn:flowNodeRef>VP_SubmissionReceived</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>VP_ProcessSubmission</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>VP_ResponseDecision</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>VP_RequestEvidence</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>VP_EvidenceRequestSent</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>VP_Challenge</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>VP_ChallengeSent</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>VP_RequestCorrection</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>VP_CorrectionSent</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>VP_ResponseReceived</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>VP_ProcessResponse</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>VP_End</bpmn:flowNodeRef>
+  <bpmn:process id="Process_Verifier_03" isExecutable="false">
+    <bpmn:laneSet id="Lanes_Verifier_03">
+      <bpmn:lane id="Lane_Verifier_03" name="Verifier Party">
+        <bpmn:flowNodeRef>VR_SubmissionReceived</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>VR_EvaluateEvidence</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>VR_DetermineOutcome</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>VR_RequestEvidence</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>VR_EvidenceRequestSent</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>VR_IssueChallenge</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>VR_ChallengeSent</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>VR_IssueCorrection</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>VR_CorrectionSent</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>VR_CompleteAttestation</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>VR_AttestationSent</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>VR_ResponseReceived</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>VR_End</bpmn:flowNodeRef>
       </bpmn:lane>
     </bpmn:laneSet>
-    <bpmn:intermediateCatchEvent id="VP_SubmissionReceived" name="Submission received">
-      <bpmn:outgoing>VP1</bpmn:outgoing>
+    <bpmn:startEvent id="VR_SubmissionReceived" name="Contribution_Submit received">
+      <bpmn:outgoing>VR1</bpmn:outgoing>
       <bpmn:messageEventDefinition messageRef="Message_ContributionSubmit" />
-    </bpmn:intermediateCatchEvent>
-    <bpmn:task id="VP_ProcessSubmission" name="Check contribution envelope, record submission, and route deterministically to assigned Verifier">
-      <bpmn:incoming>VP1</bpmn:incoming>
-      <bpmn:outgoing>VP2</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:task id="VR_EvaluateEvidence" name="Evaluate contribution evidence against validation, independence, and conflict rules">
+      <bpmn:incoming>VR1</bpmn:incoming>
+      <bpmn:incoming>VR12</bpmn:incoming>
+      <bpmn:outgoing>VR2</bpmn:outgoing>
     </bpmn:task>
-    <bpmn:eventBasedGateway id="VP_ResponseDecision" name="Wait for Verifier-issued message">
-      <bpmn:incoming>VP2</bpmn:incoming>
-      <bpmn:outgoing>VP3</bpmn:outgoing>
-      <bpmn:outgoing>VP4</bpmn:outgoing>
-      <bpmn:outgoing>VP5</bpmn:outgoing>
-    </bpmn:eventBasedGateway>
-    <bpmn:receiveTask id="VP_RequestEvidence" name="Receive, record, and forward Verifier Evidence_Request" messageRef="Message_EvidenceRequest">
-      <bpmn:incoming>VP3</bpmn:incoming>
-      <bpmn:outgoing>VP3a</bpmn:outgoing>
-    </bpmn:receiveTask>
-    <bpmn:intermediateThrowEvent id="VP_EvidenceRequestSent" name="Evidence request forwarded">
-      <bpmn:incoming>VP3a</bpmn:incoming>
-      <bpmn:outgoing>VP6</bpmn:outgoing>
+    <bpmn:exclusiveGateway id="VR_DetermineOutcome" name="Determine supported Verifier action" default="VR6">
+      <bpmn:incoming>VR2</bpmn:incoming>
+      <bpmn:outgoing>VR3</bpmn:outgoing>
+      <bpmn:outgoing>VR4</bpmn:outgoing>
+      <bpmn:outgoing>VR5</bpmn:outgoing>
+      <bpmn:outgoing>VR6</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="VR_RequestEvidence" name="Request additional evidence">
+      <bpmn:incoming>VR3</bpmn:incoming>
+      <bpmn:outgoing>VR7</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:intermediateThrowEvent id="VR_EvidenceRequestSent" name="Evidence_Request issued">
+      <bpmn:incoming>VR7</bpmn:incoming>
+      <bpmn:outgoing>VR10a</bpmn:outgoing>
       <bpmn:messageEventDefinition messageRef="Message_EvidenceRequest" />
     </bpmn:intermediateThrowEvent>
-    <bpmn:receiveTask id="VP_Challenge" name="Receive, record, and forward Verifier Challenge" messageRef="Message_Challenge">
-      <bpmn:incoming>VP4</bpmn:incoming>
-      <bpmn:outgoing>VP4a</bpmn:outgoing>
-    </bpmn:receiveTask>
-    <bpmn:intermediateThrowEvent id="VP_ChallengeSent" name="Challenge forwarded">
-      <bpmn:incoming>VP4a</bpmn:incoming>
-      <bpmn:outgoing>VP_R1</bpmn:outgoing>
+    <bpmn:task id="VR_IssueChallenge" name="Issue challenge with reasons">
+      <bpmn:incoming>VR4</bpmn:incoming>
+      <bpmn:outgoing>VR8</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:intermediateThrowEvent id="VR_ChallengeSent" name="Challenge issued">
+      <bpmn:incoming>VR8</bpmn:incoming>
+      <bpmn:outgoing>VR10b</bpmn:outgoing>
       <bpmn:messageEventDefinition messageRef="Message_Challenge" />
     </bpmn:intermediateThrowEvent>
-    <bpmn:receiveTask id="VP_RequestCorrection" name="Receive, record, and forward Verifier Correction" messageRef="Message_Correction">
-      <bpmn:incoming>VP5</bpmn:incoming>
-      <bpmn:outgoing>VP5a</bpmn:outgoing>
-    </bpmn:receiveTask>
-    <bpmn:intermediateThrowEvent id="VP_CorrectionSent" name="Correction forwarded">
-      <bpmn:incoming>VP5a</bpmn:incoming>
-      <bpmn:outgoing>VP_R2</bpmn:outgoing>
+    <bpmn:task id="VR_IssueCorrection" name="Issue correction preserving prior version and reasons">
+      <bpmn:incoming>VR5</bpmn:incoming>
+      <bpmn:outgoing>VR9</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:intermediateThrowEvent id="VR_CorrectionSent" name="Correction issued">
+      <bpmn:incoming>VR9</bpmn:incoming>
+      <bpmn:outgoing>VR10c</bpmn:outgoing>
       <bpmn:messageEventDefinition messageRef="Message_Correction" />
     </bpmn:intermediateThrowEvent>
-    <bpmn:intermediateCatchEvent id="VP_ResponseReceived" name="Contributor response received">
-      <bpmn:incoming>VP6</bpmn:incoming>
-      <bpmn:incoming>VP_R1</bpmn:incoming>
-      <bpmn:incoming>VP_R2</bpmn:incoming>
-      <bpmn:outgoing>VP7</bpmn:outgoing>
-      <bpmn:messageEventDefinition messageRef="Message_ContributionRespond" />
-    </bpmn:intermediateCatchEvent>
-    <bpmn:task id="VP_ProcessResponse" name="Record Contributor response and route deterministically to assigned Verifier">
-      <bpmn:incoming>VP7</bpmn:incoming>
-      <bpmn:outgoing>VP8</bpmn:outgoing>
+    <bpmn:task id="VR_CompleteAttestation" name="Complete validation and record accountable attestation">
+      <bpmn:incoming>VR6</bpmn:incoming>
+      <bpmn:outgoing>VR13</bpmn:outgoing>
     </bpmn:task>
-    <bpmn:endEvent id="VP_End" name="Contributor response routed to Verifier">
-      <bpmn:incoming>VP8</bpmn:incoming>
+    <bpmn:intermediateThrowEvent id="VR_AttestationSent" name="Verifier_Attestation issued">
+      <bpmn:incoming>VR13</bpmn:incoming>
+      <bpmn:outgoing>VR14</bpmn:outgoing>
+      <bpmn:messageEventDefinition messageRef="Message_VerifierAttestation" />
+    </bpmn:intermediateThrowEvent>
+    <bpmn:intermediateCatchEvent id="VR_ResponseReceived" name="Evidence_Resubmitted received">
+      <bpmn:incoming>VR10a</bpmn:incoming>
+      <bpmn:incoming>VR10b</bpmn:incoming>
+      <bpmn:incoming>VR10c</bpmn:incoming>
+      <bpmn:outgoing>VR12</bpmn:outgoing>
+      <bpmn:messageEventDefinition messageRef="Message_EvidenceResubmitted" />
+    </bpmn:intermediateCatchEvent>
+    <bpmn:endEvent id="VR_End" name="Contribution validation attested">
+      <bpmn:incoming>VR14</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:sequenceFlow id="VP1" sourceRef="VP_SubmissionReceived" targetRef="VP_ProcessSubmission" />
-    <bpmn:sequenceFlow id="VP2" sourceRef="VP_ProcessSubmission" targetRef="VP_ResponseDecision" />
-    <bpmn:sequenceFlow id="VP3" name="Verifier issued Evidence_Request" sourceRef="VP_ResponseDecision" targetRef="VP_RequestEvidence" />
-    <bpmn:sequenceFlow id="VP3a" sourceRef="VP_RequestEvidence" targetRef="VP_EvidenceRequestSent" />
-    <bpmn:sequenceFlow id="VP4" name="Verifier issued Challenge" sourceRef="VP_ResponseDecision" targetRef="VP_Challenge" />
-    <bpmn:sequenceFlow id="VP4a" sourceRef="VP_Challenge" targetRef="VP_ChallengeSent" />
-    <bpmn:sequenceFlow id="VP5" name="Verifier issued Correction" sourceRef="VP_ResponseDecision" targetRef="VP_RequestCorrection" />
-    <bpmn:sequenceFlow id="VP5a" sourceRef="VP_RequestCorrection" targetRef="VP_CorrectionSent" />
-    <bpmn:sequenceFlow id="VP6" sourceRef="VP_EvidenceRequestSent" targetRef="VP_ResponseReceived" />
-    <bpmn:sequenceFlow id="VP7" sourceRef="VP_ResponseReceived" targetRef="VP_ProcessResponse" />
-    <bpmn:sequenceFlow id="VP8" sourceRef="VP_ProcessResponse" targetRef="VP_End" />
-    <bpmn:sequenceFlow id="VP_R1" sourceRef="VP_ChallengeSent" targetRef="VP_ResponseReceived" />
-    <bpmn:sequenceFlow id="VP_R2" sourceRef="VP_CorrectionSent" targetRef="VP_ResponseReceived" />
+    <bpmn:sequenceFlow id="VR1" sourceRef="VR_SubmissionReceived" targetRef="VR_EvaluateEvidence" />
+    <bpmn:sequenceFlow id="VR2" sourceRef="VR_EvaluateEvidence" targetRef="VR_DetermineOutcome" />
+    <bpmn:sequenceFlow id="VR3" name="Additional evidence required" sourceRef="VR_DetermineOutcome" targetRef="VR_RequestEvidence">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">additional evidence required</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="VR4" name="Challenge required" sourceRef="VR_DetermineOutcome" targetRef="VR_IssueChallenge">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">challenge required</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="VR5" name="Correction required" sourceRef="VR_DetermineOutcome" targetRef="VR_IssueCorrection">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">correction required</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="VR6" name="Validation complete" sourceRef="VR_DetermineOutcome" targetRef="VR_CompleteAttestation" />
+    <bpmn:sequenceFlow id="VR7" sourceRef="VR_RequestEvidence" targetRef="VR_EvidenceRequestSent" />
+    <bpmn:sequenceFlow id="VR8" sourceRef="VR_IssueChallenge" targetRef="VR_ChallengeSent" />
+    <bpmn:sequenceFlow id="VR9" sourceRef="VR_IssueCorrection" targetRef="VR_CorrectionSent" />
+    <bpmn:sequenceFlow id="VR10a" sourceRef="VR_EvidenceRequestSent" targetRef="VR_ResponseReceived" />
+    <bpmn:sequenceFlow id="VR10b" sourceRef="VR_ChallengeSent" targetRef="VR_ResponseReceived" />
+    <bpmn:sequenceFlow id="VR10c" sourceRef="VR_CorrectionSent" targetRef="VR_ResponseReceived" />
+    <bpmn:sequenceFlow id="VR12" sourceRef="VR_ResponseReceived" targetRef="VR_EvaluateEvidence" />
+    <bpmn:sequenceFlow id="VR13" sourceRef="VR_CompleteAttestation" targetRef="VR_AttestationSent" />
+    <bpmn:sequenceFlow id="VR14" sourceRef="VR_AttestationSent" targetRef="VR_End" />
   </bpmn:process>
-  <bpmn:process id="Process_ContributorParty_02a" isExecutable="false">
-    <bpmn:laneSet id="Lanes_ContributorParty_02a">
-      <bpmn:lane id="Lane_ContributorParty_02a" name="Contributor Party">
+  <bpmn:process id="Process_Contributor_03" isExecutable="false">
+    <bpmn:laneSet id="Lanes_Contributor_03">
+      <bpmn:lane id="Lane_Contributor_03" name="Contributor Party">
         <bpmn:flowNodeRef>CT_Authorized</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>CT_SelectPolicy</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>CT_Submit</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>CT_ContributionSubmitSent</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>CT_JoinWait</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>CT_WaitForResponse</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>CT_EvidenceRequestReceived</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>CT_ChallengeReceived</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>CT_CorrectionReceived</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>CT_AttestationReceived</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>CT_Respond</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>CT_ContributionRespondSent</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>CT_EvidenceResubmittedSent</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>CT_GovernanceInterruption</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>CT_ApplyInterruption</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>CT_Interrupted</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>CT_End</bpmn:flowNodeRef>
       </bpmn:lane>
@@ -153,15 +167,21 @@
       <bpmn:outgoing>CT4</bpmn:outgoing>
       <bpmn:messageEventDefinition messageRef="Message_ContributionSubmit" />
     </bpmn:intermediateThrowEvent>
-    <bpmn:eventBasedGateway id="CT_WaitForResponse" name="Wait for Evidence_Request, Challenge, or Correction">
+    <bpmn:exclusiveGateway id="CT_JoinWait">
       <bpmn:incoming>CT4</bpmn:incoming>
+      <bpmn:incoming>CT10</bpmn:incoming>
+      <bpmn:outgoing>CT4a</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:eventBasedGateway id="CT_WaitForResponse" name="Wait for Verifier action or attestation">
+      <bpmn:incoming>CT4a</bpmn:incoming>
       <bpmn:outgoing>CT5</bpmn:outgoing>
       <bpmn:outgoing>CT6</bpmn:outgoing>
       <bpmn:outgoing>CT7</bpmn:outgoing>
+      <bpmn:outgoing>CT11</bpmn:outgoing>
     </bpmn:eventBasedGateway>
     <bpmn:intermediateCatchEvent id="CT_EvidenceRequestReceived" name="Evidence_Request received">
       <bpmn:incoming>CT5</bpmn:incoming>
-      <bpmn:outgoing>CT8</bpmn:outgoing>
+      <bpmn:outgoing>CT8a</bpmn:outgoing>
       <bpmn:messageEventDefinition messageRef="Message_EvidenceRequest" />
     </bpmn:intermediateCatchEvent>
     <bpmn:intermediateCatchEvent id="CT_ChallengeReceived" name="Challenge received">
@@ -174,16 +194,21 @@
       <bpmn:outgoing>CT8c</bpmn:outgoing>
       <bpmn:messageEventDefinition messageRef="Message_Correction" />
     </bpmn:intermediateCatchEvent>
-    <bpmn:task id="CT_Respond" name="Respond to Verifier evidence request, challenge, or correction (handles both initial and correction responses via contract version)">
-      <bpmn:incoming>CT8</bpmn:incoming>
+    <bpmn:intermediateCatchEvent id="CT_AttestationReceived" name="Verifier_Attestation received">
+      <bpmn:incoming>CT11</bpmn:incoming>
+      <bpmn:outgoing>CT12</bpmn:outgoing>
+      <bpmn:messageEventDefinition messageRef="Message_VerifierAttestation" />
+    </bpmn:intermediateCatchEvent>
+    <bpmn:task id="CT_Respond" name="Respond with evidence or correction using the contribution contract version">
+      <bpmn:incoming>CT8a</bpmn:incoming>
       <bpmn:incoming>CT8b</bpmn:incoming>
       <bpmn:incoming>CT8c</bpmn:incoming>
       <bpmn:outgoing>CT9</bpmn:outgoing>
     </bpmn:task>
-    <bpmn:intermediateThrowEvent id="CT_ContributionRespondSent" name="Contribution_Respond sent">
+    <bpmn:intermediateThrowEvent id="CT_EvidenceResubmittedSent" name="Evidence_Resubmitted sent">
       <bpmn:incoming>CT9</bpmn:incoming>
       <bpmn:outgoing>CT10</bpmn:outgoing>
-      <bpmn:messageEventDefinition messageRef="Message_ContributionRespond" />
+      <bpmn:messageEventDefinition messageRef="Message_EvidenceResubmitted" />
     </bpmn:intermediateThrowEvent>
     <bpmn:boundaryEvent id="CT_GovernanceInterruption" name="Governance suspension or rotation arriving mid-submission" attachedToRef="CT_Submit">
       <bpmn:outgoing>CT_BI1</bpmn:outgoing>
@@ -196,370 +221,101 @@
     <bpmn:endEvent id="CT_Interrupted" name="Contributor suspended or rotated by governance">
       <bpmn:incoming>CT_BI2</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:endEvent id="CT_End" name="Contribution submission complete">
-      <bpmn:incoming>CT10</bpmn:incoming>
+    <bpmn:endEvent id="CT_End" name="Contribution validation complete">
+      <bpmn:incoming>CT12</bpmn:incoming>
     </bpmn:endEvent>
     <bpmn:sequenceFlow id="CT1" sourceRef="CT_Authorized" targetRef="CT_SelectPolicy" />
     <bpmn:sequenceFlow id="CT2" sourceRef="CT_SelectPolicy" targetRef="CT_Submit" />
     <bpmn:sequenceFlow id="CT3" sourceRef="CT_Submit" targetRef="CT_ContributionSubmitSent" />
-    <bpmn:sequenceFlow id="CT4" sourceRef="CT_ContributionSubmitSent" targetRef="CT_WaitForResponse" />
+    <bpmn:sequenceFlow id="CT4" sourceRef="CT_ContributionSubmitSent" targetRef="CT_JoinWait" />
+    <bpmn:sequenceFlow id="CT4a" sourceRef="CT_JoinWait" targetRef="CT_WaitForResponse" />
     <bpmn:sequenceFlow id="CT5" sourceRef="CT_WaitForResponse" targetRef="CT_EvidenceRequestReceived" />
     <bpmn:sequenceFlow id="CT6" sourceRef="CT_WaitForResponse" targetRef="CT_ChallengeReceived" />
     <bpmn:sequenceFlow id="CT7" sourceRef="CT_WaitForResponse" targetRef="CT_CorrectionReceived" />
-    <bpmn:sequenceFlow id="CT8" sourceRef="CT_EvidenceRequestReceived" targetRef="CT_Respond" />
+    <bpmn:sequenceFlow id="CT8a" sourceRef="CT_EvidenceRequestReceived" targetRef="CT_Respond" />
     <bpmn:sequenceFlow id="CT8b" sourceRef="CT_ChallengeReceived" targetRef="CT_Respond" />
     <bpmn:sequenceFlow id="CT8c" sourceRef="CT_CorrectionReceived" targetRef="CT_Respond" />
-    <bpmn:sequenceFlow id="CT9" sourceRef="CT_Respond" targetRef="CT_ContributionRespondSent" />
-    <bpmn:sequenceFlow id="CT10" sourceRef="CT_ContributionRespondSent" targetRef="CT_End" />
+    <bpmn:sequenceFlow id="CT9" sourceRef="CT_Respond" targetRef="CT_EvidenceResubmittedSent" />
+    <bpmn:sequenceFlow id="CT10" sourceRef="CT_EvidenceResubmittedSent" targetRef="CT_JoinWait" />
+    <bpmn:sequenceFlow id="CT11" sourceRef="CT_WaitForResponse" targetRef="CT_AttestationReceived" />
+    <bpmn:sequenceFlow id="CT12" sourceRef="CT_AttestationReceived" targetRef="CT_End" />
     <bpmn:sequenceFlow id="CT_BI1" sourceRef="CT_GovernanceInterruption" targetRef="CT_ApplyInterruption" />
     <bpmn:sequenceFlow id="CT_BI2" sourceRef="CT_ApplyInterruption" targetRef="CT_Interrupted" />
   </bpmn:process>
-  <bpmndi:BPMNDiagram id="Diagram_02a">
-    <bpmndi:BPMNPlane id="Plane_02a" bpmnElement="Collaboration_02a">
-      <bpmndi:BPMNShape id="DI_Chassis_External" bpmnElement="Participant_Chassis_External" isHorizontal="true">
-        <dc:Bounds x="20" y="20" width="1540" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="DI_Verifier_External_02a" bpmnElement="Participant_Verifier_External_02a" isHorizontal="true">
-        <dc:Bounds x="20" y="1020" width="1540" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="DI_VeridicaPlatform_02a" bpmnElement="Participant_VeridicaPlatform_02a" isHorizontal="true">
-        <dc:Bounds x="20" y="120" width="1540" height="440" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="DI_VP_SubmissionReceived" bpmnElement="VP_SubmissionReceived">
-        <dc:Bounds x="120" y="260" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="80" y="296" width="116" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="DI_VP_ProcessSubmission" bpmnElement="VP_ProcessSubmission">
-        <dc:Bounds x="220" y="250" width="180" height="56" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="DI_VP_ResponseDecision" bpmnElement="VP_ResponseDecision" isMarkerVisible="true">
-        <dc:Bounds x="460" y="250" width="56" height="56" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="440" y="216" width="96" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="DI_VP_RequestEvidence" bpmnElement="VP_RequestEvidence">
-        <dc:Bounds x="580" y="170" width="180" height="56" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="DI_VP_EvidenceRequestSent" bpmnElement="VP_EvidenceRequestSent">
-        <dc:Bounds x="820" y="180" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="780" y="216" width="116" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="DI_VP_Challenge" bpmnElement="VP_Challenge">
-        <dc:Bounds x="580" y="250" width="180" height="56" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="DI_VP_ChallengeSent" bpmnElement="VP_ChallengeSent">
-        <dc:Bounds x="820" y="260" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="780" y="296" width="116" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="DI_VP_RequestCorrection" bpmnElement="VP_RequestCorrection">
-        <dc:Bounds x="580" y="330" width="180" height="56" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="DI_VP_CorrectionSent" bpmnElement="VP_CorrectionSent">
-        <dc:Bounds x="820" y="340" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="780" y="376" width="116" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="DI_VP_ResponseReceived" bpmnElement="VP_ResponseReceived">
-        <dc:Bounds x="920" y="260" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="880" y="296" width="116" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="DI_VP_ProcessResponse" bpmnElement="VP_ProcessResponse">
-        <dc:Bounds x="1000" y="250" width="200" height="56" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="DI_VP_End" bpmnElement="VP_End">
-        <dc:Bounds x="1240" y="260" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1200" y="296" width="116" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="DI_VP1" bpmnElement="VP1">
-        <di:waypoint x="156" y="278" />
-        <di:waypoint x="220" y="278" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="DI_VP2" bpmnElement="VP2">
-        <di:waypoint x="400" y="278" />
-        <di:waypoint x="460" y="278" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="DI_VP3" bpmnElement="VP3">
-        <di:waypoint x="488" y="250" />
-        <di:waypoint x="488" y="198" />
-        <di:waypoint x="580" y="198" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="DI_VP3a" bpmnElement="VP3a">
-        <di:waypoint x="760" y="198" />
-        <di:waypoint x="820" y="198" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="DI_VP4" bpmnElement="VP4">
-        <di:waypoint x="516" y="278" />
-        <di:waypoint x="580" y="278" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="DI_VP4a" bpmnElement="VP4a">
-        <di:waypoint x="760" y="278" />
-        <di:waypoint x="820" y="278" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="DI_VP5" bpmnElement="VP5">
-        <di:waypoint x="488" y="306" />
-        <di:waypoint x="488" y="358" />
-        <di:waypoint x="580" y="358" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="DI_VP5a" bpmnElement="VP5a">
-        <di:waypoint x="760" y="358" />
-        <di:waypoint x="820" y="358" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="DI_VP6" bpmnElement="VP6">
-        <di:waypoint x="856" y="198" />
-        <di:waypoint x="920" y="198" />
-        <di:waypoint x="920" y="260" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="DI_VP7" bpmnElement="VP7">
-        <di:waypoint x="956" y="278" />
-        <di:waypoint x="1000" y="278" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="DI_VP8" bpmnElement="VP8">
-        <di:waypoint x="1200" y="278" />
-        <di:waypoint x="1240" y="278" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="DI_VP_R1" bpmnElement="VP_R1">
-        <di:waypoint x="856" y="278" />
-        <di:waypoint x="920" y="278" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="DI_VP_R2" bpmnElement="VP_R2">
-        <di:waypoint x="856" y="358" />
-        <di:waypoint x="920" y="358" />
-        <di:waypoint x="920" y="296" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="DI_Participant_Process_ContributorParty_02a" bpmnElement="Participant_Process_ContributorParty_02a" isHorizontal="true">
-        <dc:Bounds x="20" y="580" width="1540" height="420" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="DI_CT_Authorized" bpmnElement="CT_Authorized">
-        <dc:Bounds x="120" y="700" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="80" y="736" width="156" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="DI_CT_SelectPolicy" bpmnElement="CT_SelectPolicy">
-        <dc:Bounds x="220" y="690" width="200" height="56" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="DI_CT_Submit" bpmnElement="CT_Submit">
-        <dc:Bounds x="460" y="690" width="220" height="56" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="DI_CT_ContributionSubmitSent" bpmnElement="CT_ContributionSubmitSent">
-        <dc:Bounds x="720" y="700" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="680" y="736" width="116" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="DI_CT_WaitForResponse" bpmnElement="CT_WaitForResponse" isMarkerVisible="true">
-        <dc:Bounds x="820" y="690" width="56" height="56" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="800" y="656" width="156" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="DI_CT_EvidenceRequestReceived" bpmnElement="CT_EvidenceRequestReceived">
-        <dc:Bounds x="920" y="630" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="880" y="666" width="116" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="DI_CT_ChallengeReceived" bpmnElement="CT_ChallengeReceived">
-        <dc:Bounds x="920" y="690" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="880" y="726" width="116" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="DI_CT_CorrectionReceived" bpmnElement="CT_CorrectionReceived">
-        <dc:Bounds x="920" y="750" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="880" y="786" width="116" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="DI_CT_Respond" bpmnElement="CT_Respond">
-        <dc:Bounds x="1020" y="690" width="240" height="56" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="DI_CT_ContributionRespondSent" bpmnElement="CT_ContributionRespondSent">
-        <dc:Bounds x="1300" y="700" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1260" y="736" width="116" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="DI_CT_GovernanceInterruption" bpmnElement="CT_GovernanceInterruption">
-        <dc:Bounds x="532" y="760" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="488" y="796" width="156" height="40" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="DI_CT_ApplyInterruption" bpmnElement="CT_ApplyInterruption">
-        <dc:Bounds x="460" y="830" width="220" height="56" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="DI_CT_Interrupted" bpmnElement="CT_Interrupted">
-        <dc:Bounds x="720" y="840" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="680" y="876" width="156" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="DI_CT_End" bpmnElement="CT_End">
-        <dc:Bounds x="1380" y="700" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1340" y="736" width="116" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="DI_CT1" bpmnElement="CT1">
-        <di:waypoint x="156" y="718" />
-        <di:waypoint x="220" y="718" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="DI_CT2" bpmnElement="CT2">
-        <di:waypoint x="420" y="718" />
-        <di:waypoint x="460" y="718" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="DI_CT3" bpmnElement="CT3">
-        <di:waypoint x="680" y="718" />
-        <di:waypoint x="720" y="718" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="DI_CT4" bpmnElement="CT4">
-        <di:waypoint x="756" y="718" />
-        <di:waypoint x="820" y="718" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="DI_CT5" bpmnElement="CT5">
-        <di:waypoint x="848" y="690" />
-        <di:waypoint x="848" y="648" />
-        <di:waypoint x="920" y="648" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="DI_CT6" bpmnElement="CT6">
-        <di:waypoint x="876" y="718" />
-        <di:waypoint x="920" y="718" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="DI_CT7" bpmnElement="CT7">
-        <di:waypoint x="848" y="746" />
-        <di:waypoint x="848" y="768" />
-        <di:waypoint x="920" y="768" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="DI_CT8" bpmnElement="CT8">
-        <di:waypoint x="956" y="648" />
-        <di:waypoint x="990" y="648" />
-        <di:waypoint x="990" y="718" />
-        <di:waypoint x="1020" y="718" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="DI_CT8b" bpmnElement="CT8b">
-        <di:waypoint x="956" y="708" />
-        <di:waypoint x="990" y="708" />
-        <di:waypoint x="990" y="718" />
-        <di:waypoint x="1020" y="718" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="DI_CT8c" bpmnElement="CT8c">
-        <di:waypoint x="956" y="768" />
-        <di:waypoint x="990" y="768" />
-        <di:waypoint x="990" y="718" />
-        <di:waypoint x="1020" y="718" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="DI_CT9" bpmnElement="CT9">
-        <di:waypoint x="1260" y="718" />
-        <di:waypoint x="1300" y="718" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="DI_CT10" bpmnElement="CT10">
-        <di:waypoint x="1336" y="718" />
-        <di:waypoint x="1380" y="718" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="DI_CT_BI1" bpmnElement="CT_BI1">
-        <di:waypoint x="550" y="796" />
-        <di:waypoint x="550" y="830" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="DI_CT_BI2" bpmnElement="CT_BI2">
-        <di:waypoint x="680" y="858" />
-        <di:waypoint x="720" y="858" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="DI_MF_ContributorAuthorized" bpmnElement="MF_ContributorAuthorized">
-        <di:waypoint x="80" y="100" />
-        <di:waypoint x="80" y="570" />
-        <di:waypoint x="138" y="570" />
-        <di:waypoint x="138" y="700" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="20" y="565" width="116" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="DI_MF_ContributionSubmit" bpmnElement="MF_ContributionSubmit">
-        <di:waypoint x="738" y="700" />
-        <di:waypoint x="738" y="570" />
-        <di:waypoint x="138" y="570" />
-        <di:waypoint x="138" y="260" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="200" y="555" width="116" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="DI_MF_ContributionRespond" bpmnElement="MF_ContributionRespond">
-        <di:waypoint x="1318" y="700" />
-        <di:waypoint x="1318" y="540" />
-        <di:waypoint x="958" y="540" />
-        <di:waypoint x="958" y="296" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="900" y="525" width="116" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="DI_MF_ForwardEvidenceRequest" bpmnElement="MF_ForwardEvidenceRequest">
-        <di:waypoint x="838" y="180" />
-        <di:waypoint x="838" y="540" />
-        <di:waypoint x="938" y="540" />
-        <di:waypoint x="938" y="630" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="780" y="525" width="116" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="DI_MF_ForwardChallenge" bpmnElement="MF_ForwardChallenge">
-        <di:waypoint x="838" y="260" />
-        <di:waypoint x="838" y="520" />
-        <di:waypoint x="938" y="520" />
-        <di:waypoint x="938" y="690" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="780" y="505" width="116" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="DI_MF_ForwardCorrection" bpmnElement="MF_ForwardCorrection">
-        <di:waypoint x="838" y="340" />
-        <di:waypoint x="838" y="500" />
-        <di:waypoint x="938" y="500" />
-        <di:waypoint x="938" y="750" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="780" y="485" width="116" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="DI_MF_InitialContribution" bpmnElement="MF_InitialContribution">
-        <di:waypoint x="310" y="306" />
-        <di:waypoint x="310" y="1020" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="DI_MF_EvidenceResubmitted" bpmnElement="MF_EvidenceResubmitted">
-        <di:waypoint x="1100" y="306" />
-        <di:waypoint x="1100" y="1020" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="DI_MF_EvidenceRequest" bpmnElement="MF_EvidenceRequest">
-        <di:waypoint x="650" y="1020" />
-        <di:waypoint x="650" y="226" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="DI_MF_Challenge" bpmnElement="MF_Challenge">
-        <di:waypoint x="670" y="1020" />
-        <di:waypoint x="670" y="306" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="DI_MF_Correction" bpmnElement="MF_Correction">
-        <di:waypoint x="690" y="1020" />
-        <di:waypoint x="690" y="386" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="DI_MF_GovernanceInterruption" bpmnElement="MF_GovernanceInterruption">
-        <di:waypoint x="100" y="100" />
-        <di:waypoint x="100" y="540" />
-        <di:waypoint x="550" y="540" />
-        <di:waypoint x="550" y="760" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="20" y="535" width="156" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
+  <bpmndi:BPMNDiagram id="Diagram_03">
+    <bpmndi:BPMNPlane id="Plane_03" bpmnElement="Collaboration_03">
+      <bpmndi:BPMNShape id="DI_Chassis_External" bpmnElement="Participant_Chassis_External" isHorizontal="true"><dc:Bounds x="20" y="20" width="1540" height="80" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_Verifier_03" bpmnElement="Participant_Verifier_03" isHorizontal="true"><dc:Bounds x="20" y="120" width="1540" height="440" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_VR_SubmissionReceived" bpmnElement="VR_SubmissionReceived"><dc:Bounds x="100" y="260" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_VR_EvaluateEvidence" bpmnElement="VR_EvaluateEvidence"><dc:Bounds x="180" y="250" width="220" height="56" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_VR_DetermineOutcome" bpmnElement="VR_DetermineOutcome" isMarkerVisible="true"><dc:Bounds x="450" y="250" width="56" height="56" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_VR_RequestEvidence" bpmnElement="VR_RequestEvidence"><dc:Bounds x="560" y="150" width="180" height="56" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_VR_EvidenceRequestSent" bpmnElement="VR_EvidenceRequestSent"><dc:Bounds x="780" y="160" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_VR_IssueChallenge" bpmnElement="VR_IssueChallenge"><dc:Bounds x="560" y="230" width="180" height="56" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_VR_ChallengeSent" bpmnElement="VR_ChallengeSent"><dc:Bounds x="780" y="240" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_VR_IssueCorrection" bpmnElement="VR_IssueCorrection"><dc:Bounds x="560" y="310" width="180" height="56" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_VR_CorrectionSent" bpmnElement="VR_CorrectionSent"><dc:Bounds x="780" y="320" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_VR_CompleteAttestation" bpmnElement="VR_CompleteAttestation"><dc:Bounds x="560" y="390" width="180" height="56" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_VR_AttestationSent" bpmnElement="VR_AttestationSent"><dc:Bounds x="780" y="400" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_VR_ResponseReceived" bpmnElement="VR_ResponseReceived"><dc:Bounds x="900" y="260" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_VR_End" bpmnElement="VR_End"><dc:Bounds x="900" y="400" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_Contributor_03" bpmnElement="Participant_Contributor_03" isHorizontal="true"><dc:Bounds x="20" y="580" width="1540" height="500" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_CT_Authorized" bpmnElement="CT_Authorized"><dc:Bounds x="100" y="700" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_CT_SelectPolicy" bpmnElement="CT_SelectPolicy"><dc:Bounds x="180" y="690" width="180" height="56" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_CT_Submit" bpmnElement="CT_Submit"><dc:Bounds x="400" y="690" width="200" height="56" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_CT_ContributionSubmitSent" bpmnElement="CT_ContributionSubmitSent"><dc:Bounds x="640" y="700" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_CT_JoinWait" bpmnElement="CT_JoinWait" isMarkerVisible="true"><dc:Bounds x="700" y="690" width="56" height="56" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_CT_WaitForResponse" bpmnElement="CT_WaitForResponse" isMarkerVisible="true"><dc:Bounds x="780" y="690" width="56" height="56" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_CT_EvidenceRequestReceived" bpmnElement="CT_EvidenceRequestReceived"><dc:Bounds x="860" y="620" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_CT_ChallengeReceived" bpmnElement="CT_ChallengeReceived"><dc:Bounds x="860" y="680" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_CT_CorrectionReceived" bpmnElement="CT_CorrectionReceived"><dc:Bounds x="860" y="740" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_CT_AttestationReceived" bpmnElement="CT_AttestationReceived"><dc:Bounds x="860" y="800" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_CT_Respond" bpmnElement="CT_Respond"><dc:Bounds x="960" y="690" width="220" height="56" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_CT_EvidenceResubmittedSent" bpmnElement="CT_EvidenceResubmittedSent"><dc:Bounds x="1220" y="700" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_CT_End" bpmnElement="CT_End"><dc:Bounds x="960" y="800" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_CT_GovernanceInterruption" bpmnElement="CT_GovernanceInterruption"><dc:Bounds x="482" y="780" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_CT_ApplyInterruption" bpmnElement="CT_ApplyInterruption"><dc:Bounds x="400" y="860" width="200" height="56" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_CT_Interrupted" bpmnElement="CT_Interrupted"><dc:Bounds x="640" y="870" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="DI_VR1" bpmnElement="VR1"><di:waypoint x="136" y="278" /><di:waypoint x="180" y="278" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_VR2" bpmnElement="VR2"><di:waypoint x="400" y="278" /><di:waypoint x="450" y="278" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_VR3" bpmnElement="VR3"><di:waypoint x="478" y="250" /><di:waypoint x="478" y="178" /><di:waypoint x="560" y="178" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_VR4" bpmnElement="VR4"><di:waypoint x="506" y="278" /><di:waypoint x="530" y="278" /><di:waypoint x="530" y="258" /><di:waypoint x="560" y="258" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_VR5" bpmnElement="VR5"><di:waypoint x="478" y="306" /><di:waypoint x="478" y="338" /><di:waypoint x="560" y="338" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_VR6" bpmnElement="VR6"><di:waypoint x="478" y="306" /><di:waypoint x="478" y="418" /><di:waypoint x="560" y="418" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_VR7" bpmnElement="VR7"><di:waypoint x="740" y="178" /><di:waypoint x="780" y="178" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_VR8" bpmnElement="VR8"><di:waypoint x="740" y="258" /><di:waypoint x="780" y="258" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_VR9" bpmnElement="VR9"><di:waypoint x="740" y="338" /><di:waypoint x="780" y="338" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_VR10a" bpmnElement="VR10a"><di:waypoint x="816" y="178" /><di:waypoint x="918" y="178" /><di:waypoint x="918" y="260" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_VR10b" bpmnElement="VR10b"><di:waypoint x="816" y="258" /><di:waypoint x="918" y="258" /><di:waypoint x="918" y="260" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_VR10c" bpmnElement="VR10c"><di:waypoint x="816" y="338" /><di:waypoint x="918" y="338" /><di:waypoint x="918" y="296" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_VR12" bpmnElement="VR12"><di:waypoint x="900" y="278" /><di:waypoint x="870" y="278" /><di:waypoint x="870" y="130" /><di:waypoint x="290" y="130" /><di:waypoint x="290" y="250" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_VR13" bpmnElement="VR13"><di:waypoint x="740" y="418" /><di:waypoint x="780" y="418" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_VR14" bpmnElement="VR14"><di:waypoint x="816" y="418" /><di:waypoint x="900" y="418" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_CT1" bpmnElement="CT1"><di:waypoint x="136" y="718" /><di:waypoint x="180" y="718" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_CT2" bpmnElement="CT2"><di:waypoint x="360" y="718" /><di:waypoint x="400" y="718" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_CT3" bpmnElement="CT3"><di:waypoint x="600" y="718" /><di:waypoint x="640" y="718" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_CT4" bpmnElement="CT4"><di:waypoint x="676" y="718" /><di:waypoint x="700" y="718" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_CT4a" bpmnElement="CT4a"><di:waypoint x="756" y="718" /><di:waypoint x="780" y="718" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_CT5" bpmnElement="CT5"><di:waypoint x="768" y="690" /><di:waypoint x="768" y="638" /><di:waypoint x="860" y="638" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_CT6" bpmnElement="CT6"><di:waypoint x="796" y="718" /><di:waypoint x="830" y="718" /><di:waypoint x="830" y="698" /><di:waypoint x="860" y="698" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_CT7" bpmnElement="CT7"><di:waypoint x="768" y="746" /><di:waypoint x="768" y="758" /><di:waypoint x="860" y="758" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_CT8a" bpmnElement="CT8a"><di:waypoint x="896" y="638" /><di:waypoint x="930" y="638" /><di:waypoint x="930" y="718" /><di:waypoint x="960" y="718" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_CT8b" bpmnElement="CT8b"><di:waypoint x="896" y="698" /><di:waypoint x="930" y="698" /><di:waypoint x="930" y="718" /><di:waypoint x="960" y="718" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_CT8c" bpmnElement="CT8c"><di:waypoint x="896" y="758" /><di:waypoint x="930" y="758" /><di:waypoint x="930" y="718" /><di:waypoint x="960" y="718" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_CT9" bpmnElement="CT9"><di:waypoint x="1180" y="718" /><di:waypoint x="1220" y="718" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_CT10" bpmnElement="CT10"><di:waypoint x="1256" y="718" /><di:waypoint x="1300" y="718" /><di:waypoint x="1300" y="600" /><di:waypoint x="768" y="600" /><di:waypoint x="768" y="690" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_CT11" bpmnElement="CT11"><di:waypoint x="768" y="746" /><di:waypoint x="768" y="818" /><di:waypoint x="860" y="818" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_CT12" bpmnElement="CT12"><di:waypoint x="896" y="818" /><di:waypoint x="960" y="818" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_CT_BI1" bpmnElement="CT_BI1"><di:waypoint x="500" y="816" /><di:waypoint x="500" y="860" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_CT_BI2" bpmnElement="CT_BI2"><di:waypoint x="600" y="888" /><di:waypoint x="640" y="888" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_MF_ContributorAuthorized" bpmnElement="MF_ContributorAuthorized"><di:waypoint x="80" y="100" /><di:waypoint x="80" y="700" /><di:waypoint x="100" y="700" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_MF_ContributionSubmit" bpmnElement="MF_ContributionSubmit"><di:waypoint x="658" y="700" /><di:waypoint x="658" y="570" /><di:waypoint x="118" y="570" /><di:waypoint x="118" y="296" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_MF_EvidenceResubmitted" bpmnElement="MF_EvidenceResubmitted"><di:waypoint x="1238" y="700" /><di:waypoint x="1238" y="570" /><di:waypoint x="918" y="570" /><di:waypoint x="918" y="296" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_MF_EvidenceRequest" bpmnElement="MF_EvidenceRequest"><di:waypoint x="798" y="196" /><di:waypoint x="798" y="570" /><di:waypoint x="878" y="570" /><di:waypoint x="878" y="620" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_MF_Challenge" bpmnElement="MF_Challenge"><di:waypoint x="798" y="276" /><di:waypoint x="798" y="570" /><di:waypoint x="878" y="570" /><di:waypoint x="878" y="680" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_MF_Correction" bpmnElement="MF_Correction"><di:waypoint x="798" y="356" /><di:waypoint x="798" y="570" /><di:waypoint x="878" y="570" /><di:waypoint x="878" y="740" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_MF_VerifierAttestation" bpmnElement="MF_VerifierAttestation"><di:waypoint x="798" y="436" /><di:waypoint x="798" y="570" /><di:waypoint x="878" y="570" /><di:waypoint x="878" y="800" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_MF_GovernanceInterruption" bpmnElement="MF_GovernanceInterruption"><di:waypoint x="60" y="100" /><di:waypoint x="60" y="570" /><di:waypoint x="500" y="570" /><di:waypoint x="500" y="780" /></bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
 </bpmn:definitions>
