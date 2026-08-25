@@ -1,134 +1,138 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_Veridica_DataProducerActions" targetNamespace="https://unlockit.io/veridica/bpmn">
   <bpmn:process id="Process_Veridica_DataProducerActions" name="03 Veridica Data Producer Actions" isExecutable="false">
-    <bpmn:documentation>Happy-path choreography for authorized Contributor, Aggregator, and Verifier roles. Each cross-lane sequence flow is a correlated handoff for the intended party, product, contribution or aggregation round, and applicable contract or policy version. A contributor cannot verify its own contribution where independence is required. The same party cannot be Aggregator and Verifier for the same product.</bpmn:documentation>
+    <bpmn:documentation>Compact contribution flow for authorized Contributor, Aggregator, and Verifier roles. The Verifier validates and attests individual contribution versions only and performs no aggregate review or verification. A correction supersedes a version while preserving its linked prior verification as visible evidence marked not current and requiring revalidation. Every corrected version receives a new validation or attestation before returning to matching and aggregation.</bpmn:documentation>
     <bpmn:laneSet id="LaneSet_DataProducers">
       <bpmn:lane id="Lane_Contributor" name="Contributor">
         <bpmn:flowNodeRef>C_Start</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>C_Submit</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>C_ProvideInput</bpmn:flowNodeRef>
       </bpmn:lane>
       <bpmn:lane id="Lane_Aggregator" name="Aggregator">
-        <bpmn:flowNodeRef>A_PrepareRound</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>A_BuildAggregate</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>A_PublishAggregate</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>A_MatchContributions</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>G_CorrectionNeeded</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>A_RequestCorrection</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>A_AggregateContributions</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>A_PublishContribution</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>A_End</bpmn:flowNodeRef>
       </bpmn:lane>
       <bpmn:lane id="Lane_Verifier" name="Verifier">
         <bpmn:flowNodeRef>V_ValidateContribution</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>V_ReviewAggregate</bpmn:flowNodeRef>
       </bpmn:lane>
     </bpmn:laneSet>
 
     <bpmn:startEvent id="C_Start" name="Contributor_Authorized">
       <bpmn:outgoing>F_1</bpmn:outgoing>
     </bpmn:startEvent>
-    <bpmn:task id="C_Submit" name="Submit contribution package">
+    <bpmn:task id="C_Submit" name="Submit contribution version">
       <bpmn:incoming>F_1</bpmn:incoming>
+      <bpmn:incoming>F_CorrectionLoop</bpmn:incoming>
       <bpmn:outgoing>F_2</bpmn:outgoing>
     </bpmn:task>
-    <bpmn:task id="V_ValidateContribution" name="Validate and attest contribution">
+    <bpmn:task id="V_ValidateContribution" name="Validate and attest contribution version">
       <bpmn:incoming>F_2</bpmn:incoming>
       <bpmn:outgoing>F_3</bpmn:outgoing>
     </bpmn:task>
-    <bpmn:task id="A_PrepareRound" name="Prepare aggregation round">
+    <bpmn:task id="A_MatchContributions" name="Match contributions">
       <bpmn:incoming>F_3</bpmn:incoming>
       <bpmn:outgoing>F_4</bpmn:outgoing>
     </bpmn:task>
-    <bpmn:task id="C_ProvideInput" name="Provide eligible input">
+    <bpmn:exclusiveGateway id="G_CorrectionNeeded" name="Correction needed?" gatewayDirection="Diverging">
       <bpmn:incoming>F_4</bpmn:incoming>
+      <bpmn:outgoing>F_Correction</bpmn:outgoing>
+      <bpmn:outgoing>F_Matched</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="A_RequestCorrection" name="Request correction">
+      <bpmn:incoming>F_Correction</bpmn:incoming>
+      <bpmn:outgoing>F_CorrectionLoop</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="A_AggregateContributions" name="Aggregate matched contributions into consolidated contribution">
+      <bpmn:incoming>F_Matched</bpmn:incoming>
       <bpmn:outgoing>F_5</bpmn:outgoing>
     </bpmn:task>
-    <bpmn:task id="A_BuildAggregate" name="Build traceable aggregate">
+    <bpmn:task id="A_PublishContribution" name="Publish consolidated contribution">
       <bpmn:incoming>F_5</bpmn:incoming>
       <bpmn:outgoing>F_6</bpmn:outgoing>
     </bpmn:task>
-    <bpmn:task id="V_ReviewAggregate" name="Independently review aggregate">
+    <bpmn:endEvent id="A_End" name="Consolidated contribution published">
       <bpmn:incoming>F_6</bpmn:incoming>
-      <bpmn:outgoing>F_7</bpmn:outgoing>
-    </bpmn:task>
-    <bpmn:task id="A_PublishAggregate" name="Publish reviewed aggregate">
-      <bpmn:incoming>F_7</bpmn:incoming>
-      <bpmn:outgoing>F_8</bpmn:outgoing>
-    </bpmn:task>
-    <bpmn:endEvent id="A_End" name="Aggregation round complete">
-      <bpmn:incoming>F_8</bpmn:incoming>
     </bpmn:endEvent>
 
     <bpmn:sequenceFlow id="F_1" sourceRef="C_Start" targetRef="C_Submit" />
     <bpmn:sequenceFlow id="F_2" sourceRef="C_Submit" targetRef="V_ValidateContribution" />
-    <bpmn:sequenceFlow id="F_3" sourceRef="V_ValidateContribution" targetRef="A_PrepareRound" />
-    <bpmn:sequenceFlow id="F_4" sourceRef="A_PrepareRound" targetRef="C_ProvideInput" />
-    <bpmn:sequenceFlow id="F_5" sourceRef="C_ProvideInput" targetRef="A_BuildAggregate" />
-    <bpmn:sequenceFlow id="F_6" sourceRef="A_BuildAggregate" targetRef="V_ReviewAggregate" />
-    <bpmn:sequenceFlow id="F_7" sourceRef="V_ReviewAggregate" targetRef="A_PublishAggregate" />
-    <bpmn:sequenceFlow id="F_8" sourceRef="A_PublishAggregate" targetRef="A_End" />
+    <bpmn:sequenceFlow id="F_3" sourceRef="V_ValidateContribution" targetRef="A_MatchContributions" />
+    <bpmn:sequenceFlow id="F_4" sourceRef="A_MatchContributions" targetRef="G_CorrectionNeeded" />
+    <bpmn:sequenceFlow id="F_Correction" name="Yes: mismatch or relevant issue" sourceRef="G_CorrectionNeeded" targetRef="A_RequestCorrection" />
+    <bpmn:sequenceFlow id="F_CorrectionLoop" name="Superseding version" sourceRef="A_RequestCorrection" targetRef="C_Submit" />
+    <bpmn:sequenceFlow id="F_Matched" name="No: matched" sourceRef="G_CorrectionNeeded" targetRef="A_AggregateContributions" />
+    <bpmn:sequenceFlow id="F_5" sourceRef="A_AggregateContributions" targetRef="A_PublishContribution" />
+    <bpmn:sequenceFlow id="F_6" sourceRef="A_PublishContribution" targetRef="A_End" />
 
     <bpmn:textAnnotation id="Note_Contribution">
-      <bpmn:text>Select the standard version and Observation Key policy. Submit the Contribution ID, information or reference, provenance, and evidence under the applicable contract version.</bpmn:text>
+      <bpmn:text>Submit a versioned contribution with its Contribution ID, Observation Key, standard and policy versions, provenance, evidence, and any corrects or replaces reference.</bpmn:text>
     </bpmn:textAnnotation>
-    <bpmn:textAnnotation id="Note_ContributionReview">
-      <bpmn:text>The independently responsible Verifier evaluates validation, independence, and conflict rules and records an accountable attestation. Evidence requests and challenges remain outside this happy-path view. Corrections and replacements preserve prior versions, evidence, checks, challenges, and reasons.</bpmn:text>
+    <bpmn:textAnnotation id="Note_Validation">
+      <bpmn:text>The independently responsible Verifier validates and attests this individual contribution version only. Each superseding corrected version requires a new validation or attestation before matching; the Verifier performs no aggregate review or verification.</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:textAnnotation id="Note_Matching">
+      <bpmn:text>Apply the named versioned exact or semantic Matching Policy. A mismatch, ambiguity, stale validation, or other relevant issue takes the correction route; only matched, current contributions proceed.</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:textAnnotation id="Note_Correction">
+      <bpmn:text>The correction supersedes the affected version and links back to it. Preserve the prior version and verification as visible evidence marked “not current / revalidation required”; the loop returns the corrected version through submission and new attestation.</bpmn:text>
     </bpmn:textAnnotation>
     <bpmn:textAnnotation id="Note_Aggregation">
-      <bpmn:text>Publish privacy-safe availability, apply the named versioned exact or semantic Matching Policy, confirm an eligible independent Verifier, and request authorized inputs. Ambiguous matches are reviewed or kept separate. Matching permits comparison but does not prove truth, quality, agreement, or independence.</bpmn:text>
-    </bpmn:textAnnotation>
-    <bpmn:textAnnotation id="Note_Build">
-      <bpmn:text>Select authorized input versions; normalize under the named versioned Information Standard and Aggregation Policy; account for outliers, missing data, recency, and minimum independence; calculate policy-based confidence and preserve traceability.</bpmn:text>
-    </bpmn:textAnnotation>
-    <bpmn:textAnnotation id="Note_AggregateReview">
-      <bpmn:text>The Verifier validates method, inputs, independence, evidence, and confidence and records the completed review with limitations. Attestation and aggregation do not guarantee truth, quality, agreement, reward, or a governance outcome.</bpmn:text>
+      <bpmn:text>Normalize matched contribution versions under the named Information Standard and Aggregation Policy, apply the governed calculation and confidence rules, and preserve traceability in the consolidated contribution. No Verifier aggregate task occurs.</bpmn:text>
     </bpmn:textAnnotation>
     <bpmn:textAnnotation id="Note_Publication">
-      <bpmn:text>Publish only after independent review, under applicable access, pricing, and licensing controls. No handoff reaches Workflow 05 reward allocation.</bpmn:text>
+      <bpmn:text>Publish the consolidated contribution under applicable access, pricing, and licensing controls. No handoff reaches Workflow 05 reward allocation.</bpmn:text>
     </bpmn:textAnnotation>
 
     <bpmn:association id="Assoc_Contribution" sourceRef="C_Submit" targetRef="Note_Contribution" />
-    <bpmn:association id="Assoc_ContributionReview" sourceRef="V_ValidateContribution" targetRef="Note_ContributionReview" />
-    <bpmn:association id="Assoc_Aggregation" sourceRef="A_PrepareRound" targetRef="Note_Aggregation" />
-    <bpmn:association id="Assoc_Build" sourceRef="A_BuildAggregate" targetRef="Note_Build" />
-    <bpmn:association id="Assoc_AggregateReview" sourceRef="V_ReviewAggregate" targetRef="Note_AggregateReview" />
-    <bpmn:association id="Assoc_Publication" sourceRef="A_PublishAggregate" targetRef="Note_Publication" />
+    <bpmn:association id="Assoc_Validation" sourceRef="V_ValidateContribution" targetRef="Note_Validation" />
+    <bpmn:association id="Assoc_Matching" sourceRef="A_MatchContributions" targetRef="Note_Matching" />
+    <bpmn:association id="Assoc_Correction" sourceRef="A_RequestCorrection" targetRef="Note_Correction" />
+    <bpmn:association id="Assoc_Aggregation" sourceRef="A_AggregateContributions" targetRef="Note_Aggregation" />
+    <bpmn:association id="Assoc_Publication" sourceRef="A_PublishContribution" targetRef="Note_Publication" />
   </bpmn:process>
 
   <bpmndi:BPMNDiagram id="Diagram_DataProducerActions">
     <bpmndi:BPMNPlane id="Plane_DataProducerActions" bpmnElement="Process_Veridica_DataProducerActions">
-      <bpmndi:BPMNShape id="Shape_Lane_Contributor" bpmnElement="Lane_Contributor" isHorizontal="true"><dc:Bounds x="80" y="80" width="1720" height="240" /></bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_Lane_Aggregator" bpmnElement="Lane_Aggregator" isHorizontal="true"><dc:Bounds x="80" y="320" width="1720" height="280" /></bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_Lane_Verifier" bpmnElement="Lane_Verifier" isHorizontal="true"><dc:Bounds x="80" y="600" width="1720" height="260" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Lane_Contributor" bpmnElement="Lane_Contributor" isHorizontal="true"><dc:Bounds x="80" y="80" width="1940" height="240" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Lane_Aggregator" bpmnElement="Lane_Aggregator" isHorizontal="true"><dc:Bounds x="80" y="320" width="1940" height="300" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Lane_Verifier" bpmnElement="Lane_Verifier" isHorizontal="true"><dc:Bounds x="80" y="620" width="1940" height="240" /></bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="Shape_C_Start" bpmnElement="C_Start"><dc:Bounds x="130" y="165" width="36" height="36" /></bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_C_Submit" bpmnElement="C_Submit"><dc:Bounds x="215" y="140" width="170" height="86" /></bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_V_ValidateContribution" bpmnElement="V_ValidateContribution"><dc:Bounds x="445" y="655" width="180" height="86" /></bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_A_PrepareRound" bpmnElement="A_PrepareRound"><dc:Bounds x="685" y="365" width="180" height="86" /></bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_C_ProvideInput" bpmnElement="C_ProvideInput"><dc:Bounds x="925" y="140" width="170" height="86" /></bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_A_BuildAggregate" bpmnElement="A_BuildAggregate"><dc:Bounds x="1155" y="365" width="180" height="86" /></bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_V_ReviewAggregate" bpmnElement="V_ReviewAggregate"><dc:Bounds x="1395" y="655" width="180" height="86" /></bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_A_PublishAggregate" bpmnElement="A_PublishAggregate"><dc:Bounds x="1600" y="365" width="140" height="86" /></bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_A_End" bpmnElement="A_End"><dc:Bounds x="1760" y="390" width="36" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_C_Submit" bpmnElement="C_Submit"><dc:Bounds x="215" y="140" width="180" height="86" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_V_ValidateContribution" bpmnElement="V_ValidateContribution"><dc:Bounds x="465" y="665" width="210" height="86" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_A_MatchContributions" bpmnElement="A_MatchContributions"><dc:Bounds x="755" y="370" width="180" height="86" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_G_CorrectionNeeded" bpmnElement="G_CorrectionNeeded" isMarkerVisible="true"><dc:Bounds x="1010" y="388" width="50" height="50" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_A_RequestCorrection" bpmnElement="A_RequestCorrection"><dc:Bounds x="955" y="500" width="160" height="76" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_A_AggregateContributions" bpmnElement="A_AggregateContributions"><dc:Bounds x="1200" y="360" width="270" height="106" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_A_PublishContribution" bpmnElement="A_PublishContribution"><dc:Bounds x="1570" y="370" width="210" height="86" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_A_End" bpmnElement="A_End"><dc:Bounds x="1870" y="395" width="36" height="36" /></bpmndi:BPMNShape>
 
-      <bpmndi:BPMNShape id="Shape_Note_Contribution" bpmnElement="Note_Contribution"><dc:Bounds x="195" y="245" width="230" height="60" /></bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_Note_ContributionReview" bpmnElement="Note_ContributionReview"><dc:Bounds x="415" y="765" width="250" height="80" /></bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_Note_Aggregation" bpmnElement="Note_Aggregation"><dc:Bounds x="650" y="480" width="250" height="90" /></bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_Note_Build" bpmnElement="Note_Build"><dc:Bounds x="1120" y="480" width="250" height="90" /></bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_Note_AggregateReview" bpmnElement="Note_AggregateReview"><dc:Bounds x="1360" y="765" width="250" height="80" /></bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_Note_Publication" bpmnElement="Note_Publication"><dc:Bounds x="1535" y="480" width="225" height="75" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Note_Contribution" bpmnElement="Note_Contribution"><dc:Bounds x="195" y="245" width="250" height="60" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Note_Validation" bpmnElement="Note_Validation"><dc:Bounds x="425" y="770" width="290" height="75" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Note_Matching" bpmnElement="Note_Matching"><dc:Bounds x="710" y="480" width="220" height="105" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Note_Correction" bpmnElement="Note_Correction"><dc:Bounds x="950" y="635" width="300" height="95" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Note_Aggregation" bpmnElement="Note_Aggregation"><dc:Bounds x="1200" y="490" width="285" height="95" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Note_Publication" bpmnElement="Note_Publication"><dc:Bounds x="1555" y="490" width="245" height="80" /></bpmndi:BPMNShape>
 
       <bpmndi:BPMNEdge id="Edge_F_1" bpmnElement="F_1"><di:waypoint x="166" y="183" /><di:waypoint x="215" y="183" /></bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_F_2" bpmnElement="F_2"><di:waypoint x="385" y="183" /><di:waypoint x="415" y="183" /><di:waypoint x="415" y="698" /><di:waypoint x="445" y="698" /></bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_F_3" bpmnElement="F_3"><di:waypoint x="625" y="698" /><di:waypoint x="655" y="698" /><di:waypoint x="655" y="408" /><di:waypoint x="685" y="408" /></bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_F_4" bpmnElement="F_4"><di:waypoint x="865" y="408" /><di:waypoint x="895" y="408" /><di:waypoint x="895" y="183" /><di:waypoint x="925" y="183" /></bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_F_5" bpmnElement="F_5"><di:waypoint x="1095" y="183" /><di:waypoint x="1125" y="183" /><di:waypoint x="1125" y="408" /><di:waypoint x="1155" y="408" /></bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_F_6" bpmnElement="F_6"><di:waypoint x="1335" y="408" /><di:waypoint x="1365" y="408" /><di:waypoint x="1365" y="698" /><di:waypoint x="1395" y="698" /></bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_F_7" bpmnElement="F_7"><di:waypoint x="1575" y="698" /><di:waypoint x="1585" y="698" /><di:waypoint x="1585" y="408" /><di:waypoint x="1600" y="408" /></bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_F_8" bpmnElement="F_8"><di:waypoint x="1740" y="408" /><di:waypoint x="1760" y="408" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_F_2" bpmnElement="F_2"><di:waypoint x="395" y="183" /><di:waypoint x="430" y="183" /><di:waypoint x="430" y="708" /><di:waypoint x="465" y="708" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_F_3" bpmnElement="F_3"><di:waypoint x="675" y="708" /><di:waypoint x="715" y="708" /><di:waypoint x="715" y="413" /><di:waypoint x="755" y="413" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_F_4" bpmnElement="F_4"><di:waypoint x="935" y="413" /><di:waypoint x="1010" y="413" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_F_Correction" bpmnElement="F_Correction"><di:waypoint x="1035" y="438" /><di:waypoint x="1035" y="500" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_F_CorrectionLoop" bpmnElement="F_CorrectionLoop"><di:waypoint x="955" y="538" /><di:waypoint x="900" y="538" /><di:waypoint x="900" y="330" /><di:waypoint x="460" y="330" /><di:waypoint x="460" y="115" /><di:waypoint x="305" y="115" /><di:waypoint x="305" y="140" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_F_Matched" bpmnElement="F_Matched"><di:waypoint x="1060" y="413" /><di:waypoint x="1200" y="413" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_F_5" bpmnElement="F_5"><di:waypoint x="1470" y="413" /><di:waypoint x="1570" y="413" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_F_6" bpmnElement="F_6"><di:waypoint x="1780" y="413" /><di:waypoint x="1870" y="413" /></bpmndi:BPMNEdge>
 
-      <bpmndi:BPMNEdge id="Edge_Assoc_Contribution" bpmnElement="Assoc_Contribution"><di:waypoint x="300" y="226" /><di:waypoint x="300" y="245" /></bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_Assoc_ContributionReview" bpmnElement="Assoc_ContributionReview"><di:waypoint x="535" y="741" /><di:waypoint x="535" y="765" /></bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_Assoc_Aggregation" bpmnElement="Assoc_Aggregation"><di:waypoint x="775" y="451" /><di:waypoint x="775" y="480" /></bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_Assoc_Build" bpmnElement="Assoc_Build"><di:waypoint x="1245" y="451" /><di:waypoint x="1245" y="480" /></bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_Assoc_AggregateReview" bpmnElement="Assoc_AggregateReview"><di:waypoint x="1485" y="741" /><di:waypoint x="1485" y="765" /></bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_Assoc_Publication" bpmnElement="Assoc_Publication"><di:waypoint x="1685" y="451" /><di:waypoint x="1685" y="480" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Assoc_Contribution" bpmnElement="Assoc_Contribution"><di:waypoint x="305" y="226" /><di:waypoint x="305" y="245" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Assoc_Validation" bpmnElement="Assoc_Validation"><di:waypoint x="570" y="751" /><di:waypoint x="570" y="770" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Assoc_Matching" bpmnElement="Assoc_Matching"><di:waypoint x="845" y="456" /><di:waypoint x="845" y="480" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Assoc_Correction" bpmnElement="Assoc_Correction"><di:waypoint x="1035" y="576" /><di:waypoint x="1035" y="635" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Assoc_Aggregation" bpmnElement="Assoc_Aggregation"><di:waypoint x="1335" y="466" /><di:waypoint x="1335" y="490" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Assoc_Publication" bpmnElement="Assoc_Publication"><di:waypoint x="1675" y="456" /><di:waypoint x="1675" y="490" /></bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
 </bpmn:definitions>
