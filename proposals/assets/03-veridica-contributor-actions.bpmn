@@ -6,9 +6,13 @@
   <bpmn:message id="Message_EvidenceRequest" name="Evidence_Request" />
   <bpmn:message id="Message_Challenge" name="Challenge" />
   <bpmn:message id="Message_Correction" name="Correction" />
+  <bpmn:message id="Message_EvidenceResubmitted" name="Evidence_Resubmitted" />
   <bpmn:message id="Message_GovernanceInterruption" name="Governance suspension or rotation" />
   <bpmn:collaboration id="Collaboration_02a">
     <bpmn:participant id="Participant_VeridicaPlatform_02a" name="Veridica Platform" processRef="Process_VeridicaPlatform_02a" />
+    <bpmn:participant id="Participant_Verifier_External_02a" name="Verifier Party (03b, external owner of contribution validation)">
+      <bpmn:participantMultiplicity minimum="1" maximum="999" />
+    </bpmn:participant>
     <bpmn:participant id="Participant_Process_ContributorParty_02a" name="Contributor Party (multiplicity 1..999)" processRef="Process_ContributorParty_02a">
       <bpmn:participantMultiplicity minimum="1" maximum="999" />
     </bpmn:participant>
@@ -18,9 +22,14 @@
     <bpmn:messageFlow id="MF_ContributorAuthorized" name="Contributor_Authorized" sourceRef="Participant_Chassis_External" targetRef="CT_Authorized" />
     <bpmn:messageFlow id="MF_ContributionSubmit" name="Contribution_Submit" sourceRef="CT_ContributionSubmitSent" targetRef="VP_SubmissionReceived" />
     <bpmn:messageFlow id="MF_ContributionRespond" name="Contribution_Respond" sourceRef="CT_ContributionRespondSent" targetRef="VP_ResponseReceived" />
-    <bpmn:messageFlow id="MF_EvidenceRequest" name="Evidence_Request" sourceRef="VP_EvidenceRequestSent" targetRef="CT_EvidenceRequestReceived" />
-    <bpmn:messageFlow id="MF_Challenge" name="Challenge" sourceRef="VP_ChallengeSent" targetRef="CT_ChallengeReceived" />
-    <bpmn:messageFlow id="MF_Correction" name="Correction" sourceRef="VP_CorrectionSent" targetRef="CT_CorrectionReceived" />
+    <bpmn:messageFlow id="MF_InitialContribution" name="Contribution_Submit" sourceRef="VP_ProcessSubmission" targetRef="Participant_Verifier_External_02a" />
+    <bpmn:messageFlow id="MF_EvidenceResubmitted" name="Evidence_Resubmitted" sourceRef="VP_ProcessResponse" targetRef="Participant_Verifier_External_02a" />
+    <bpmn:messageFlow id="MF_EvidenceRequest" name="Evidence_Request" sourceRef="Participant_Verifier_External_02a" targetRef="VP_RequestEvidence" />
+    <bpmn:messageFlow id="MF_Challenge" name="Challenge" sourceRef="Participant_Verifier_External_02a" targetRef="VP_Challenge" />
+    <bpmn:messageFlow id="MF_Correction" name="Correction" sourceRef="Participant_Verifier_External_02a" targetRef="VP_RequestCorrection" />
+    <bpmn:messageFlow id="MF_ForwardEvidenceRequest" name="Evidence_Request" sourceRef="VP_EvidenceRequestSent" targetRef="CT_EvidenceRequestReceived" />
+    <bpmn:messageFlow id="MF_ForwardChallenge" name="Challenge" sourceRef="VP_ChallengeSent" targetRef="CT_ChallengeReceived" />
+    <bpmn:messageFlow id="MF_ForwardCorrection" name="Correction" sourceRef="VP_CorrectionSent" targetRef="CT_CorrectionReceived" />
     <bpmn:messageFlow id="MF_GovernanceInterruption" name="Governance suspension or rotation" sourceRef="Participant_Chassis_External" targetRef="CT_GovernanceInterruption" />
   </bpmn:collaboration>
   <bpmn:process id="Process_VeridicaPlatform_02a" isExecutable="false">
@@ -41,63 +50,67 @@
       </bpmn:lane>
     </bpmn:laneSet>
     <bpmn:intermediateCatchEvent id="VP_SubmissionReceived" name="Submission received">
-      <bpmn:incoming>VP_R1</bpmn:incoming>
       <bpmn:outgoing>VP1</bpmn:outgoing>
       <bpmn:messageEventDefinition messageRef="Message_ContributionSubmit" />
     </bpmn:intermediateCatchEvent>
-    <bpmn:task id="VP_ProcessSubmission" name="Process contribution: validate standard version, Observation Key, and evidence">
+    <bpmn:task id="VP_ProcessSubmission" name="Check contribution envelope, record submission, and route deterministically to assigned Verifier">
       <bpmn:incoming>VP1</bpmn:incoming>
       <bpmn:outgoing>VP2</bpmn:outgoing>
     </bpmn:task>
-    <bpmn:exclusiveGateway id="VP_ResponseDecision" name="Response type" gatewayDirection="Diverging">
+    <bpmn:eventBasedGateway id="VP_ResponseDecision" name="Wait for Verifier-issued message">
       <bpmn:incoming>VP2</bpmn:incoming>
       <bpmn:outgoing>VP3</bpmn:outgoing>
       <bpmn:outgoing>VP4</bpmn:outgoing>
       <bpmn:outgoing>VP5</bpmn:outgoing>
-    </bpmn:exclusiveGateway>
-    <bpmn:task id="VP_RequestEvidence" name="Request additional evidence">
+    </bpmn:eventBasedGateway>
+    <bpmn:receiveTask id="VP_RequestEvidence" name="Receive, record, and forward Verifier Evidence_Request" messageRef="Message_EvidenceRequest">
       <bpmn:incoming>VP3</bpmn:incoming>
       <bpmn:outgoing>VP3a</bpmn:outgoing>
-    </bpmn:task>
-    <bpmn:intermediateThrowEvent id="VP_EvidenceRequestSent" name="Evidence request sent">
+    </bpmn:receiveTask>
+    <bpmn:intermediateThrowEvent id="VP_EvidenceRequestSent" name="Evidence request forwarded">
       <bpmn:incoming>VP3a</bpmn:incoming>
+      <bpmn:outgoing>VP6</bpmn:outgoing>
       <bpmn:messageEventDefinition messageRef="Message_EvidenceRequest" />
     </bpmn:intermediateThrowEvent>
-    <bpmn:task id="VP_Challenge" name="Raise challenge against contribution">
+    <bpmn:receiveTask id="VP_Challenge" name="Receive, record, and forward Verifier Challenge" messageRef="Message_Challenge">
       <bpmn:incoming>VP4</bpmn:incoming>
       <bpmn:outgoing>VP4a</bpmn:outgoing>
-    </bpmn:task>
-    <bpmn:intermediateThrowEvent id="VP_ChallengeSent" name="Challenge sent">
+    </bpmn:receiveTask>
+    <bpmn:intermediateThrowEvent id="VP_ChallengeSent" name="Challenge forwarded">
       <bpmn:incoming>VP4a</bpmn:incoming>
+      <bpmn:outgoing>VP_R1</bpmn:outgoing>
       <bpmn:messageEventDefinition messageRef="Message_Challenge" />
     </bpmn:intermediateThrowEvent>
-    <bpmn:task id="VP_RequestCorrection" name="Request correction of submission">
+    <bpmn:receiveTask id="VP_RequestCorrection" name="Receive, record, and forward Verifier Correction" messageRef="Message_Correction">
       <bpmn:incoming>VP5</bpmn:incoming>
       <bpmn:outgoing>VP5a</bpmn:outgoing>
-    </bpmn:task>
-    <bpmn:intermediateThrowEvent id="VP_CorrectionSent" name="Correction request sent">
+    </bpmn:receiveTask>
+    <bpmn:intermediateThrowEvent id="VP_CorrectionSent" name="Correction forwarded">
       <bpmn:incoming>VP5a</bpmn:incoming>
+      <bpmn:outgoing>VP_R2</bpmn:outgoing>
       <bpmn:messageEventDefinition messageRef="Message_Correction" />
     </bpmn:intermediateThrowEvent>
-    <bpmn:intermediateCatchEvent id="VP_ResponseReceived" name="Response received">
+    <bpmn:intermediateCatchEvent id="VP_ResponseReceived" name="Contributor response received">
       <bpmn:incoming>VP6</bpmn:incoming>
+      <bpmn:incoming>VP_R1</bpmn:incoming>
+      <bpmn:incoming>VP_R2</bpmn:incoming>
       <bpmn:outgoing>VP7</bpmn:outgoing>
       <bpmn:messageEventDefinition messageRef="Message_ContributionRespond" />
     </bpmn:intermediateCatchEvent>
-    <bpmn:task id="VP_ProcessResponse" name="Process response: update evidence, challenge resolution, or correction acceptance">
+    <bpmn:task id="VP_ProcessResponse" name="Record Contributor response and route deterministically to assigned Verifier">
       <bpmn:incoming>VP7</bpmn:incoming>
       <bpmn:outgoing>VP8</bpmn:outgoing>
     </bpmn:task>
-    <bpmn:endEvent id="VP_End" name="Contribution round complete">
+    <bpmn:endEvent id="VP_End" name="Contributor response routed to Verifier">
       <bpmn:incoming>VP8</bpmn:incoming>
     </bpmn:endEvent>
     <bpmn:sequenceFlow id="VP1" sourceRef="VP_SubmissionReceived" targetRef="VP_ProcessSubmission" />
     <bpmn:sequenceFlow id="VP2" sourceRef="VP_ProcessSubmission" targetRef="VP_ResponseDecision" />
-    <bpmn:sequenceFlow id="VP3" name="Evidence" sourceRef="VP_ResponseDecision" targetRef="VP_RequestEvidence" />
+    <bpmn:sequenceFlow id="VP3" name="Verifier issued Evidence_Request" sourceRef="VP_ResponseDecision" targetRef="VP_RequestEvidence" />
     <bpmn:sequenceFlow id="VP3a" sourceRef="VP_RequestEvidence" targetRef="VP_EvidenceRequestSent" />
-    <bpmn:sequenceFlow id="VP4" name="Challenge" sourceRef="VP_ResponseDecision" targetRef="VP_Challenge" />
+    <bpmn:sequenceFlow id="VP4" name="Verifier issued Challenge" sourceRef="VP_ResponseDecision" targetRef="VP_Challenge" />
     <bpmn:sequenceFlow id="VP4a" sourceRef="VP_Challenge" targetRef="VP_ChallengeSent" />
-    <bpmn:sequenceFlow id="VP5" name="Correction" sourceRef="VP_ResponseDecision" targetRef="VP_RequestCorrection" />
+    <bpmn:sequenceFlow id="VP5" name="Verifier issued Correction" sourceRef="VP_ResponseDecision" targetRef="VP_RequestCorrection" />
     <bpmn:sequenceFlow id="VP5a" sourceRef="VP_RequestCorrection" targetRef="VP_CorrectionSent" />
     <bpmn:sequenceFlow id="VP6" sourceRef="VP_EvidenceRequestSent" targetRef="VP_ResponseReceived" />
     <bpmn:sequenceFlow id="VP7" sourceRef="VP_ResponseReceived" targetRef="VP_ProcessResponse" />
@@ -137,6 +150,7 @@
     </bpmn:task>
     <bpmn:intermediateThrowEvent id="CT_ContributionSubmitSent" name="Contribution_Submit sent">
       <bpmn:incoming>CT3</bpmn:incoming>
+      <bpmn:outgoing>CT4</bpmn:outgoing>
       <bpmn:messageEventDefinition messageRef="Message_ContributionSubmit" />
     </bpmn:intermediateThrowEvent>
     <bpmn:eventBasedGateway id="CT_WaitForResponse" name="Wait for Evidence_Request, Challenge, or Correction">
@@ -152,20 +166,23 @@
     </bpmn:intermediateCatchEvent>
     <bpmn:intermediateCatchEvent id="CT_ChallengeReceived" name="Challenge received">
       <bpmn:incoming>CT6</bpmn:incoming>
-      <bpmn:outgoing>CT8</bpmn:outgoing>
+      <bpmn:outgoing>CT8b</bpmn:outgoing>
       <bpmn:messageEventDefinition messageRef="Message_Challenge" />
     </bpmn:intermediateCatchEvent>
     <bpmn:intermediateCatchEvent id="CT_CorrectionReceived" name="Correction received">
       <bpmn:incoming>CT7</bpmn:incoming>
-      <bpmn:outgoing>CT8</bpmn:outgoing>
+      <bpmn:outgoing>CT8c</bpmn:outgoing>
       <bpmn:messageEventDefinition messageRef="Message_Correction" />
     </bpmn:intermediateCatchEvent>
-    <bpmn:task id="CT_Respond" name="Respond to evidence request, challenge, or correction (handles both initial and correction responses via contract version)">
+    <bpmn:task id="CT_Respond" name="Respond to Verifier evidence request, challenge, or correction (handles both initial and correction responses via contract version)">
       <bpmn:incoming>CT8</bpmn:incoming>
+      <bpmn:incoming>CT8b</bpmn:incoming>
+      <bpmn:incoming>CT8c</bpmn:incoming>
       <bpmn:outgoing>CT9</bpmn:outgoing>
     </bpmn:task>
     <bpmn:intermediateThrowEvent id="CT_ContributionRespondSent" name="Contribution_Respond sent">
       <bpmn:incoming>CT9</bpmn:incoming>
+      <bpmn:outgoing>CT10</bpmn:outgoing>
       <bpmn:messageEventDefinition messageRef="Message_ContributionRespond" />
     </bpmn:intermediateThrowEvent>
     <bpmn:boundaryEvent id="CT_GovernanceInterruption" name="Governance suspension or rotation arriving mid-submission" attachedToRef="CT_Submit">
@@ -190,6 +207,8 @@
     <bpmn:sequenceFlow id="CT6" sourceRef="CT_WaitForResponse" targetRef="CT_ChallengeReceived" />
     <bpmn:sequenceFlow id="CT7" sourceRef="CT_WaitForResponse" targetRef="CT_CorrectionReceived" />
     <bpmn:sequenceFlow id="CT8" sourceRef="CT_EvidenceRequestReceived" targetRef="CT_Respond" />
+    <bpmn:sequenceFlow id="CT8b" sourceRef="CT_ChallengeReceived" targetRef="CT_Respond" />
+    <bpmn:sequenceFlow id="CT8c" sourceRef="CT_CorrectionReceived" targetRef="CT_Respond" />
     <bpmn:sequenceFlow id="CT9" sourceRef="CT_Respond" targetRef="CT_ContributionRespondSent" />
     <bpmn:sequenceFlow id="CT10" sourceRef="CT_ContributionRespondSent" targetRef="CT_End" />
     <bpmn:sequenceFlow id="CT_BI1" sourceRef="CT_GovernanceInterruption" targetRef="CT_ApplyInterruption" />
@@ -199,6 +218,9 @@
     <bpmndi:BPMNPlane id="Plane_02a" bpmnElement="Collaboration_02a">
       <bpmndi:BPMNShape id="DI_Chassis_External" bpmnElement="Participant_Chassis_External" isHorizontal="true">
         <dc:Bounds x="20" y="20" width="1540" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_Verifier_External_02a" bpmnElement="Participant_Verifier_External_02a" isHorizontal="true">
+        <dc:Bounds x="20" y="1020" width="1540" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DI_VeridicaPlatform_02a" bpmnElement="Participant_VeridicaPlatform_02a" isHorizontal="true">
         <dc:Bounds x="20" y="120" width="1540" height="440" />
@@ -422,7 +444,21 @@
         <di:waypoint x="920" y="768" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_CT8" bpmnElement="CT8">
-        <di:waypoint x="956" y="718" />
+        <di:waypoint x="956" y="648" />
+        <di:waypoint x="990" y="648" />
+        <di:waypoint x="990" y="718" />
+        <di:waypoint x="1020" y="718" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_CT8b" bpmnElement="CT8b">
+        <di:waypoint x="956" y="708" />
+        <di:waypoint x="990" y="708" />
+        <di:waypoint x="990" y="718" />
+        <di:waypoint x="1020" y="718" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_CT8c" bpmnElement="CT8c">
+        <di:waypoint x="956" y="768" />
+        <di:waypoint x="990" y="768" />
+        <di:waypoint x="990" y="718" />
         <di:waypoint x="1020" y="718" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_CT9" bpmnElement="CT9">
@@ -468,7 +504,7 @@
           <dc:Bounds x="900" y="525" width="116" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="DI_MF_EvidenceRequest" bpmnElement="MF_EvidenceRequest">
+      <bpmndi:BPMNEdge id="DI_MF_ForwardEvidenceRequest" bpmnElement="MF_ForwardEvidenceRequest">
         <di:waypoint x="838" y="180" />
         <di:waypoint x="838" y="540" />
         <di:waypoint x="938" y="540" />
@@ -477,7 +513,7 @@
           <dc:Bounds x="780" y="525" width="116" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="DI_MF_Challenge" bpmnElement="MF_Challenge">
+      <bpmndi:BPMNEdge id="DI_MF_ForwardChallenge" bpmnElement="MF_ForwardChallenge">
         <di:waypoint x="838" y="260" />
         <di:waypoint x="838" y="520" />
         <di:waypoint x="938" y="520" />
@@ -486,7 +522,7 @@
           <dc:Bounds x="780" y="505" width="116" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="DI_MF_Correction" bpmnElement="MF_Correction">
+      <bpmndi:BPMNEdge id="DI_MF_ForwardCorrection" bpmnElement="MF_ForwardCorrection">
         <di:waypoint x="838" y="340" />
         <di:waypoint x="838" y="500" />
         <di:waypoint x="938" y="500" />
@@ -494,6 +530,26 @@
         <bpmndi:BPMNLabel>
           <dc:Bounds x="780" y="485" width="116" height="14" />
         </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_MF_InitialContribution" bpmnElement="MF_InitialContribution">
+        <di:waypoint x="310" y="306" />
+        <di:waypoint x="310" y="1020" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_MF_EvidenceResubmitted" bpmnElement="MF_EvidenceResubmitted">
+        <di:waypoint x="1100" y="306" />
+        <di:waypoint x="1100" y="1020" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_MF_EvidenceRequest" bpmnElement="MF_EvidenceRequest">
+        <di:waypoint x="650" y="1020" />
+        <di:waypoint x="650" y="226" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_MF_Challenge" bpmnElement="MF_Challenge">
+        <di:waypoint x="670" y="1020" />
+        <di:waypoint x="670" y="306" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_MF_Correction" bpmnElement="MF_Correction">
+        <di:waypoint x="690" y="1020" />
+        <di:waypoint x="690" y="386" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_MF_GovernanceInterruption" bpmnElement="MF_GovernanceInterruption">
         <di:waypoint x="100" y="100" />
