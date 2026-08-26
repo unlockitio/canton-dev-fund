@@ -15,10 +15,6 @@
       <bpmn:outgoing>A2_Yes</bpmn:outgoing>
       <bpmn:outgoing>A2_No</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:task id="A_PartyCreated" name="Create or register required Party">
-      <bpmn:incoming>A2_Yes</bpmn:incoming>
-      <bpmn:outgoing>A3</bpmn:outgoing>
-    </bpmn:task>
     <bpmn:exclusiveGateway id="A_PartyMerge" gatewayDirection="Converging">
       <bpmn:incoming>A2_No</bpmn:incoming>
       <bpmn:incoming>A3</bpmn:incoming>
@@ -48,6 +44,10 @@
       <bpmn:incoming>A7</bpmn:incoming>
       <bpmn:messageEventDefinition id="MessageEventDefinition_1l1pgn1" />
     </bpmn:intermediateThrowEvent>
+    <bpmn:task id="A_PartyCreated" name="Create or register required Party">
+      <bpmn:incoming>A2_Yes</bpmn:incoming>
+      <bpmn:outgoing>A3</bpmn:outgoing>
+    </bpmn:task>
     <bpmn:textAnnotation id="A_DecisionPolicies">
       <bpmn:text>Uses the Party Setup result to define and commit the execution identity/model, decision-policy fields, and fixed closed Candidate electorate.</bpmn:text>
     </bpmn:textAnnotation>
@@ -55,7 +55,7 @@
   </bpmn:process>
   <bpmn:process id="Process_Candidates" isExecutable="false">
     <bpmn:sequenceFlow id="C1" sourceRef="A_RequestReceived" targetRef="A_SubmitBallot" />
-    <bpmn:sequenceFlow id="C2" sourceRef="A_SubmitBallot" targetRef="A_BallotSubmitted" />
+    <bpmn:sequenceFlow id="C2" sourceRef="A_SubmitBallot" targetRef="Event_0dy1yhh" />
     <bpmn:startEvent id="A_RequestReceived" name="Request received">
       <bpmn:outgoing>C1</bpmn:outgoing>
       <bpmn:messageEventDefinition />
@@ -64,10 +64,10 @@
       <bpmn:incoming>C1</bpmn:incoming>
       <bpmn:outgoing>C2</bpmn:outgoing>
     </bpmn:task>
-    <bpmn:intermediateThrowEvent id="A_BallotSubmitted" name="Ballot submitted">
+    <bpmn:endEvent id="Event_0dy1yhh" name="Ballot submitted">
       <bpmn:incoming>C2</bpmn:incoming>
-      <bpmn:messageEventDefinition id="MessageEventDefinition_1dd3ors" />
-    </bpmn:intermediateThrowEvent>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_1nnpgjp" />
+    </bpmn:endEvent>
   </bpmn:process>
   <bpmn:process id="Process_Resolver" isExecutable="false">
     <bpmn:sequenceFlow id="R2" sourceRef="A_ReceiveBallots" targetRef="A_EvaluateResolve" />
@@ -112,9 +112,6 @@
       <bpmndi:BPMNShape id="DI_A_PartySetup" bpmnElement="A_PartySetup" isMarkerVisible="true">
         <dc:Bounds x="200" y="120" width="56" height="56" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="DI_A_PartyCreated" bpmnElement="A_PartyCreated">
-        <dc:Bounds x="350" y="55" width="170" height="56" />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DI_A_PartyMerge" bpmnElement="A_PartyMerge" isMarkerVisible="true">
         <dc:Bounds x="530" y="120" width="56" height="56" />
       </bpmndi:BPMNShape>
@@ -136,8 +133,11 @@
           <dc:Bounds x="1337" y="93" width="45" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_A_PartyCreated" bpmnElement="A_PartyCreated">
+        <dc:Bounds x="305" y="55" width="170" height="56" />
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DI_A_DecisionPolicies" bpmnElement="A_DecisionPolicies">
-        <dc:Bounds x="630" y="45" width="270" height="45" />
+        <dc:Bounds x="630" y="45" width="430" height="45" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="DI_A1" bpmnElement="A1">
         <di:waypoint x="136" y="144" />
@@ -146,7 +146,7 @@
       <bpmndi:BPMNEdge id="DI_A2_Yes" bpmnElement="A2_Yes">
         <di:waypoint x="228" y="120" />
         <di:waypoint x="228" y="83" />
-        <di:waypoint x="350" y="83" />
+        <di:waypoint x="305" y="83" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="125" y="53" width="89" height="53" />
         </bpmndi:BPMNLabel>
@@ -159,7 +159,7 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_A3" bpmnElement="A3">
-        <di:waypoint x="520" y="83" />
+        <di:waypoint x="475" y="83" />
         <di:waypoint x="558" y="83" />
         <di:waypoint x="558" y="120" />
       </bpmndi:BPMNEdge>
@@ -191,10 +191,10 @@
       <bpmndi:BPMNShape id="DI_A_SubmitBallot" bpmnElement="A_SubmitBallot">
         <dc:Bounds x="235" y="470" width="150" height="56" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_15ssiat_di" bpmnElement="A_BallotSubmitted">
-        <dc:Bounds x="502" y="480" width="36" height="36" />
+      <bpmndi:BPMNShape id="Event_1mmg3gr_di" bpmnElement="Event_0dy1yhh">
+        <dc:Bounds x="632" y="480" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="480" y="456" width="79" height="14" />
+          <dc:Bounds x="611" y="523" width="79" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="DI_C1" bpmnElement="C1">
@@ -203,7 +203,7 @@
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_C2" bpmnElement="C2">
         <di:waypoint x="385" y="498" />
-        <di:waypoint x="502" y="498" />
+        <di:waypoint x="632" y="498" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="DI_Participant_Resolver" bpmnElement="Participant_Resolver" isHorizontal="true">
         <dc:Bounds x="20" y="620" width="1540" height="270" />
