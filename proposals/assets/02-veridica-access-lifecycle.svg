@@ -1,9 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="2400" height="1900" viewBox="0 0 2400 1900" role="img" aria-labelledby="title desc">
 <title id="title">02. Veridica Access Lifecycle</title>
-<desc id="desc">Exact static rendering of the canonical BPMN DI with four pools, independent per-capability offers, governed admission and revocation, and unilateral named role renunciation.</desc>
+<desc id="desc">Exact static rendering of the canonical BPMN DI with four pools, direct activation of already-accepted role capabilities, governed admission and revocation, and unilateral named role renunciation.</desc>
 <defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#334155"/></marker><marker id="message-arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="none" stroke="#7c3aed"/></marker><marker id="assoc-arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#0f766e"/></marker><style>text{font-family:Arial,sans-serif;fill:#172033}.pool{fill:#fff;stroke:#172033;stroke-width:2}.task{fill:#fff;stroke:#2563a8;stroke-width:2}.call{fill:#eef6ff;stroke:#1d4ed8;stroke-width:4}.sub{fill:#f8fbff;stroke:#2563a8;stroke-width:2}.event{fill:#fff;stroke:#0f766e;stroke-width:2}.end{stroke-width:4}.gateway{fill:#fff;stroke:#b45309;stroke-width:2}.data{fill:#fff7d6;stroke:#9a6700;stroke-width:2}.label{font-size:12px;text-anchor:middle}.poollabel{font-size:16px;font-weight:bold}.edge{fill:none;stroke:#334155;stroke-width:2;marker-end:url(#arrow)}.message{fill:none;stroke:#7c3aed;stroke-width:2;stroke-dasharray:9 6;marker-end:url(#message-arrow)}.assoc{fill:none;stroke:#0f766e;stroke-width:1.5;stroke-dasharray:3 5;marker-end:url(#assoc-arrow)}</style></defs>
 <g id="DI_Pool_Governor">
-<rect class="pool" x="20.0" y="20.0" width="2360.0" height="250.0"/><line x1="70.0" y1="20.0" x2="70.0" y2="270.0" stroke="#172033" stroke-width="2"/><text class="poollabel" transform="translate(50.0 145.0) rotate(-90)" text-anchor="middle">Governor or Consortium Member</text>
+<rect class="pool" x="20.0" y="0.0" width="2360.0" height="270.0"/><line x1="70.0" y1="0.0" x2="70.0" y2="270.0" stroke="#172033" stroke-width="2"/><text class="poollabel" transform="translate(50.0 135.0) rotate(-90)" text-anchor="middle">Governor or Consortium Member</text>
 </g>
 <g id="DI_Pool_Prospective">
 <rect class="pool" x="20.0" y="290.0" width="2360.0" height="300.0"/><line x1="70.0" y1="290.0" x2="70.0" y2="590.0" stroke="#172033" stroke-width="2"/><text class="poollabel" transform="translate(50.0 440.0) rotate(-90)" text-anchor="middle">Prospective Participant</text>
@@ -15,35 +15,35 @@
 <rect class="pool" x="20.0" y="980.0" width="2360.0" height="900.0"/><line x1="70.0" y1="980.0" x2="70.0" y2="1880.0" stroke="#172033" stroke-width="2"/><text class="poollabel" transform="translate(50.0 1430.0) rotate(-90)" text-anchor="middle">Veridica Operator</text>
 </g>
 <g id="DI_Start_Sponsor">
-<circle class="event" cx="108.0" cy="98.0" r="18.0"/>
-<text class="label" x="108.0" y="91.0">Sponsor, offer, or</text>
-<text class="label" x="108.0" y="105.0">request admission</text>
+<circle class="event" cx="108.0" cy="78.0" r="18.0"/>
+<text class="label" x="108.0" y="106.0">Sponsor, offer, or</text>
+<text class="label" x="108.0" y="120.0">request admission</text>
 </g>
 <g id="DI_Task_NameAdmission">
-<rect class="task" x="180.0" y="70.0" width="210.0" height="56.0" rx="8"/>
-<text class="label" x="285.0" y="91.0">Name candidate and requested</text>
-<text class="label" x="285.0" y="105.0">role capabilities</text>
+<rect class="task" x="180.0" y="50.0" width="210.0" height="56.0" rx="8"/>
+<text class="label" x="285.0" y="71.0">Name candidate and requested</text>
+<text class="label" x="285.0" y="85.0">role capabilities</text>
 </g>
 <g id="DI_End_GovAdmission">
-<circle class="event end" cx="468.0" cy="98.0" r="18.0"/>
-<text class="label" x="468.0" y="91.0">Admission request</text>
-<text class="label" x="468.0" y="105.0">sent</text>
+<circle class="event end" cx="468.0" cy="78.0" r="18.0"/>
+<text class="label" x="467.5" y="33.0">Admission request</text>
+<text class="label" x="467.5" y="47.0">sent</text>
 </g>
-<g id="DI_Start_GovRevocation">
-<circle class="event" cx="108.0" cy="203.0" r="18.0"/>
-<text class="label" x="108.0" y="189.0">Governed</text>
-<text class="label" x="108.0" y="203.0">revocation</text>
-<text class="label" x="108.0" y="217.0">requested</text>
+<g id="Event_0dgx9pm_di">
+<circle class="event" cx="108.0" cy="183.0" r="18.0"/><circle cx="108.0" cy="183.0" r="14.0" fill="none" stroke="#0f766e" stroke-width="2"/>
+<text class="label" x="108.5" y="211.0">Governed</text>
+<text class="label" x="108.5" y="224.0">revocation</text>
+<text class="label" x="108.5" y="237.0">requested</text>
 </g>
 <g id="DI_Task_NameRevocation">
-<rect class="task" x="180.0" y="175.0" width="210.0" height="56.0" rx="8"/>
-<text class="label" x="285.0" y="196.0">Name access or capabilities</text>
-<text class="label" x="285.0" y="210.0">for revocation</text>
+<rect class="task" x="180.0" y="155.0" width="210.0" height="56.0" rx="8"/>
+<text class="label" x="285.0" y="176.0">Name access or capabilities</text>
+<text class="label" x="285.0" y="190.0">for revocation</text>
 </g>
 <g id="DI_End_GovRevocation">
-<circle class="event end" cx="468.0" cy="203.0" r="18.0"/>
-<text class="label" x="468.0" y="196.0">Revocation request</text>
-<text class="label" x="468.0" y="210.0">sent</text>
+<circle class="event end" cx="468.0" cy="183.0" r="18.0"/>
+<text class="label" x="519.5" y="236.0">Revocation request</text>
+<text class="label" x="519.5" y="250.0">sent</text>
 </g>
 <g id="DI_Start_Self">
 <circle class="event" cx="108.0" cy="358.0" r="18.0"/>
@@ -57,33 +57,7 @@
 </g>
 <g id="DI_End_SelfRequest">
 <circle class="event end" cx="488.0" cy="358.0" r="18.0"/>
-<text class="label" x="488.0" y="358.0">Self-request sent</text>
-</g>
-<g id="DI_Start_ProspectOffer">
-<circle class="event" cx="838.0" cy="488.0" r="18.0"/>
-<text class="label" x="838.0" y="481.0">Role-specific</text>
-<text class="label" x="838.0" y="495.0">offer received</text>
-</g>
-<g id="DI_Gateway_ProspectDecision">
-<path class="gateway" d="M938.0,460.0 L966.0,488.0 L938.0,516.0 L910.0,488.0 Z"/><path d="M929.6,479.6 L946.4,496.4 M946.4,479.6 L929.6,496.4" stroke="#b45309" stroke-width="2"/>
-<text class="label" x="938.0" y="481.0">Accept this role</text>
-<text class="label" x="938.0" y="495.0">capability?</text>
-</g>
-<g id="DI_Task_ProspectAccept">
-<rect class="task" x="1030.0" y="415.0" width="190.0" height="56.0" rx="8"/>
-<text class="label" x="1125.0" y="443.0">Accept named role capability</text>
-</g>
-<g id="DI_Task_ProspectDecline">
-<rect class="task" x="1030.0" y="515.0" width="190.0" height="56.0" rx="8"/>
-<text class="label" x="1125.0" y="543.0">Decline named role capability</text>
-</g>
-<g id="DI_Gateway_ProspectMerge">
-<path class="gateway" d="M1308.0,460.0 L1336.0,488.0 L1308.0,516.0 L1280.0,488.0 Z"/><path d="M1299.6,479.6 L1316.4,496.4 M1316.4,479.6 L1299.6,496.4" stroke="#b45309" stroke-width="2"/>
-</g>
-<g id="DI_End_ProspectResponse">
-<circle class="event end" cx="1418.0" cy="488.0" r="18.0"/>
-<text class="label" x="1418.0" y="481.0">Response sent for</text>
-<text class="label" x="1418.0" y="495.0">this role</text>
+<text class="label" x="488.0" y="327.0">Self-request sent</text>
 </g>
 <g id="DI_Start_Capability">
 <circle class="event" cx="108.0" cy="673.0" r="18.0"/>
@@ -98,49 +72,23 @@
 </g>
 <g id="DI_End_CapabilityRequest">
 <circle class="event end" cx="488.0" cy="673.0" r="18.0"/>
-<text class="label" x="488.0" y="666.0">Capability request</text>
-<text class="label" x="488.0" y="680.0">sent</text>
+<text class="label" x="487.5" y="627.5">Capability request</text>
+<text class="label" x="487.5" y="641.5">sent</text>
 </g>
 <g id="DI_Start_Renounce">
-<circle class="event" cx="108.0" cy="773.0" r="18.0"/>
-<text class="label" x="108.0" y="766.0">Unilaterally</text>
-<text class="label" x="108.0" y="780.0">renounce held role</text>
+<circle class="event" cx="108.0" cy="819.0" r="18.0"/>
+<text class="label" x="108.0" y="853.0">Unilaterally</text>
+<text class="label" x="108.0" y="867.0">renounce held role</text>
 </g>
 <g id="DI_Task_NameRenunciation">
-<rect class="task" x="180.0" y="745.0" width="230.0" height="56.0" rx="8"/>
-<text class="label" x="295.0" y="766.0">Name held role capability to</text>
-<text class="label" x="295.0" y="780.0">renounce</text>
+<rect class="task" x="180.0" y="791.0" width="230.0" height="56.0" rx="8"/>
+<text class="label" x="295.0" y="812.0">Name held role capability to</text>
+<text class="label" x="295.0" y="826.0">renounce</text>
 </g>
 <g id="DI_End_Renunciation">
-<circle class="event end" cx="488.0" cy="773.0" r="18.0"/>
-<text class="label" x="488.0" y="766.0">Named renunciation</text>
-<text class="label" x="488.0" y="780.0">sent</text>
-</g>
-<g id="DI_Start_ActiveOffer">
-<circle class="event" cx="838.0" cy="873.0" r="18.0"/>
-<text class="label" x="838.0" y="866.0">Role-specific</text>
-<text class="label" x="838.0" y="880.0">offer received</text>
-</g>
-<g id="DI_Gateway_ActiveDecision">
-<path class="gateway" d="M938.0,845.0 L966.0,873.0 L938.0,901.0 L910.0,873.0 Z"/><path d="M929.6,864.6 L946.4,881.4 M946.4,864.6 L929.6,881.4" stroke="#b45309" stroke-width="2"/>
-<text class="label" x="938.0" y="866.0">Accept this role</text>
-<text class="label" x="938.0" y="880.0">capability?</text>
-</g>
-<g id="DI_Task_ActiveAccept">
-<rect class="task" x="1030.0" y="805.0" width="190.0" height="56.0" rx="8"/>
-<text class="label" x="1125.0" y="833.0">Accept named role capability</text>
-</g>
-<g id="DI_Task_ActiveDecline">
-<rect class="task" x="1030.0" y="890.0" width="190.0" height="56.0" rx="8"/>
-<text class="label" x="1125.0" y="918.0">Decline named role capability</text>
-</g>
-<g id="DI_Gateway_ActiveMerge">
-<path class="gateway" d="M1308.0,845.0 L1336.0,873.0 L1308.0,901.0 L1280.0,873.0 Z"/><path d="M1299.6,864.6 L1316.4,881.4 M1316.4,864.6 L1299.6,881.4" stroke="#b45309" stroke-width="2"/>
-</g>
-<g id="DI_End_ActiveResponse">
-<circle class="event end" cx="1418.0" cy="873.0" r="18.0"/>
-<text class="label" x="1418.0" y="866.0">Response sent for</text>
-<text class="label" x="1418.0" y="880.0">this role</text>
+<circle class="event end" cx="488.0" cy="819.0" r="18.0"/>
+<text class="label" x="540.0" y="746.5">Named renunciation</text>
+<text class="label" x="540.0" y="760.5">sent</text>
 </g>
 <g id="DI_Start_Admission">
 <circle class="event" cx="108.0" cy="1058.0" r="18.0"/>
@@ -178,63 +126,12 @@
 <text class="label" x="878.0" y="1128.0">capability</text>
 <text class="label" x="878.0" y="1142.0">approved?</text>
 </g>
-<g id="DI_Subprocess_PerCapability">
-<rect class="sub" x="970.0" y="1030.0" width="930.0" height="300.0" rx="8"/>
-<text class="label" x="1435.0" y="1173.0">For each offered role</text>
-<text class="label" x="1435.0" y="1187.0">capability</text>
-</g>
-<g id="DI_Start_OfferItem">
-<circle class="event" cx="1015.0" cy="1150.0" r="15.0"/>
-</g>
-<g id="DI_Task_IssueOffer">
-<rect class="task" x="1060.0" y="1122.0" width="140.0" height="56.0" rx="8"/>
-<text class="label" x="1130.0" y="1150.0">Issue role-specific offer</text>
-</g>
-<g id="DI_Gateway_OfferRecipient">
-<path class="gateway" d="M1248.0,1122.0 L1276.0,1150.0 L1248.0,1178.0 L1220.0,1150.0 Z"/><path d="M1239.6,1141.6 L1256.4,1158.4 M1256.4,1141.6 L1239.6,1158.4" stroke="#b45309" stroke-width="2"/>
-<text class="label" x="1248.0" y="1136.0">Prospective or</text>
-<text class="label" x="1248.0" y="1150.0">active</text>
-<text class="label" x="1248.0" y="1164.0">participant?</text>
-</g>
-<g id="DI_Throw_OfferProspect">
-<circle class="event" cx="1315.0" cy="1095.0" r="15.0"/>
-<text class="label" x="1315.0" y="1081.0">Offer sent to</text>
-<text class="label" x="1315.0" y="1095.0">prospective</text>
-<text class="label" x="1315.0" y="1109.0">participant</text>
-</g>
-<g id="DI_Throw_OfferActive">
-<circle class="event" cx="1315.0" cy="1205.0" r="15.0"/>
-<text class="label" x="1315.0" y="1198.0">Offer sent to</text>
-<text class="label" x="1315.0" y="1212.0">active participant</text>
-</g>
-<g id="DI_Gateway_OfferMerge">
-<path class="gateway" d="M1388.0,1122.0 L1416.0,1150.0 L1388.0,1178.0 L1360.0,1150.0 Z"/><path d="M1379.6,1141.6 L1396.4,1158.4 M1396.4,1141.6 L1379.6,1158.4" stroke="#b45309" stroke-width="2"/>
-</g>
-<g id="DI_Catch_Response">
-<circle class="event" cx="1450.0" cy="1150.0" r="15.0"/>
-<text class="label" x="1450.0" y="1143.0">Accept or decline</text>
-<text class="label" x="1450.0" y="1157.0">received</text>
-</g>
-<g id="DI_Gateway_Accepted">
-<path class="gateway" d="M1518.0,1122.0 L1546.0,1150.0 L1518.0,1178.0 L1490.0,1150.0 Z"/><path d="M1509.6,1141.6 L1526.4,1158.4 M1526.4,1141.6 L1509.6,1158.4" stroke="#b45309" stroke-width="2"/>
-<text class="label" x="1518.0" y="1143.0">Accepted before</text>
-<text class="label" x="1518.0" y="1157.0">expiry?</text>
-</g>
 <g id="DI_Task_RecordBinding">
-<rect class="task" x="1600.0" y="1070.0" width="190.0" height="56.0" rx="8"/>
-<text class="label" x="1695.0" y="1091.0">Record accepted binding and</text>
-<text class="label" x="1695.0" y="1105.0">scoped credentials</text>
-</g>
-<g id="DI_End_BindingRecorded">
-<circle class="event end" cx="1845.0" cy="1098.0" r="15.0"/>
-<text class="label" x="1845.0" y="1091.0">Accepted binding</text>
-<text class="label" x="1845.0" y="1105.0">recorded</text>
-</g>
-<g id="DI_End_NoCredential">
-<circle class="event end" cx="1615.0" cy="1245.0" r="15.0"/>
-<text class="label" x="1615.0" y="1231.0">Rejected, expired,</text>
-<text class="label" x="1615.0" y="1245.0">or declined: no</text>
-<text class="label" x="1615.0" y="1259.0">credential</text>
+<rect class="task" x="970.0" y="1100.0" width="230.0" height="70.0" rx="8"/>
+<text class="label" x="1085.0" y="1121.0">Record and activate</text>
+<text class="label" x="1085.0" y="1135.0">accepted role capability</text>
+<text class="label" x="1085.0" y="1149.0">with scoped credentials</text>
+<path d="M1073.0,1156.0 V1165.0 M1085.0,1156.0 V1165.0 M1097.0,1156.0 V1165.0" fill="none" stroke="#172033" stroke-width="1.5"/>
 </g>
 <g id="DI_Task_AuditAdmission">
 <rect class="task" x="1970.0" y="1100.0" width="220.0" height="56.0" rx="8"/>
@@ -284,26 +181,20 @@
 <text class="label" x="108.0" y="1621.0">Named renunciation</text>
 <text class="label" x="108.0" y="1635.0">received</text>
 </g>
-<g id="DI_Task_VerifyControl">
-<rect class="task" x="180.0" y="1600.0" width="220.0" height="56.0" rx="8"/>
-<text class="label" x="290.0" y="1621.0">Verify participant control and</text>
-<text class="label" x="290.0" y="1635.0">held named capability</text>
+<g id="DI_Task_ProcessRenunciation">
+<rect class="task" x="180.0" y="1600.0" width="360.0" height="56.0" rx="8"/>
+<text class="label" x="360.0" y="1632.0">Process named renunciation</text>
 </g>
-<g id="DI_Task_RemoveRenounced">
-<rect class="task" x="460.0" y="1600.0" width="230.0" height="56.0" rx="8"/>
-<text class="label" x="575.0" y="1621.0">Remove named capability and</text>
-<text class="label" x="575.0" y="1635.0">scoped credentials only</text>
-</g>
-<g id="DI_Task_RecordRenunciation">
-<rect class="task" x="750.0" y="1600.0" width="230.0" height="56.0" rx="8"/>
-<text class="label" x="865.0" y="1621.0">Preserve unrelated</text>
-<text class="label" x="865.0" y="1635.0">capabilities and record audit</text>
+<g id="DI_Annotation_RenunciationObligations">
+<path d="M650.0,1580.0 H640.0 V1676.0 H650.0" fill="none" stroke="#334155" stroke-width="1.5"/>
+<text x="660.0" y="1597.0" font-size="12px">Verify participant control; remove only the named</text>
+<text x="660.0" y="1614.0" font-size="12px">capability and scoped credentials; preserve unrelated</text>
+<text x="660.0" y="1631.0" font-size="12px">capabilities; record audit evidence.</text>
 </g>
 <g id="DI_End_RenunciationHandled">
-<circle class="event end" cx="1058.0" cy="1628.0" r="18.0"/>
-<text class="label" x="1058.0" y="1614.0">Renunciation</text>
-<text class="label" x="1058.0" y="1628.0">recorded without</text>
-<text class="label" x="1058.0" y="1642.0">governance</text>
+<circle class="event end" cx="618.0" cy="1628.0" r="18.0"/>
+<text class="label" x="618.0" y="1676.0">Renunciation recorded</text>
+<text class="label" x="618.0" y="1690.0">without governance</text>
 </g>
 <g id="DI_Ref_ActiveGovernance">
 <path class="data" d="M570.0,1260.0 H608.0 L620.0,1272.0 V1330.0 H570.0 Z M608.0,1260.0 V1272.0 H620.0"/>
@@ -317,18 +208,9 @@
 <text class="label" x="335.0" y="1295.0">Access Request</text>
 </g>
 <g id="DI_Ref_GovernedOutcome">
-<path class="data" d="M830.0,1260.0 H868.0 L880.0,1272.0 V1330.0 H830.0 Z M868.0,1260.0 V1272.0 H880.0"/>
-<text class="label" x="855.0" y="1295.0">Governed Outcome</text>
-</g>
-<g id="DI_Ref_Offer">
-<path class="data" d="M1100.0,1250.0 H1138.0 L1150.0,1262.0 V1320.0 H1100.0 Z M1138.0,1250.0 V1262.0 H1150.0"/>
-<text class="label" x="1125.0" y="1278.0">Admission or</text>
-<text class="label" x="1125.0" y="1292.0">Capability Offer</text>
-</g>
-<g id="DI_Ref_Response">
-<path class="data" d="M1290.0,1250.0 H1328.0 L1340.0,1262.0 V1320.0 H1290.0 Z M1328.0,1250.0 V1262.0 H1340.0"/>
-<text class="label" x="1315.0" y="1278.0">Participant</text>
-<text class="label" x="1315.0" y="1292.0">Response</text>
+<path class="data" d="M655.0,1260.0 H693.0 L705.0,1272.0 V1330.0 H655.0 Z M693.0,1260.0 V1272.0 H705.0"/>
+<text class="label" x="680.5" y="1340.0">Governed</text>
+<text class="label" x="680.5" y="1354.0">Outcome</text>
 </g>
 <g id="DI_Ref_AccessRecord">
 <path class="data" d="M2030.0,1250.0 H2068.0 L2080.0,1262.0 V1320.0 H2030.0 Z M2068.0,1250.0 V1262.0 H2080.0"/>
@@ -351,22 +233,10 @@
 <g id="DI_G4"><path class="edge" d="M390.0,203.0 L450.0,203.0"/></g>
 <g id="DI_P1"><path class="edge" d="M126.0,358.0 L180.0,358.0"/></g>
 <g id="DI_P2"><path class="edge" d="M410.0,358.0 L470.0,358.0"/></g>
-<g id="DI_P3"><path class="edge" d="M856.0,488.0 L910.0,488.0"/></g>
-<g id="DI_P4"><path class="edge" d="M938.0,460.0 L938.0,443.0 L1030.0,443.0"/></g>
-<g id="DI_P5"><path class="edge" d="M938.0,516.0 L938.0,543.0 L1030.0,543.0"/></g>
-<g id="DI_P6"><path class="edge" d="M1220.0,443.0 L1308.0,443.0 L1308.0,460.0"/></g>
-<g id="DI_P7"><path class="edge" d="M1220.0,543.0 L1308.0,543.0 L1308.0,516.0"/></g>
-<g id="DI_P8"><path class="edge" d="M1336.0,488.0 L1400.0,488.0"/></g>
 <g id="DI_A1"><path class="edge" d="M126.0,673.0 L180.0,673.0"/></g>
 <g id="DI_A2"><path class="edge" d="M410.0,673.0 L470.0,673.0"/></g>
-<g id="DI_A3"><path class="edge" d="M126.0,773.0 L180.0,773.0"/></g>
-<g id="DI_A4"><path class="edge" d="M410.0,773.0 L470.0,773.0"/></g>
-<g id="DI_A5"><path class="edge" d="M856.0,873.0 L910.0,873.0"/></g>
-<g id="DI_A6"><path class="edge" d="M938.0,845.0 L938.0,833.0 L1030.0,833.0"/></g>
-<g id="DI_A7"><path class="edge" d="M938.0,901.0 L938.0,918.0 L1030.0,918.0"/></g>
-<g id="DI_A8"><path class="edge" d="M1220.0,833.0 L1308.0,833.0 L1308.0,845.0"/></g>
-<g id="DI_A9"><path class="edge" d="M1220.0,918.0 L1308.0,918.0 L1308.0,901.0"/></g>
-<g id="DI_A10"><path class="edge" d="M1336.0,873.0 L1400.0,873.0"/></g>
+<g id="DI_A3"><path class="edge" d="M126.0,819.0 L180.0,819.0"/></g>
+<g id="DI_A4"><path class="edge" d="M410.0,819.0 L470.0,819.0"/></g>
 <g id="DI_O1"><path class="edge" d="M126.0,1058.0 L208.0,1058.0 L208.0,1100.0"/></g>
 <g id="DI_O2"><path class="edge" d="M126.0,1128.0 L180.0,1128.0"/></g>
 <g id="DI_O3"><path class="edge" d="M126.0,1198.0 L208.0,1198.0 L208.0,1156.0"/></g>
@@ -375,19 +245,8 @@
 <g id="DI_O6"><path class="edge" d="M790.0,1128.0 L850.0,1128.0"/></g>
 <g id="DI_O7"><path class="edge" d="M906.0,1128.0 L970.0,1128.0"/></g>
 <g id="DI_O8"><path class="edge" d="M878.0,1156.0 L878.0,1350.0 L2080.0,1350.0 L2080.0,1156.0"/></g>
-<g id="DI_O9"><path class="edge" d="M1900.0,1180.0 L1935.0,1180.0 L1935.0,1128.0 L1970.0,1128.0"/></g>
+<g id="DI_O9"><path class="edge" d="M1200.0,1128.0 L1970.0,1128.0"/></g>
 <g id="DI_O10"><path class="edge" d="M2190.0,1128.0 L2250.0,1128.0"/></g>
-<g id="DI_S1"><path class="edge" d="M1030.0,1150.0 L1060.0,1150.0"/></g>
-<g id="DI_S2"><path class="edge" d="M1200.0,1150.0 L1220.0,1150.0"/></g>
-<g id="DI_S2P"><path class="edge" d="M1248.0,1122.0 L1248.0,1095.0 L1300.0,1095.0"/></g>
-<g id="DI_S2A"><path class="edge" d="M1248.0,1178.0 L1248.0,1205.0 L1300.0,1205.0"/></g>
-<g id="DI_S3P"><path class="edge" d="M1330.0,1095.0 L1388.0,1095.0 L1388.0,1122.0"/></g>
-<g id="DI_S3A"><path class="edge" d="M1330.0,1205.0 L1388.0,1205.0 L1388.0,1178.0"/></g>
-<g id="DI_S3"><path class="edge" d="M1416.0,1150.0 L1435.0,1150.0"/></g>
-<g id="DI_S4"><path class="edge" d="M1465.0,1150.0 L1490.0,1150.0"/></g>
-<g id="DI_S5"><path class="edge" d="M1518.0,1122.0 L1518.0,1098.0 L1600.0,1098.0"/></g>
-<g id="DI_S6"><path class="edge" d="M1518.0,1178.0 L1518.0,1245.0 L1600.0,1245.0"/></g>
-<g id="DI_S7"><path class="edge" d="M1790.0,1098.0 L1830.0,1098.0"/></g>
 <g id="DI_O11"><path class="edge" d="M126.0,1428.0 L180.0,1428.0"/></g>
 <g id="DI_O12"><path class="edge" d="M400.0,1428.0 L460.0,1428.0"/></g>
 <g id="DI_O13"><path class="edge" d="M488.0,1400.0 L488.0,1388.0 L580.0,1388.0"/></g>
@@ -395,25 +254,18 @@
 <g id="DI_O15"><path class="edge" d="M810.0,1388.0 L840.0,1388.0 L840.0,1428.0 L870.0,1428.0"/></g>
 <g id="DI_O16"><path class="edge" d="M1100.0,1428.0 L1160.0,1428.0"/></g>
 <g id="DI_O17"><path class="edge" d="M126.0,1628.0 L180.0,1628.0"/></g>
-<g id="DI_O18"><path class="edge" d="M400.0,1628.0 L460.0,1628.0"/></g>
-<g id="DI_O19"><path class="edge" d="M690.0,1628.0 L750.0,1628.0"/></g>
-<g id="DI_O20"><path class="edge" d="M980.0,1628.0 L1040.0,1628.0"/></g>
-<g id="DI_MF_Admission"><path class="message" d="M468.0,116.0 L468.0,250.0 L60.0,250.0 L60.0,1058.0 L90.0,1058.0"/></g>
-<g id="DI_MF_Self"><path class="message" d="M488.0,376.0 L488.0,600.0 L70.0,600.0 L70.0,1128.0 L90.0,1128.0"/></g>
-<g id="DI_MF_Capability"><path class="message" d="M488.0,691.0 L488.0,970.0 L80.0,970.0 L80.0,1198.0 L90.0,1198.0"/></g>
-<g id="DI_MF_Revocation"><path class="message" d="M468.0,221.0 L468.0,280.0 L40.0,280.0 L40.0,1428.0 L90.0,1428.0"/></g>
-<g id="DI_MF_Renunciation"><path class="message" d="M488.0,791.0 L488.0,950.0 L50.0,950.0 L50.0,1628.0 L90.0,1628.0"/></g>
-<g id="DI_MF_OfferProspect"><path class="message" d="M1315.0,1080.0 L1315.0,1000.0 L800.0,1000.0 L800.0,488.0 L820.0,488.0"/></g>
-<g id="DI_MF_OfferActive"><path class="message" d="M1315.0,1190.0 L1315.0,1010.0 L790.0,1010.0 L790.0,873.0 L820.0,873.0"/></g>
-<g id="DI_MF_ProspectResponse"><path class="message" d="M1418.0,506.0 L1418.0,600.0 L1360.0,600.0 L1360.0,1150.0 L1340.0,1150.0"/></g>
-<g id="DI_MF_ActiveResponse"><path class="message" d="M1418.0,891.0 L1418.0,980.0 L1350.0,980.0 L1350.0,1150.0 L1340.0,1150.0"/></g>
+<g id="DI_O20"><path class="edge" d="M540.0,1628.0 L600.0,1628.0"/></g>
+<g id="DI_MF_Admission"><path class="message" d="M468.0,96.0 L468.0,110.0 L24.0,110.0 L24.0,1058.0 L90.0,1058.0"/><text class="label" x="520.0" y="133.0">Access Request</text></g>
+<g id="DI_MF_Self"><path class="message" d="M488.0,376.0 L488.0,390.0 L32.0,390.0 L32.0,1128.0 L90.0,1128.0"/><text class="label" x="209.0" y="405.0">Access Request</text></g>
+<g id="DI_MF_Capability"><path class="message" d="M488.0,691.0 L488.0,725.0 L36.0,725.0 L36.0,1198.0 L90.0,1198.0"/><text class="label" x="224.0" y="725.0">Access Request</text></g>
+<g id="DI_MF_Revocation"><path class="message" d="M468.0,201.0 L468.0,120.0 L28.0,120.0 L28.0,1428.0 L90.0,1428.0"/><text class="label" x="519.5" y="236.0">Revocation request sent</text></g>
+<g id="DI_MF_Renunciation"><path class="message" d="M488.0,837.0 L488.0,885.0 L40.0,885.0 L40.0,1628.0 L90.0,1628.0"/><text class="label" x="558.0" y="893.0">Named role renunciation</text></g>
 <g id="DI_Assoc_GovernanceAdmission"><path class="assoc" d="M595.0,1260.0 L595.0,1156.0"/></g>
-<g id="DI_Assoc_GovernanceRevocation"><path class="assoc" d="M620.0,1295.0 L290.0,1295.0 L290.0,1400.0"/></g>
+<g id="DataInputAssociation_1jaspdv_di"><path class="assoc" d="M570.0,1295.0 L347.0,1295.0 L347.0,1400.0"/></g>
 <g id="DI_Assoc_Request"><path class="assoc" d="M335.0,1260.0 L335.0,1200.0 L405.0,1200.0 L405.0,1156.0"/></g>
-<g id="DI_Assoc_Outcome"><path class="assoc" d="M790.0,1156.0 L855.0,1156.0 L855.0,1260.0"/></g>
-<g id="DI_Assoc_Offer"><path class="assoc" d="M1130.0,1178.0 L1130.0,1250.0 L1125.0,1250.0"/></g>
-<g id="DI_Assoc_Response"><path class="assoc" d="M1315.0,1250.0 L1325.0,1250.0 L1325.0,1165.0"/></g>
+<g id="DI_Assoc_Outcome"><path class="assoc" d="M680.0,1156.0 L680.0,1260.0"/></g>
 <g id="DI_Assoc_AccessRecord"><path class="assoc" d="M2080.0,1156.0 L2055.0,1156.0 L2055.0,1250.0"/></g>
-<g id="DI_Assoc_Bindings"><path class="assoc" d="M1585.0,1126.0 L1625.0,1126.0 L1625.0,1250.0"/></g>
-<g id="DI_Assoc_Audit"><path class="assoc" d="M865.0,1656.0 L875.0,1656.0 L875.0,1730.0"/></g>
+<g id="DI_Assoc_Bindings"><path class="assoc" d="M1085.0,1170.0 L1085.0,1285.0 L1600.0,1285.0"/></g>
+<g id="DI_Assoc_RenunciationObligations"><path class="assoc" d="M540.0,1628.0 L640.0,1628.0"/></g>
+<g id="DI_Assoc_Audit"><path class="assoc" d="M360.0,1656.0 L360.0,1765.0 L850.0,1765.0"/></g>
 </svg>
