@@ -197,12 +197,16 @@
     <bpmn:endEvent id="End_Lapsed" name="VLapsed">
       <bpmn:incoming>R5</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:startEvent id="Start_Ballot" name="Ballot received">
+    <bpmn:startEvent id="Start_Ballot" name="Applicable governance rule satisfied">
       <bpmn:outgoing>R1</bpmn:outgoing>
       <bpmn:conditionalEventDefinition id="ConditionalEventDefinition_0w087i9">
-        <bpmn:condition xsi:type="bpmn:tFormalExpression" />
+        <bpmn:condition xsi:type="bpmn:tFormalExpression" language="text/plain">Applicable governance rule satisfied</bpmn:condition>
       </bpmn:conditionalEventDefinition>
     </bpmn:startEvent>
+    <bpmn:textAnnotation id="Annotation_ApplicableGovernanceRule">
+      <bpmn:text>The applicable governance rule may vary by case, including quorum, voting weight, timeout, delegation, or abstention handling. These variations are intentionally not defined here.</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Assoc_ApplicableGovernanceRule" sourceRef="Start_Ballot" targetRef="Annotation_ApplicableGovernanceRule" />
     <bpmn:sequenceFlow id="R1" sourceRef="Start_Ballot" targetRef="Task_Resolve" />
     <bpmn:sequenceFlow id="R2" sourceRef="Task_Resolve" targetRef="Gateway_Verdict" />
     <bpmn:sequenceFlow id="R3" sourceRef="Gateway_Verdict" targetRef="Task_CreateOutcome" />
@@ -535,9 +539,18 @@
       <bpmndi:BPMNShape id="Event_0nrzqf1_di" bpmnElement="Start_Ballot">
         <dc:Bounds x="100" y="1610" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="82" y="1646" width="73" height="14" />
+          <dc:Bounds x="62" y="1646" width="112" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_Annotation_ApplicableGovernanceRule" bpmnElement="Annotation_ApplicableGovernanceRule">
+        <dc:Bounds x="850" y="1570" width="440" height="96" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="DI_Assoc_ApplicableGovernanceRule" bpmnElement="Assoc_ApplicableGovernanceRule">
+        <di:waypoint x="118" y="1610" />
+        <di:waypoint x="118" y="1550" />
+        <di:waypoint x="850" y="1550" />
+        <di:waypoint x="850" y="1570" />
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_R1" bpmnElement="R1">
         <di:waypoint x="136" y="1628" />
         <di:waypoint x="196" y="1628" />
