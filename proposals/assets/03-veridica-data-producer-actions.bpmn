@@ -118,7 +118,7 @@
   <bpmndi:BPMNDiagram id="Diagram_DataProducerActions">
     <bpmndi:BPMNPlane id="Plane_DataProducerActions" bpmnElement="Collaboration_Veridica_DataProducerActions">
       <bpmndi:BPMNShape id="Shape_Participant_Contributor" bpmnElement="Participant_Contributor" isHorizontal="true">
-        <dc:Bounds x="40" y="-100" width="2080" height="490" />
+        <dc:Bounds x="40" y="-100" width="1380" height="490" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_C_CatchCorrection" bpmnElement="C_CatchCorrection">
         <dc:Bounds x="100" y="260" width="36" height="36" />
@@ -167,7 +167,7 @@
         <di:waypoint x="470" y="50" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="Shape_Participant_Aggregator" bpmnElement="Participant_Aggregator" isHorizontal="true">
-        <dc:Bounds x="40" y="420" width="2080" height="370" />
+        <dc:Bounds x="40" y="420" width="1380" height="370" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_A_CatchContribution" bpmnElement="A_CatchContribution">
         <dc:Bounds x="100" y="505" width="36" height="36" />
@@ -231,7 +231,7 @@
         <di:waypoint x="952" y="700" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="Shape_Participant_Verifier" bpmnElement="Participant_Verifier" isHorizontal="true">
-        <dc:Bounds x="40" y="820" width="2080" height="300" />
+        <dc:Bounds x="40" y="820" width="1380" height="300" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_V_CatchContribution" bpmnElement="V_CatchContribution">
         <dc:Bounds x="100" y="885" width="36" height="36" />
@@ -258,9 +258,21 @@
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Edge_Assoc_Correction" bpmnElement="Assoc_Correction">
         <di:waypoint x="280" y="240" />
-        <di:waypoint x="280" y="165" />
-        <di:waypoint x="550" y="166" />
+        <di:waypoint x="280" y="191" />
+        <di:waypoint x="550" y="191" />
       </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Shape_Note_Validation" bpmnElement="Note_Validation">
+        <dc:Bounds x="120" y="980" width="380" height="100" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Note_Submission" bpmnElement="Note_Submission">
+        <dc:Bounds x="550" y="-80" width="350" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Note_Matching" bpmnElement="Note_Matching">
+        <dc:Bounds x="90" y="590" width="320" height="70" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Note_Aggregation" bpmnElement="Note_Aggregation">
+        <dc:Bounds x="1050" y="578" width="320" height="72" />
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Edge_Assoc_Submission" bpmnElement="Assoc_Submission">
         <di:waypoint x="280" y="12" />
         <di:waypoint x="280" y="-40" />
@@ -322,19 +334,7 @@
         <di:waypoint x="100" y="903" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="Shape_Note_Correction" bpmnElement="Note_Correction">
-        <dc:Bounds x="550" y="136" width="445" height="57" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_Note_Submission" bpmnElement="Note_Submission">
-        <dc:Bounds x="550" y="-80" width="350" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_Note_Matching" bpmnElement="Note_Matching">
-        <dc:Bounds x="90" y="590" width="320" height="70" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_Note_Aggregation" bpmnElement="Note_Aggregation">
-        <dc:Bounds x="1050" y="578" width="320" height="72" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_Note_Validation" bpmnElement="Note_Validation">
-        <dc:Bounds x="120" y="980" width="380" height="100" />
+        <dc:Bounds x="550" y="160" width="445" height="57" />
       </bpmndi:BPMNShape>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

@@ -14,42 +14,46 @@
       <bpmn:participantMultiplicity minimum="1" maximum="999" />
     </bpmn:participant>
     <bpmn:participant id="Participant_Operator" name="Veridica Operator" processRef="Process_Operator" />
-    <bpmn:messageFlow id="MF_Admission" name="Access Request" sourceRef="End_GovAdmission" targetRef="Start_Admission" />
-    <bpmn:messageFlow id="MF_Self" name="Access Request" sourceRef="End_SelfRequest" targetRef="Start_SelfRequest" />
-    <bpmn:messageFlow id="MF_Capability" name="Access Request" sourceRef="End_CapabilityRequest" targetRef="Start_CapabilityRequest" />
-    <bpmn:messageFlow id="MF_Revocation" name="Revocation request sent" sourceRef="End_GovRevocation" targetRef="Start_Revocation" />
+    <bpmn:messageFlow id="MF_Admission" sourceRef="End_GovAdmission" targetRef="Start_Admission" />
+    <bpmn:messageFlow id="MF_Self" sourceRef="End_SelfRequest" targetRef="Start_SelfRequest" />
+    <bpmn:messageFlow id="MF_Capability" sourceRef="End_CapabilityRequest" targetRef="Start_CapabilityRequest" />
+    <bpmn:messageFlow id="MF_Revocation" sourceRef="End_GovRevocation" targetRef="Start_Revocation" />
     <bpmn:messageFlow id="MF_Renunciation" name="Named role renunciation" sourceRef="End_Renunciation" targetRef="Start_Renunciation" />
+    <bpmn:textAnnotation id="Annotation_RenunciationObligations">
+      <bpmn:text>Verify participant control; remove only the named capability and scoped credentials; preserve unrelated capabilities; record audit evidence.</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Assoc_RenunciationObligations" sourceRef="Task_ProcessRenunciation" targetRef="Annotation_RenunciationObligations" />
   </bpmn:collaboration>
   <bpmn:process id="Process_Governor" isExecutable="false">
-    <bpmn:startEvent id="Start_Sponsor" name="Sponsor, offer, or request admission">
-      <bpmn:outgoing>G1</bpmn:outgoing>
-    </bpmn:startEvent>
-    <bpmn:task id="Task_NameAdmission" name="Name candidate and requested role capabilities">
-      <bpmn:incoming>G1</bpmn:incoming>
-      <bpmn:outgoing>G2</bpmn:outgoing>
-    </bpmn:task>
     <bpmn:endEvent id="End_GovAdmission" name="Admission request sent">
       <bpmn:incoming>G2</bpmn:incoming>
       <bpmn:messageEventDefinition messageRef="Message_AdmissionRequest" />
     </bpmn:endEvent>
-    <bpmn:task id="Task_NameRevocation" name="Name access or capabilities for revocation">
-      <bpmn:incoming>G3</bpmn:incoming>
-      <bpmn:outgoing>G4</bpmn:outgoing>
+    <bpmn:task id="Task_NameAdmission" name="Name candidate and requested role capabilities">
+      <bpmn:incoming>G1</bpmn:incoming>
+      <bpmn:outgoing>G2</bpmn:outgoing>
     </bpmn:task>
-    <bpmn:endEvent id="End_GovRevocation">
-      <bpmn:incoming>G4</bpmn:incoming>
-      <bpmn:messageEventDefinition messageRef="Message_RevocationRequest" />
-    </bpmn:endEvent>
+    <bpmn:startEvent id="Start_Sponsor" name="Sponsor, offer, or request admission">
+      <bpmn:outgoing>G1</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="G2" sourceRef="Task_NameAdmission" targetRef="End_GovAdmission" />
+    <bpmn:sequenceFlow id="G1" sourceRef="Start_Sponsor" targetRef="Task_NameAdmission" />
+    <bpmn:sequenceFlow id="G4" sourceRef="Task_NameRevocation" targetRef="End_GovRevocation" />
     <bpmn:startEvent id="Start_GovRevocation" name="Governed revocation requested">
       <bpmn:outgoing>G3</bpmn:outgoing>
       <bpmn:conditionalEventDefinition id="ConditionalEventDefinition_0hsvlgy">
         <bpmn:condition xsi:type="bpmn:tFormalExpression" />
       </bpmn:conditionalEventDefinition>
     </bpmn:startEvent>
-    <bpmn:sequenceFlow id="G1" sourceRef="Start_Sponsor" targetRef="Task_NameAdmission" />
-    <bpmn:sequenceFlow id="G2" sourceRef="Task_NameAdmission" targetRef="End_GovAdmission" />
+    <bpmn:task id="Task_NameRevocation" name="Name access or capabilities for revocation">
+      <bpmn:incoming>G3</bpmn:incoming>
+      <bpmn:outgoing>G4</bpmn:outgoing>
+    </bpmn:task>
     <bpmn:sequenceFlow id="G3" sourceRef="Start_GovRevocation" targetRef="Task_NameRevocation" />
-    <bpmn:sequenceFlow id="G4" sourceRef="Task_NameRevocation" targetRef="End_GovRevocation" />
+    <bpmn:endEvent id="End_GovRevocation" name="Revocation request sent">
+      <bpmn:incoming>G4</bpmn:incoming>
+      <bpmn:messageEventDefinition messageRef="Message_RevocationRequest" />
+    </bpmn:endEvent>
   </bpmn:process>
   <bpmn:process id="Process_Prospective" isExecutable="false">
     <bpmn:startEvent id="Start_Self" name="Request own admission">
@@ -78,6 +82,8 @@
       <bpmn:incoming>A2</bpmn:incoming>
       <bpmn:messageEventDefinition messageRef="Message_CapabilityRequest" />
     </bpmn:endEvent>
+    <bpmn:sequenceFlow id="A1" sourceRef="Start_Capability" targetRef="Task_NameCapability" />
+    <bpmn:sequenceFlow id="A2" sourceRef="Task_NameCapability" targetRef="End_CapabilityRequest" />
     <bpmn:startEvent id="Start_Renounce" name="Unilaterally renounce held role">
       <bpmn:outgoing>A3</bpmn:outgoing>
     </bpmn:startEvent>
@@ -89,22 +95,12 @@
       <bpmn:incoming>A4</bpmn:incoming>
       <bpmn:messageEventDefinition messageRef="Message_Renunciation" />
     </bpmn:endEvent>
-    <bpmn:sequenceFlow id="A1" sourceRef="Start_Capability" targetRef="Task_NameCapability" />
-    <bpmn:sequenceFlow id="A2" sourceRef="Task_NameCapability" targetRef="End_CapabilityRequest" />
     <bpmn:sequenceFlow id="A3" sourceRef="Start_Renounce" targetRef="Task_NameRenunciation" />
     <bpmn:sequenceFlow id="A4" sourceRef="Task_NameRenunciation" targetRef="End_Renunciation" />
   </bpmn:process>
   <bpmn:process id="Process_Operator" isExecutable="false">
     <bpmn:dataObjectReference id="Ref_ActiveGovernance" name="Active Governance Mechanism&#10;(version-pinned document from 01B)" dataObjectRef="Data_ActiveGovernance" />
     <bpmn:dataObject id="Data_ActiveGovernance" name="Active Governance Mechanism (version-pinned document from 01B)" />
-    <bpmn:dataObjectReference id="Ref_AccessRequest" name="Access Request" dataObjectRef="Data_AccessRequest" />
-    <bpmn:dataObject id="Data_AccessRequest" name="Access Request" />
-    <bpmn:dataObjectReference id="Ref_AccessRecord" name="Participant Access Record" dataObjectRef="Data_AccessRecord" />
-    <bpmn:dataObject id="Data_AccessRecord" name="Participant Access Record" />
-    <bpmn:dataObjectReference id="Ref_Bindings" name="Role Capability Bindings" dataObjectRef="Data_Bindings" />
-    <bpmn:dataObject id="Data_Bindings" name="Role Capability Bindings" />
-    <bpmn:dataObjectReference id="Ref_Audit" name="Lifecycle Audit Record" dataObjectRef="Data_Audit" />
-    <bpmn:dataObject id="Data_Audit" name="Lifecycle Audit Record" />
     <bpmn:startEvent id="Start_Admission" name="Sponsored admission request received">
       <bpmn:outgoing>O1</bpmn:outgoing>
       <bpmn:messageEventDefinition messageRef="Message_AdmissionRequest" />
@@ -142,14 +138,6 @@
       <bpmn:outgoing>O9</bpmn:outgoing>
       <bpmn:multiInstanceLoopCharacteristics />
     </bpmn:task>
-    <bpmn:task id="Task_AuditAdmission" name="Update participant access and lifecycle audit records">
-      <bpmn:incoming>O8</bpmn:incoming>
-      <bpmn:incoming>O9</bpmn:incoming>
-      <bpmn:outgoing>O10</bpmn:outgoing>
-    </bpmn:task>
-    <bpmn:endEvent id="End_AdmissionHandled" name="Admission or capability case recorded">
-      <bpmn:incoming>O10</bpmn:incoming>
-    </bpmn:endEvent>
     <bpmn:startEvent id="Start_Revocation" name="Governed revocation request received">
       <bpmn:outgoing>O11</bpmn:outgoing>
       <bpmn:messageEventDefinition messageRef="Message_RevocationRequest" />
@@ -184,9 +172,6 @@
       <bpmn:incoming>O17</bpmn:incoming>
       <bpmn:outgoing>O20</bpmn:outgoing>
     </bpmn:task>
-    <bpmn:textAnnotation id="Annotation_RenunciationObligations">
-      <bpmn:text>Verify participant control; remove only the named capability and scoped credentials; preserve unrelated capabilities; record audit evidence.</bpmn:text>
-    </bpmn:textAnnotation>
     <bpmn:endEvent id="End_RenunciationHandled" name="Renunciation recorded without governance">
       <bpmn:incoming>O20</bpmn:incoming>
     </bpmn:endEvent>
@@ -214,67 +199,83 @@
       <bpmn:incoming>O13</bpmn:incoming>
       <bpmn:outgoing>O15</bpmn:outgoing>
     </bpmn:task>
+    <bpmn:dataObjectReference id="Ref_AccessRequest" name="Access Request" dataObjectRef="Data_AccessRequest" />
+    <bpmn:dataObject id="Data_AccessRequest" name="Access Request" />
+    <bpmn:dataObjectReference id="Ref_Audit" name="Lifecycle Audit Record" dataObjectRef="Data_Audit" />
+    <bpmn:dataObject id="Data_Audit" name="Lifecycle Audit Record" />
+    <bpmn:task id="Task_AuditAdmission" name="Update participant access and lifecycle audit records">
+      <bpmn:incoming>O8</bpmn:incoming>
+      <bpmn:incoming>O9</bpmn:incoming>
+      <bpmn:outgoing>O10</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="End_AdmissionHandled" name="Admission or capability case recorded">
+      <bpmn:incoming>O10</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:dataObjectReference id="Ref_Bindings" name="Role Capability Bindings" dataObjectRef="Data_Bindings" />
+    <bpmn:dataObject id="Data_Bindings" name="Role Capability Bindings" />
+    <bpmn:dataObjectReference id="Ref_AccessRecord" name="Participant Access Record" dataObjectRef="Data_AccessRecord" />
+    <bpmn:dataObject id="Data_AccessRecord" name="Participant Access Record" />
     <bpmn:association id="Assoc_GovernanceAdmission" associationDirection="One" sourceRef="Ref_ActiveGovernance" targetRef="Call_GovernedAdmission" />
-    <bpmn:association id="Assoc_Request" associationDirection="One" sourceRef="Ref_AccessRequest" targetRef="Task_ValidateRequest" />
-    <bpmn:association id="Assoc_AccessRecord" associationDirection="One" sourceRef="Task_AuditAdmission" targetRef="Ref_AccessRecord" />
-    <bpmn:association id="Assoc_Bindings" associationDirection="One" sourceRef="Task_RecordBinding" targetRef="Ref_Bindings" />
-    <bpmn:association id="Assoc_RenunciationObligations" sourceRef="Task_ProcessRenunciation" targetRef="Annotation_RenunciationObligations" />
-    <bpmn:association id="Assoc_Audit" associationDirection="One" sourceRef="Task_ProcessRenunciation" targetRef="Ref_Audit" />
     <bpmn:association id="Assoc_Outcome" associationDirection="One" sourceRef="Call_GovernedAdmission" targetRef="Ref_GovernedOutcome" />
+    <bpmn:association id="Assoc_Request" associationDirection="One" sourceRef="Ref_AccessRequest" targetRef="Task_ValidateRequest" />
+    <bpmn:association id="Assoc_Audit" associationDirection="One" sourceRef="Task_ProcessRenunciation" targetRef="Ref_Audit" />
+    <bpmn:association id="Assoc_Bindings" associationDirection="One" sourceRef="Task_RecordBinding" targetRef="Ref_Bindings" />
+    <bpmn:association id="Assoc_AccessRecord" associationDirection="One" sourceRef="Task_AuditAdmission" targetRef="Ref_AccessRecord" />
   </bpmn:process>
   <bpmndi:BPMNDiagram id="Diagram_02_Access">
     <bpmndi:BPMNPlane id="Plane_02_Access" bpmnElement="Collaboration_02_Access">
       <bpmndi:BPMNShape id="DI_Pool_Governor" bpmnElement="Participant_Governor" isHorizontal="true">
-        <dc:Bounds x="20" y="-20" width="2360" height="270" />
+        <dc:Bounds x="20" y="-50" width="1710" height="300" />
+        <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="DI_Start_Sponsor" bpmnElement="Start_Sponsor">
-        <dc:Bounds x="90" y="40" width="36" height="36" />
+      <bpmndi:BPMNShape id="DI_End_GovAdmission" bpmnElement="End_GovAdmission">
+        <dc:Bounds x="450" y="17" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="63" y="76" width="90" height="27" />
+          <dc:Bounds x="437" y="-20" width="61" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DI_Task_NameAdmission" bpmnElement="Task_NameAdmission">
-        <dc:Bounds x="180" y="30" width="210" height="56" />
+        <dc:Bounds x="180" y="7" width="210" height="56" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="DI_End_GovAdmission" bpmnElement="End_GovAdmission">
-        <dc:Bounds x="450" y="40" width="36" height="36" />
+      <bpmndi:BPMNShape id="DI_Start_Sponsor" bpmnElement="Start_Sponsor">
+        <dc:Bounds x="90" y="17" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="437" y="3" width="61" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="DI_Task_NameRevocation" bpmnElement="Task_NameRevocation">
-        <dc:Bounds x="180" y="135" width="210" height="56" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="DI_End_GovRevocation" bpmnElement="End_GovRevocation">
-        <dc:Bounds x="450" y="145" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="489" y="226" width="61" height="27" />
+          <dc:Bounds x="63" y="53" width="90" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_0dgx9pm_di" bpmnElement="Start_GovRevocation">
-        <dc:Bounds x="90" y="145" width="36" height="36" />
+        <dc:Bounds x="90" y="152" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="83" y="181" width="51" height="40" />
+          <dc:Bounds x="83" y="188" width="51" height="40" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="DI_G1" bpmnElement="G1">
-        <di:waypoint x="126" y="58" />
-        <di:waypoint x="180" y="58" />
-      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="DI_Task_NameRevocation" bpmnElement="Task_NameRevocation">
+        <dc:Bounds x="180" y="142" width="210" height="56" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_End_GovRevocation" bpmnElement="End_GovRevocation">
+        <dc:Bounds x="450" y="152" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="438" y="122" width="61" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="DI_G2" bpmnElement="G2">
-        <di:waypoint x="390" y="58" />
-        <di:waypoint x="450" y="58" />
+        <di:waypoint x="390" y="35" />
+        <di:waypoint x="450" y="35" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="DI_G3" bpmnElement="G3">
-        <di:waypoint x="126" y="163" />
-        <di:waypoint x="180" y="163" />
+      <bpmndi:BPMNEdge id="DI_G1" bpmnElement="G1">
+        <di:waypoint x="126" y="35" />
+        <di:waypoint x="180" y="35" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_G4" bpmnElement="G4">
-        <di:waypoint x="390" y="163" />
-        <di:waypoint x="450" y="163" />
+        <di:waypoint x="390" y="170" />
+        <di:waypoint x="450" y="170" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_G3" bpmnElement="G3">
+        <di:waypoint x="126" y="170" />
+        <di:waypoint x="180" y="170" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="DI_Pool_Prospective" bpmnElement="Participant_Prospective" isHorizontal="true">
-        <dc:Bounds x="20" y="270" width="2360" height="170" />
+        <dc:Bounds x="20" y="270" width="1710" height="170" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DI_Start_Self" bpmnElement="Start_Self">
         <dc:Bounds x="90" y="322" width="36" height="36" />
@@ -300,7 +301,7 @@
         <di:waypoint x="470" y="340" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="DI_Pool_Active" bpmnElement="Participant_Active" isHorizontal="true">
-        <dc:Bounds x="20" y="460" width="2360" height="330" />
+        <dc:Bounds x="20" y="460" width="1710" height="330" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DI_Start_Capability" bpmnElement="Start_Capability">
         <dc:Bounds x="90" y="505" width="36" height="36" />
@@ -318,18 +319,18 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DI_Start_Renounce" bpmnElement="Start_Renounce">
-        <dc:Bounds x="90" y="651" width="36" height="36" />
+        <dc:Bounds x="90" y="672" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="73" y="687" width="70" height="40" />
+          <dc:Bounds x="73" y="708" width="70" height="40" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DI_Task_NameRenunciation" bpmnElement="Task_NameRenunciation">
-        <dc:Bounds x="180" y="641" width="230" height="56" />
+        <dc:Bounds x="180" y="662" width="230" height="56" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DI_End_Renunciation" bpmnElement="End_Renunciation">
-        <dc:Bounds x="470" y="651" width="36" height="36" />
+        <dc:Bounds x="470" y="672" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="498" y="587" width="84" height="27" />
+          <dc:Bounds x="498" y="608" width="84" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="DI_A1" bpmnElement="A1">
@@ -341,44 +342,20 @@
         <di:waypoint x="470" y="523" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_A3" bpmnElement="A3">
-        <di:waypoint x="126" y="669" />
-        <di:waypoint x="180" y="669" />
+        <di:waypoint x="126" y="690" />
+        <di:waypoint x="180" y="690" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_A4" bpmnElement="A4">
-        <di:waypoint x="410" y="669" />
-        <di:waypoint x="470" y="669" />
+        <di:waypoint x="410" y="690" />
+        <di:waypoint x="470" y="690" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="DI_Pool_Operator" bpmnElement="Participant_Operator" isHorizontal="true">
-        <dc:Bounds x="20" y="810" width="2360" height="900" />
+        <dc:Bounds x="20" y="810" width="1710" height="900" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DI_Ref_ActiveGovernance" bpmnElement="Ref_ActiveGovernance">
         <dc:Bounds x="570" y="1090" width="50" height="70" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="557" y="1160" width="76" height="80" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="DI_Ref_AccessRequest" bpmnElement="Ref_AccessRequest">
-        <dc:Bounds x="310" y="1090" width="50" height="70" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="295" y="1160" width="80" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="DI_Ref_AccessRecord" bpmnElement="Ref_AccessRecord">
-        <dc:Bounds x="2030" y="1080" width="50" height="70" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="2018" y="1150" width="74" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="DI_Ref_Bindings" bpmnElement="Ref_Bindings">
-        <dc:Bounds x="1600" y="1080" width="50" height="70" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1588" y="1150" width="74" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="DI_Ref_Audit" bpmnElement="Ref_Audit">
-        <dc:Bounds x="850" y="1560" width="50" height="70" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="840" y="1630" width="71" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DI_Start_Admission" bpmnElement="Start_Admission">
@@ -411,20 +388,11 @@
       <bpmndi:BPMNShape id="DI_Gateway_AdmissionOutcome" bpmnElement="Gateway_AdmissionOutcome" isMarkerVisible="true">
         <dc:Bounds x="850" y="930" width="56" height="56" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="846" y="986" width="64" height="40" />
+          <dc:Bounds x="846" y="880" width="64" height="40" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DI_Task_RecordBinding" bpmnElement="Task_RecordBinding">
         <dc:Bounds x="970" y="930" width="230" height="70" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="DI_Task_AuditAdmission" bpmnElement="Task_AuditAdmission">
-        <dc:Bounds x="1970" y="930" width="220" height="56" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="DI_End_AdmissionHandled" bpmnElement="End_AdmissionHandled">
-        <dc:Bounds x="2250" y="940" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="2232" y="976" width="73" height="40" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DI_Start_Revocation" bpmnElement="Start_Revocation">
         <dc:Bounds x="90" y="1240" width="36" height="36" />
@@ -459,9 +427,6 @@
       <bpmndi:BPMNShape id="DI_Task_ProcessRenunciation" bpmnElement="Task_ProcessRenunciation">
         <dc:Bounds x="180" y="1430" width="230" height="56" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="DI_Annotation_RenunciationObligations" bpmnElement="Annotation_RenunciationObligations">
-        <dc:Bounds x="640" y="1410" width="370" height="96" />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DI_End_RenunciationHandled" bpmnElement="End_RenunciationHandled">
         <dc:Bounds x="600" y="1440" width="36" height="36" />
         <bpmndi:BPMNLabel>
@@ -477,6 +442,47 @@
       <bpmndi:BPMNShape id="DI_Task_RemoveGoverned" bpmnElement="Task_RemoveGoverned">
         <dc:Bounds x="565" y="1332" width="230" height="56" />
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_Ref_AccessRequest" bpmnElement="Ref_AccessRequest">
+        <dc:Bounds x="380" y="1025" width="50" height="70" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="365" y="1095" width="80" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_Ref_Audit" bpmnElement="Ref_Audit">
+        <dc:Bounds x="270" y="1535" width="50" height="70" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="260" y="1605" width="71" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_Task_AuditAdmission" bpmnElement="Task_AuditAdmission">
+        <dc:Bounds x="1290" y="930" width="220" height="56" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_End_AdmissionHandled" bpmnElement="End_AdmissionHandled">
+        <dc:Bounds x="1602" y="940" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1584" y="976" width="73" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_Ref_Bindings" bpmnElement="Ref_Bindings">
+        <dc:Bounds x="1060" y="1090" width="50" height="70" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1048" y="1170" width="74" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_Ref_AccessRecord" bpmnElement="Ref_AccessRecord">
+        <dc:Bounds x="1375" y="1090" width="50" height="70" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1363" y="1160" width="74" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="DI_Assoc_Bindings" bpmnElement="Assoc_Bindings">
+        <di:waypoint x="1085" y="1000" />
+        <di:waypoint x="1085" y="1090" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_Assoc_AccessRecord" bpmnElement="Assoc_AccessRecord">
+        <di:waypoint x="1400" y="986" />
+        <di:waypoint x="1400" y="1090" />
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_O1" bpmnElement="O1">
         <di:waypoint x="126" y="888" />
         <di:waypoint x="208" y="888" />
@@ -512,20 +518,21 @@
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_O8" bpmnElement="O8">
         <di:waypoint x="878" y="986" />
-        <di:waypoint x="878" y="1180" />
-        <di:waypoint x="2080" y="1180" />
-        <di:waypoint x="2080" y="986" />
+        <di:waypoint x="878" y="1050" />
+        <di:waypoint x="1240" y="1050" />
+        <di:waypoint x="1240" y="958" />
+        <di:waypoint x="1290" y="958" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1451" y="1155" width="57" height="27" />
+          <dc:Bounds x="811" y="1046" width="57" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_O9" bpmnElement="O9">
         <di:waypoint x="1200" y="958" />
-        <di:waypoint x="1970" y="958" />
+        <di:waypoint x="1290" y="958" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_O10" bpmnElement="O10">
-        <di:waypoint x="2190" y="958" />
-        <di:waypoint x="2250" y="958" />
+        <di:waypoint x="1510" y="958" />
+        <di:waypoint x="1602" y="958" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_O11" bpmnElement="O11">
         <di:waypoint x="126" y="1258" />
@@ -540,7 +547,7 @@
         <di:waypoint x="488" y="1360" />
         <di:waypoint x="565" y="1360" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="477" y="1356" width="48" height="14" />
+          <dc:Bounds x="464" y="1363" width="48" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_O14" bpmnElement="O14">
@@ -572,44 +579,32 @@
         <di:waypoint x="595" y="1090" />
         <di:waypoint x="595" y="986" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="DI_Assoc_Request" bpmnElement="Assoc_Request">
-        <di:waypoint x="335" y="1090" />
-        <di:waypoint x="335" y="1030" />
-        <di:waypoint x="405" y="1030" />
-        <di:waypoint x="405" y="986" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="DI_Assoc_AccessRecord" bpmnElement="Assoc_AccessRecord">
-        <di:waypoint x="2080" y="986" />
-        <di:waypoint x="2055" y="986" />
-        <di:waypoint x="2055" y="1080" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="DI_Assoc_Bindings" bpmnElement="Assoc_Bindings">
-        <di:waypoint x="1085" y="1000" />
-        <di:waypoint x="1085" y="1115" />
-        <di:waypoint x="1600" y="1115" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="DI_Assoc_RenunciationObligations" bpmnElement="Assoc_RenunciationObligations">
-        <di:waypoint x="295" y="1430" />
-        <di:waypoint x="295" y="1395" />
-        <di:waypoint x="640" y="1395" />
-        <di:waypoint x="640" y="1410" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="DI_Assoc_Audit" bpmnElement="Assoc_Audit">
-        <di:waypoint x="295" y="1486" />
-        <di:waypoint x="295" y="1595" />
-        <di:waypoint x="850" y="1595" />
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_Assoc_Outcome" bpmnElement="Assoc_Outcome">
         <di:waypoint x="680" y="986" />
         <di:waypoint x="680" y="1090" />
       </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_Assoc_Request" bpmnElement="Assoc_Request">
+        <di:waypoint x="405" y="1025" />
+        <di:waypoint x="405" y="986" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_Assoc_Audit" bpmnElement="Assoc_Audit">
+        <di:waypoint x="295" y="1486" />
+        <di:waypoint x="295" y="1535" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="DI_Annotation_RenunciationObligations" bpmnElement="Annotation_RenunciationObligations">
+        <dc:Bounds x="165" y="1330" width="260" height="60" />
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="DataInputAssociation_1jaspdv_di" bpmnElement="DataInputAssociation_1jaspdv">
         <di:waypoint x="570" y="1125" />
         <di:waypoint x="347" y="1125" />
         <di:waypoint x="347" y="1230" />
       </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_Assoc_RenunciationObligations" bpmnElement="Assoc_RenunciationObligations">
+        <di:waypoint x="295" y="1430" />
+        <di:waypoint x="295" y="1390" />
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_MF_Admission" bpmnElement="MF_Admission">
-        <di:waypoint x="468" y="76" />
+        <di:waypoint x="468" y="53" />
         <di:waypoint x="468" y="110" />
         <di:waypoint x="-150" y="110" />
         <di:waypoint x="-150" y="888" />
@@ -620,26 +615,26 @@
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_MF_Self" bpmnElement="MF_Self">
         <di:waypoint x="488" y="358" />
-        <di:waypoint x="488" y="390" />
-        <di:waypoint x="-90" y="390" />
+        <di:waypoint x="488" y="410" />
+        <di:waypoint x="-90" y="410" />
         <di:waypoint x="-90" y="958" />
         <di:waypoint x="90" y="958" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="94" y="385" width="80" height="14" />
+          <dc:Bounds x="500" y="403" width="80" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_MF_Capability" bpmnElement="MF_Capability">
         <di:waypoint x="488" y="541" />
-        <di:waypoint x="488" y="725" />
-        <di:waypoint x="-30" y="725" />
+        <di:waypoint x="488" y="600" />
+        <di:waypoint x="-30" y="600" />
         <di:waypoint x="-30" y="1028" />
         <di:waypoint x="90" y="1028" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="145" y="725" width="80" height="14" />
+          <dc:Bounds x="145" y="600" width="80" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_MF_Revocation" bpmnElement="MF_Revocation">
-        <di:waypoint x="468" y="181" />
+        <di:waypoint x="468" y="188" />
         <di:waypoint x="468" y="230" />
         <di:waypoint x="-120" y="230" />
         <di:waypoint x="-120" y="1258" />
@@ -649,13 +644,13 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_MF_Renunciation" bpmnElement="MF_Renunciation">
-        <di:waypoint x="488" y="651" />
-        <di:waypoint x="488" y="610" />
-        <di:waypoint x="-60" y="610" />
+        <di:waypoint x="488" y="672" />
+        <di:waypoint x="488" y="630" />
+        <di:waypoint x="-60" y="630" />
         <di:waypoint x="-60" y="1458" />
         <di:waypoint x="90" y="1458" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="500" y="617.9999999999993" width="80" height="14" />
+          <dc:Bounds x="510" y="640" width="60" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
