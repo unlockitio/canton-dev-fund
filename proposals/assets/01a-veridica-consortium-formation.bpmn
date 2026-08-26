@@ -148,12 +148,15 @@
         <di:waypoint x="228" y="83" />
         <di:waypoint x="350" y="83" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="225" y="33" width="89" height="53" />
+          <dc:Bounds x="125" y="53" width="89" height="53" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_A2_No" bpmnElement="A2_No">
         <di:waypoint x="256" y="148" />
         <di:waypoint x="530" y="148" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="354" y="157" width="79" height="66" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_A3" bpmnElement="A3">
         <di:waypoint x="386" y="83" />
