@@ -182,8 +182,9 @@
 <text class="label" x="108.0" y="1635.0">received</text>
 </g>
 <g id="DI_Task_ProcessRenunciation">
-<rect class="task" x="180.0" y="1600.0" width="360.0" height="56.0" rx="8"/>
-<text class="label" x="360.0" y="1632.0">Process named renunciation</text>
+<rect class="task" x="180.0" y="1600.0" width="230.0" height="56.0" rx="8"/>
+<text class="label" x="295.0" y="1621.0">Process named</text>
+<text class="label" x="295.0" y="1635.0">renunciation</text>
 </g>
 <g id="DI_Annotation_RenunciationObligations">
 <path d="M650.0,1580.0 H640.0 V1676.0 H650.0" fill="none" stroke="#334155" stroke-width="1.5"/>
@@ -254,7 +255,7 @@
 <g id="DI_O15"><path class="edge" d="M810.0,1388.0 L840.0,1388.0 L840.0,1428.0 L870.0,1428.0"/></g>
 <g id="DI_O16"><path class="edge" d="M1100.0,1428.0 L1160.0,1428.0"/></g>
 <g id="DI_O17"><path class="edge" d="M126.0,1628.0 L180.0,1628.0"/></g>
-<g id="DI_O20"><path class="edge" d="M540.0,1628.0 L600.0,1628.0"/></g>
+<g id="DI_O20"><path class="edge" d="M410.0,1628.0 L600.0,1628.0"/></g>
 <g id="DI_MF_Admission"><path class="message" d="M468.0,96.0 L468.0,110.0 L24.0,110.0 L24.0,1058.0 L90.0,1058.0"/><text class="label" x="520.0" y="133.0">Access Request</text></g>
 <g id="DI_MF_Self"><path class="message" d="M488.0,376.0 L488.0,390.0 L32.0,390.0 L32.0,1128.0 L90.0,1128.0"/><text class="label" x="209.0" y="405.0">Access Request</text></g>
 <g id="DI_MF_Capability"><path class="message" d="M488.0,691.0 L488.0,725.0 L36.0,725.0 L36.0,1198.0 L90.0,1198.0"/><text class="label" x="224.0" y="725.0">Access Request</text></g>
@@ -266,6 +267,6 @@
 <g id="DI_Assoc_Outcome"><path class="assoc" d="M680.0,1156.0 L680.0,1260.0"/></g>
 <g id="DI_Assoc_AccessRecord"><path class="assoc" d="M2080.0,1156.0 L2055.0,1156.0 L2055.0,1250.0"/></g>
 <g id="DI_Assoc_Bindings"><path class="assoc" d="M1085.0,1170.0 L1085.0,1285.0 L1600.0,1285.0"/></g>
-<g id="DI_Assoc_RenunciationObligations"><path class="assoc" d="M360.0,1600.0 L360.0,1565.0 L640.0,1565.0 L640.0,1580.0"/></g>
-<g id="DI_Assoc_Audit"><path class="assoc" d="M360.0,1656.0 L360.0,1765.0 L850.0,1765.0"/></g>
+<g id="DI_Assoc_RenunciationObligations"><path class="assoc" d="M295.0,1600.0 L295.0,1565.0 L640.0,1565.0 L640.0,1580.0"/></g>
+<g id="DI_Assoc_Audit"><path class="assoc" d="M295.0,1656.0 L295.0,1765.0 L850.0,1765.0"/></g>
 </svg>
