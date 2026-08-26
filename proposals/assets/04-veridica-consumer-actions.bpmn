@@ -14,9 +14,8 @@
     <bpmn:participant id="Participant_Escrow" name="Escrow" processRef="Process_Escrow" />
     <bpmn:messageFlow id="MessageFlow_QuoteRequest" sourceRef="Consumer_SendQuoteRequest" targetRef="Provider_ReceiveQuoteRequest" />
     <bpmn:messageFlow id="MessageFlow_Quote" sourceRef="Provider_SendQuote" targetRef="Consumer_ReceiveQuote" />
-    <bpmn:messageFlow id="MessageFlow_AcceptedQuoteLock" sourceRef="Consumer_SendAcceptance" targetRef="Escrow_ReceiveInstruction" />
-    <bpmn:messageFlow id="MessageFlow_EscrowLocked" sourceRef="Escrow_SendLocked" targetRef="Provider_ReceiveLocked" />
     <bpmn:messageFlow id="MessageFlow_SettlementRequest" sourceRef="Provider_SendSettlementRequest" targetRef="Escrow_ReceiveSettlementRequest" />
+    <bpmn:messageFlow id="MessageFlow_EscrowLocked" sourceRef="Escrow_SendLocked" targetRef="Provider_ReceiveLocked" />
   </bpmn:collaboration>
   <bpmn:process id="Process_Consumer" name="Consumer actions" isExecutable="false">
     <bpmn:startEvent id="Consumer_Start" name="Data needed">
@@ -30,10 +29,6 @@
       <bpmn:incoming>C_Flow_02</bpmn:incoming>
       <bpmn:messageEventDefinition messageRef="Message_QuoteRequest" />
     </bpmn:intermediateThrowEvent>
-    <bpmn:sequenceFlow id="C_Flow_01" sourceRef="Consumer_Start" targetRef="Consumer_SelectData" />
-    <bpmn:sequenceFlow id="C_Flow_02" sourceRef="Consumer_SelectData" targetRef="Consumer_SendQuoteRequest" />
-    <bpmn:sequenceFlow id="Flow_130ew2r" sourceRef="Consumer_QuoteDecision" targetRef="Event_1mzfr2f" />
-    <bpmn:sequenceFlow id="C_Flow_Expiry" sourceRef="Consumer_QuoteExpiry" targetRef="Consumer_ExpiryEnd" />
     <bpmn:intermediateCatchEvent id="Consumer_ReceiveQuote" name="Receive binding time-bound quote">
       <bpmn:outgoing>C_Flow_04</bpmn:outgoing>
       <bpmn:messageEventDefinition messageRef="Message_Quote" />
@@ -44,16 +39,9 @@
     </bpmn:userTask>
     <bpmn:exclusiveGateway id="Consumer_QuoteDecision" name="Accept quote?">
       <bpmn:incoming>C_Flow_05</bpmn:incoming>
-      <bpmn:outgoing>C_Flow_Accept</bpmn:outgoing>
       <bpmn:outgoing>Flow_130ew2r</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0e0ebnd</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:intermediateThrowEvent id="Consumer_SendAcceptance" name="Send accepted quote and token-lock instruction">
-      <bpmn:incoming>C_Flow_Accept</bpmn:incoming>
-      <bpmn:messageEventDefinition messageRef="Message_AcceptedQuoteLock" />
-    </bpmn:intermediateThrowEvent>
-    <bpmn:sequenceFlow id="C_Flow_04" sourceRef="Consumer_ReceiveQuote" targetRef="Consumer_ReviewQuote" />
-    <bpmn:sequenceFlow id="C_Flow_05" sourceRef="Consumer_ReviewQuote" targetRef="Consumer_QuoteDecision" />
-    <bpmn:sequenceFlow id="C_Flow_Accept" name="Accept" sourceRef="Consumer_QuoteDecision" targetRef="Consumer_SendAcceptance" />
     <bpmn:endEvent id="Consumer_ExpiryEnd" name="Quote expired; no transfer or data">
       <bpmn:incoming>C_Flow_Expiry</bpmn:incoming>
     </bpmn:endEvent>
@@ -66,6 +54,22 @@
     <bpmn:endEvent id="Event_1mzfr2f" name="Quote declined">
       <bpmn:incoming>Flow_130ew2r</bpmn:incoming>
     </bpmn:endEvent>
+    <bpmn:sequenceFlow id="C_Flow_01" sourceRef="Consumer_Start" targetRef="Consumer_SelectData" />
+    <bpmn:sequenceFlow id="C_Flow_02" sourceRef="Consumer_SelectData" targetRef="Consumer_SendQuoteRequest" />
+    <bpmn:sequenceFlow id="C_Flow_04" sourceRef="Consumer_ReceiveQuote" targetRef="Consumer_ReviewQuote" />
+    <bpmn:sequenceFlow id="C_Flow_05" sourceRef="Consumer_ReviewQuote" targetRef="Consumer_QuoteDecision" />
+    <bpmn:sequenceFlow id="Flow_130ew2r" sourceRef="Consumer_QuoteDecision" targetRef="Event_1mzfr2f" />
+    <bpmn:sequenceFlow id="C_Flow_Expiry" sourceRef="Consumer_QuoteExpiry" targetRef="Consumer_ExpiryEnd" />
+    <bpmn:sequenceFlow id="Flow_0bjj8z9" sourceRef="Escrow_LockToken" targetRef="Escrow_SendLocked" />
+    <bpmn:sequenceFlow id="Flow_0e0ebnd" sourceRef="Consumer_QuoteDecision" targetRef="Escrow_LockToken" />
+    <bpmn:task id="Escrow_LockToken" name="Lock Consumer token to escrow">
+      <bpmn:incoming>Flow_0e0ebnd</bpmn:incoming>
+      <bpmn:outgoing>Flow_0bjj8z9</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:intermediateThrowEvent id="Escrow_SendLocked" name="Send escrow locked to Data Provider">
+      <bpmn:incoming>Flow_0bjj8z9</bpmn:incoming>
+      <bpmn:messageEventDefinition messageRef="Message_EscrowLocked" />
+    </bpmn:intermediateThrowEvent>
   </bpmn:process>
   <bpmn:process id="Process_DataProvider" name="Data Provider actions" isExecutable="false">
     <bpmn:sequenceFlow id="P_Flow_01" sourceRef="Provider_ReceiveQuoteRequest" targetRef="Provider_PrepareQuote" />
@@ -98,127 +102,25 @@
     </bpmn:intermediateThrowEvent>
   </bpmn:process>
   <bpmn:process id="Process_Escrow" name="Escrow actions" isExecutable="false">
-    <bpmn:startEvent id="Escrow_ReceiveInstruction" name="Receive accepted quote and token-lock instruction">
-      <bpmn:outgoing>E_Flow_01</bpmn:outgoing>
-      <bpmn:messageEventDefinition messageRef="Message_AcceptedQuoteLock" />
-    </bpmn:startEvent>
-    <bpmn:task id="Escrow_LockToken" name="Lock Consumer token">
-      <bpmn:incoming>E_Flow_01</bpmn:incoming>
-      <bpmn:outgoing>E_Flow_02</bpmn:outgoing>
-    </bpmn:task>
-    <bpmn:sequenceFlow id="E_Flow_04" sourceRef="Escrow_ReceiveSettlementRequest" targetRef="Escrow_TransferValue" />
-    <bpmn:sequenceFlow id="E_Flow_05" sourceRef="Escrow_TransferValue" targetRef="Escrow_CompleteEnd" />
-    <bpmn:sequenceFlow id="E_Flow_01" sourceRef="Escrow_ReceiveInstruction" targetRef="Escrow_LockToken" />
-    <bpmn:sequenceFlow id="E_Flow_02" sourceRef="Escrow_LockToken" targetRef="Escrow_SendLocked" />
     <bpmn:intermediateCatchEvent id="Escrow_ReceiveSettlementRequest" name="Receive settlement request / data ready">
       <bpmn:outgoing>E_Flow_04</bpmn:outgoing>
       <bpmn:messageEventDefinition messageRef="Message_SettlementRequest" />
     </bpmn:intermediateCatchEvent>
-    <bpmn:intermediateThrowEvent id="Escrow_SendLocked" name="Send escrow locked to Data Provider">
-      <bpmn:incoming>E_Flow_02</bpmn:incoming>
-      <bpmn:messageEventDefinition messageRef="Message_EscrowLocked" />
-    </bpmn:intermediateThrowEvent>
-    <bpmn:task id="Escrow_TransferValue" name="Transfer locked token / value to Data Provider">
-      <bpmn:incoming>E_Flow_04</bpmn:incoming>
-      <bpmn:outgoing>E_Flow_05</bpmn:outgoing>
-    </bpmn:task>
     <bpmn:endEvent id="Escrow_CompleteEnd" name="Settlement complete">
       <bpmn:incoming>E_Flow_05</bpmn:incoming>
       <bpmn:messageEventDefinition id="MessageEventDefinition_0fcujkf" />
     </bpmn:endEvent>
+    <bpmn:sequenceFlow id="E_Flow_04" sourceRef="Escrow_ReceiveSettlementRequest" targetRef="Escrow_TransferValue" />
+    <bpmn:sequenceFlow id="E_Flow_05" sourceRef="Escrow_TransferValue" targetRef="Escrow_CompleteEnd" />
+    <bpmn:task id="Escrow_TransferValue" name="Transfer locked token / value to Data Provider">
+      <bpmn:incoming>E_Flow_04</bpmn:incoming>
+      <bpmn:outgoing>E_Flow_05</bpmn:outgoing>
+    </bpmn:task>
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_Workflow04">
     <bpmndi:BPMNPlane id="BPMNPlane_Workflow04" bpmnElement="Collaboration_Workflow04">
-      <bpmndi:BPMNShape id="Shape_Participant_Consumer" bpmnElement="Participant_Consumer" isHorizontal="true">
-        <dc:Bounds x="40" y="-400" width="1150" height="690" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_Consumer_Start" bpmnElement="Consumer_Start">
-        <dc:Bounds x="102" y="-348" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="89" y="-312" width="63" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_Consumer_SelectData" bpmnElement="Consumer_SelectData">
-        <dc:Bounds x="180" y="-370" width="120" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_Consumer_SendQuoteRequest" bpmnElement="Consumer_SendQuoteRequest">
-        <dc:Bounds x="372" y="-348" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="362" y="-384" width="57" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_Consumer_ReceiveQuote" bpmnElement="Consumer_ReceiveQuote">
-        <dc:Bounds x="102" y="2" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="77" y="-35.5" width="86" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_Consumer_ReviewQuote" bpmnElement="Consumer_ReviewQuote">
-        <dc:Bounds x="180" y="-20" width="120" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_Consumer_QuoteDecision" bpmnElement="Consumer_QuoteDecision" isMarkerVisible="true">
-        <dc:Bounds x="415" y="-5" width="50" height="50" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="404" y="55" width="71" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_Consumer_SendAcceptance" bpmnElement="Consumer_SendAcceptance">
-        <dc:Bounds x="582" y="2" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="558" y="-48" width="83" height="40" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_Consumer_ExpiryEnd" bpmnElement="Consumer_ExpiryEnd">
-        <dc:Bounds x="222" y="-178" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="196" y="-142" width="88" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_04yt00j_di" bpmnElement="Consumer_QuoteExpiry">
-        <dc:Bounds x="102" y="-178" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="79" y="-142" width="82" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_1mzfr2f_di" bpmnElement="Event_1mzfr2f">
-        <dc:Bounds x="422" y="-178" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="403" y="-202" width="74" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="Edge_C_Flow_01" bpmnElement="C_Flow_01">
-        <di:waypoint x="138" y="-330" />
-        <di:waypoint x="180" y="-330" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_C_Flow_02" bpmnElement="C_Flow_02">
-        <di:waypoint x="300" y="-330" />
-        <di:waypoint x="372" y="-330" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_130ew2r_di" bpmnElement="Flow_130ew2r">
-        <di:waypoint x="440" y="-5" />
-        <di:waypoint x="440" y="-142" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_C_Flow_Expiry" bpmnElement="C_Flow_Expiry">
-        <di:waypoint x="138" y="-160" />
-        <di:waypoint x="222" y="-160" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_C_Flow_04" bpmnElement="C_Flow_04">
-        <di:waypoint x="138" y="20" />
-        <di:waypoint x="180" y="20" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_C_Flow_05" bpmnElement="C_Flow_05">
-        <di:waypoint x="300" y="20" />
-        <di:waypoint x="415" y="20" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_C_Flow_Accept" bpmnElement="C_Flow_Accept">
-        <di:waypoint x="465" y="20" />
-        <di:waypoint x="582" y="20" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="507" y="-5" width="34" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="Shape_Participant_DataProvider" bpmnElement="Participant_DataProvider" isHorizontal="true">
-        <dc:Bounds x="40" y="330" width="1150" height="350" />
+        <dc:Bounds x="40" y="330" width="870" height="350" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_Provider_ReceiveQuoteRequest" bpmnElement="Provider_ReceiveQuoteRequest">
         <dc:Bounds x="102" y="412" width="36" height="36" />
@@ -267,56 +169,126 @@
         <di:waypoint x="372" y="560" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="Shape_Participant_Escrow" bpmnElement="Participant_Escrow" isHorizontal="true">
-        <dc:Bounds x="40" y="760" width="1150" height="380" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_Escrow_ReceiveInstruction" bpmnElement="Escrow_ReceiveInstruction">
-        <dc:Bounds x="102" y="852" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="76" y="888" width="88" height="40" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_Escrow_LockToken" bpmnElement="Escrow_LockToken">
-        <dc:Bounds x="215" y="830" width="90" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_Escrow_SendLocked" bpmnElement="Escrow_SendLocked">
-        <dc:Bounds x="372" y="852" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="355" y="888" width="71" height="40" />
-        </bpmndi:BPMNLabel>
+        <dc:Bounds x="40" y="720" width="870" height="180" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_Escrow_ReceiveSettlementRequest" bpmnElement="Escrow_ReceiveSettlementRequest">
-        <dc:Bounds x="102" y="1002" width="36" height="36" />
+        <dc:Bounds x="102" y="772" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="86" y="1038" width="68" height="53" />
+          <dc:Bounds x="86" y="808" width="68" height="53" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1m8ugtf_di" bpmnElement="Escrow_CompleteEnd">
+        <dc:Bounds x="372" y="772" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="364" y="808" width="53" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_Escrow_TransferValue" bpmnElement="Escrow_TransferValue">
-        <dc:Bounds x="200" y="980" width="120" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_1m8ugtf_di" bpmnElement="Escrow_CompleteEnd">
-        <dc:Bounds x="372" y="1002" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="364" y="1038" width="53" height="27" />
-        </bpmndi:BPMNLabel>
+        <dc:Bounds x="180" y="750" width="120" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Edge_E_Flow_04" bpmnElement="E_Flow_04">
-        <di:waypoint x="138" y="1020" />
-        <di:waypoint x="200" y="1020" />
+        <di:waypoint x="138" y="790" />
+        <di:waypoint x="180" y="790" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Edge_E_Flow_05" bpmnElement="E_Flow_05">
-        <di:waypoint x="320" y="1020" />
-        <di:waypoint x="372" y="1020" />
+        <di:waypoint x="300" y="790" />
+        <di:waypoint x="372" y="790" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_E_Flow_01" bpmnElement="E_Flow_01">
-        <di:waypoint x="138" y="870" />
-        <di:waypoint x="215" y="870" />
+      <bpmndi:BPMNShape id="Shape_Participant_Consumer" bpmnElement="Participant_Consumer" isHorizontal="true">
+        <dc:Bounds x="40" y="-260" width="870" height="560" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Consumer_Start" bpmnElement="Consumer_Start">
+        <dc:Bounds x="102" y="-208" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="89" y="-172" width="63" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Consumer_SelectData" bpmnElement="Consumer_SelectData">
+        <dc:Bounds x="180" y="-230" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Consumer_SendQuoteRequest" bpmnElement="Consumer_SendQuoteRequest">
+        <dc:Bounds x="372" y="-208" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="361" y="-162.5" width="57" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Consumer_ReceiveQuote" bpmnElement="Consumer_ReceiveQuote">
+        <dc:Bounds x="102" y="142" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="77" y="105" width="86" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Consumer_ReviewQuote" bpmnElement="Consumer_ReviewQuote">
+        <dc:Bounds x="180" y="120" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Consumer_QuoteDecision" bpmnElement="Consumer_QuoteDecision" isMarkerVisible="true">
+        <dc:Bounds x="415" y="135" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="404" y="195" width="71" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Consumer_ExpiryEnd" bpmnElement="Consumer_ExpiryEnd">
+        <dc:Bounds x="222" y="-38" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="196" y="-2" width="88" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_04yt00j_di" bpmnElement="Consumer_QuoteExpiry">
+        <dc:Bounds x="102" y="-38" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="79" y="-2" width="82" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1mzfr2f_di" bpmnElement="Event_1mzfr2f">
+        <dc:Bounds x="422" y="-38" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="403" y="-62" width="74" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Escrow_LockToken" bpmnElement="Escrow_LockToken">
+        <dc:Bounds x="555" y="120" width="90" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Escrow_SendLocked" bpmnElement="Escrow_SendLocked">
+        <dc:Bounds x="742" y="142" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="724" y="92" width="71" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Edge_C_Flow_01" bpmnElement="C_Flow_01">
+        <di:waypoint x="138" y="-190" />
+        <di:waypoint x="180" y="-190" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_E_Flow_02" bpmnElement="E_Flow_02">
-        <di:waypoint x="305" y="870" />
-        <di:waypoint x="372" y="870" />
+      <bpmndi:BPMNEdge id="Edge_C_Flow_02" bpmnElement="C_Flow_02">
+        <di:waypoint x="300" y="-190" />
+        <di:waypoint x="372" y="-190" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_C_Flow_04" bpmnElement="C_Flow_04">
+        <di:waypoint x="138" y="160" />
+        <di:waypoint x="180" y="160" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_C_Flow_05" bpmnElement="C_Flow_05">
+        <di:waypoint x="300" y="160" />
+        <di:waypoint x="415" y="160" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_130ew2r_di" bpmnElement="Flow_130ew2r">
+        <di:waypoint x="440" y="135" />
+        <di:waypoint x="440" y="-2" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_C_Flow_Expiry" bpmnElement="C_Flow_Expiry">
+        <di:waypoint x="138" y="-20" />
+        <di:waypoint x="222" y="-20" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0bjj8z9_di" bpmnElement="Flow_0bjj8z9">
+        <di:waypoint x="645" y="160" />
+        <di:waypoint x="742" y="160" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0e0ebnd_di" bpmnElement="Flow_0e0ebnd">
+        <di:waypoint x="465" y="160" />
+        <di:waypoint x="555" y="160" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Edge_MessageFlow_QuoteRequest" bpmnElement="MessageFlow_QuoteRequest">
-        <di:waypoint x="390" y="-312" />
+        <di:waypoint x="390" y="-208" />
         <di:waypoint x="390" y="-230" />
         <di:waypoint x="-120" y="-230" />
         <di:waypoint x="-120" y="430" />
@@ -329,26 +301,16 @@
         <di:waypoint x="390" y="412" />
         <di:waypoint x="390" y="370" />
         <di:waypoint x="-90" y="370" />
-        <di:waypoint x="-90" y="20" />
-        <di:waypoint x="102" y="20" />
+        <di:waypoint x="-90" y="160" />
+        <di:waypoint x="102" y="160" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="405" y="333" width="30" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_MessageFlow_AcceptedQuoteLock" bpmnElement="MessageFlow_AcceptedQuoteLock">
-        <di:waypoint x="600" y="38" />
-        <di:waypoint x="600" y="100" />
-        <di:waypoint x="-60" y="100" />
-        <di:waypoint x="-60" y="870" />
-        <di:waypoint x="102" y="870" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="572" y="50" width="86" height="40" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Edge_MessageFlow_EscrowLocked" bpmnElement="MessageFlow_EscrowLocked">
-        <di:waypoint x="390" y="852" />
-        <di:waypoint x="390" y="800" />
-        <di:waypoint x="-30" y="800" />
+        <di:waypoint x="760" y="178" />
+        <di:waypoint x="760" y="250" />
+        <di:waypoint x="-30" y="250" />
         <di:waypoint x="-30" y="560" />
         <di:waypoint x="102" y="560" />
         <bpmndi:BPMNLabel>
@@ -358,9 +320,9 @@
       <bpmndi:BPMNEdge id="Edge_MessageFlow_SettlementRequest" bpmnElement="MessageFlow_SettlementRequest">
         <di:waypoint x="390" y="578" />
         <di:waypoint x="390" y="630" />
-        <di:waypoint x="0" y="630" />
-        <di:waypoint x="0" y="1020" />
-        <di:waypoint x="102" y="1020" />
+        <di:waypoint x="-30" y="630" />
+        <di:waypoint x="-30" y="790" />
+        <di:waypoint x="102" y="790" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="371" y="586" width="68" height="40" />
         </bpmndi:BPMNLabel>
