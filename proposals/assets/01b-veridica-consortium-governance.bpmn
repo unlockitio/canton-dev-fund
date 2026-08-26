@@ -231,7 +231,7 @@
       <dc:Bounds x="20" y="20" width="2460" height="600" />
     </bpmndi:BPMNShape>
     <bpmndi:BPMNShape id="DI_Task_RevisionValidate" bpmnElement="Task_RevisionValidate">
-      <dc:Bounds x="196" y="460" width="600" height="56" />
+      <dc:Bounds x="381" y="460" width="230" height="56" />
     </bpmndi:BPMNShape>
     <bpmndi:BPMNShape id="DI_Start_Revision" bpmnElement="Start_Revision">
       <dc:Bounds x="100" y="470" width="36" height="36" />
@@ -246,10 +246,10 @@
       </bpmndi:BPMNLabel>
     </bpmndi:BPMNShape>
     <bpmndi:BPMNShape id="DI_Task_Withdraw" bpmnElement="Task_Withdraw">
-      <dc:Bounds x="196" y="320" width="160" height="56" />
+      <dc:Bounds x="161" y="320" width="230" height="56" />
     </bpmndi:BPMNShape>
     <bpmndi:BPMNShape id="DI_Task_ValidateCapacity" bpmnElement="Task_ValidateCapacity">
-      <dc:Bounds x="196" y="100" width="600" height="56" />
+      <dc:Bounds x="381" y="100" width="230" height="56" />
     </bpmndi:BPMNShape>
     <bpmndi:BPMNShape id="DI_Start_Action" bpmnElement="Start_Action">
       <dc:Bounds x="100" y="110" width="36" height="36" />
@@ -280,34 +280,34 @@
     </bpmndi:BPMNShape>
     <bpmndi:BPMNEdge id="DI_P8" bpmnElement="P8">
       <di:waypoint x="136" y="488" />
-      <di:waypoint x="196" y="488" />
+      <di:waypoint x="381" y="488" />
     </bpmndi:BPMNEdge>
     <bpmndi:BPMNEdge id="DI_P7" bpmnElement="P7">
-      <di:waypoint x="356" y="348" />
+      <di:waypoint x="391" y="348" />
       <di:waypoint x="416" y="348" />
     </bpmndi:BPMNEdge>
     <bpmndi:BPMNEdge id="DI_P6" bpmnElement="P6">
       <di:waypoint x="136" y="348" />
-      <di:waypoint x="196" y="348" />
+      <di:waypoint x="161" y="348" />
     </bpmndi:BPMNEdge>
     <bpmndi:BPMNEdge id="DI_P5" bpmnElement="P5">
-      <di:waypoint x="796" y="128" />
+      <di:waypoint x="611" y="128" />
       <di:waypoint x="1076" y="128" />
     </bpmndi:BPMNEdge>
     <bpmndi:BPMNEdge id="DI_P1" bpmnElement="P1">
       <di:waypoint x="136" y="128" />
-      <di:waypoint x="196" y="128" />
+      <di:waypoint x="381" y="128" />
     </bpmndi:BPMNEdge>
     <bpmndi:BPMNEdge id="Flow_0smsrdv_di" bpmnElement="Flow_0smsrdv">
-      <di:waypoint x="796" y="488" />
+      <di:waypoint x="611" y="488" />
       <di:waypoint x="1076" y="488" />
     </bpmndi:BPMNEdge>
     <bpmndi:BPMNEdge id="DI_Assoc_ProposalPreparation" bpmnElement="Assoc_ProposalPreparation">
-      <di:waypoint x="796" y="145" />
+      <di:waypoint x="611" y="145" />
       <di:waypoint x="830" y="180" />
     </bpmndi:BPMNEdge>
     <bpmndi:BPMNEdge id="DI_Assoc_RevisionPreparation" bpmnElement="Assoc_RevisionPreparation">
-      <di:waypoint x="796" y="505" />
+      <di:waypoint x="611" y="505" />
       <di:waypoint x="830" y="530" />
     </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="DI_Governor" bpmnElement="Participant_Governor" isHorizontal="true">
@@ -320,7 +320,7 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DI_Task_Review" bpmnElement="Task_Review">
-        <dc:Bounds x="200" y="780" width="160" height="56" />
+        <dc:Bounds x="161" y="780" width="230" height="56" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DI_Gateway_Approved" bpmnElement="Gateway_Approved" isMarkerVisible="true">
         <dc:Bounds x="462" y="780" width="56" height="56" />
@@ -329,10 +329,10 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DI_Task_Distribute" bpmnElement="Task_Distribute">
-        <dc:Bounds x="630" y="770" width="160" height="76" />
+        <dc:Bounds x="520" y="780" width="230" height="56" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DI_Task_RequestRevision" bpmnElement="Task_RequestRevision">
-        <dc:Bounds x="630" y="980" width="160" height="56" />
+        <dc:Bounds x="520" y="980" width="230" height="56" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DI_End_BallotRequestSent" bpmnElement="End_BallotRequestSent">
         <dc:Bounds x="916" y="794" width="28" height="28" />
@@ -347,35 +347,35 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="DI_G2" bpmnElement="G2">
-        <di:waypoint x="360" y="808" />
+        <di:waypoint x="391" y="808" />
         <di:waypoint x="462" y="808" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_G4" bpmnElement="G4">
         <di:waypoint x="518" y="808" />
-        <di:waypoint x="630" y="808" />
+        <di:waypoint x="520" y="808" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_G5" bpmnElement="G5">
         <di:waypoint x="490" y="836" />
         <di:waypoint x="490" y="1008" />
-        <di:waypoint x="630" y="1008" />
+        <di:waypoint x="520" y="1008" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_G6" bpmnElement="G6">
-        <di:waypoint x="790" y="808" />
+        <di:waypoint x="750" y="808" />
         <di:waypoint x="916" y="808" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_G7" bpmnElement="G7">
-        <di:waypoint x="790" y="1008" />
+        <di:waypoint x="750" y="1008" />
         <di:waypoint x="916" y="1008" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1jakvug_di" bpmnElement="Flow_1jakvug">
         <di:waypoint x="148" y="808" />
-        <di:waypoint x="200" y="808" />
+        <di:waypoint x="161" y="808" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="DI_Resolver" bpmnElement="Participant_Resolver" isHorizontal="true">
         <dc:Bounds x="20" y="1520" width="2460" height="330" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DI_Task_Resolve" bpmnElement="Task_Resolve">
-        <dc:Bounds x="196" y="1600" width="160" height="56" />
+        <dc:Bounds x="161" y="1610" width="230" height="56" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DI_Gateway_Verdict" bpmnElement="Gateway_Verdict" isMarkerVisible="true">
         <dc:Bounds x="416" y="1600" width="56" height="56" />
@@ -384,7 +384,7 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DI_Task_CreateOutcome" bpmnElement="Task_CreateOutcome">
-        <dc:Bounds x="532" y="1592" width="160" height="72" />
+        <dc:Bounds x="497" y="1610" width="230" height="56" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DI_End_OutcomeSent" bpmnElement="End_OutcomeSent">
@@ -412,16 +412,16 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="DI_R1" bpmnElement="R1">
-        <di:waypoint x="136" y="1628" />
-        <di:waypoint x="196" y="1628" />
+        <di:waypoint x="136" y="1638" />
+        <di:waypoint x="161" y="1638" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_R2" bpmnElement="R2">
-        <di:waypoint x="356" y="1628" />
-        <di:waypoint x="416" y="1628" />
+        <di:waypoint x="391" y="1638" />
+        <di:waypoint x="416" y="1638" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_R3" bpmnElement="R3">
-        <di:waypoint x="472" y="1628" />
-        <di:waypoint x="532" y="1628" />
+        <di:waypoint x="472" y="1638" />
+        <di:waypoint x="497" y="1638" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_R4" bpmnElement="R4">
         <di:waypoint x="444" y="1600" />
@@ -434,8 +434,8 @@
         <di:waypoint x="532" y="1710" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_R6" bpmnElement="R6">
-        <di:waypoint x="692" y="1628" />
-        <di:waypoint x="752" y="1628" />
+        <di:waypoint x="727" y="1638" />
+        <di:waypoint x="752" y="1638" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="DI_Executor" bpmnElement="Participant_Executor" isHorizontal="true">
         <dc:Bounds x="20" y="1930" width="2460" height="310" />
@@ -447,7 +447,7 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DI_Task_ValidateExecution" bpmnElement="Task_ValidateExecution">
-        <dc:Bounds x="196" y="2010" width="160" height="56" />
+        <dc:Bounds x="161" y="2160" width="230" height="56" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DI_Gateway_Execute" bpmnElement="Gateway_Execute" isMarkerVisible="true">
         <dc:Bounds x="416" y="2010" width="56" height="56" />
@@ -456,7 +456,7 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DI_Task_Execute" bpmnElement="Task_Execute">
-        <dc:Bounds x="532" y="2010" width="160" height="56" />
+        <dc:Bounds x="497" y="2160" width="230" height="56" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DI_End_Executed" bpmnElement="End_Executed">
@@ -472,16 +472,16 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="DI_E1" bpmnElement="E1">
-        <di:waypoint x="136" y="2038" />
-        <di:waypoint x="196" y="2038" />
+        <di:waypoint x="136" y="2188" />
+        <di:waypoint x="161" y="2188" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_E2" bpmnElement="E2">
-        <di:waypoint x="356" y="2038" />
-        <di:waypoint x="416" y="2038" />
+        <di:waypoint x="391" y="2188" />
+        <di:waypoint x="416" y="2188" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_E3" bpmnElement="E3">
-        <di:waypoint x="472" y="2038" />
-        <di:waypoint x="532" y="2038" />
+        <di:waypoint x="472" y="2188" />
+        <di:waypoint x="497" y="2188" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_E4" bpmnElement="E4">
         <di:waypoint x="444" y="2066" />
@@ -489,8 +489,8 @@
         <di:waypoint x="752" y="2150" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_E5" bpmnElement="E5">
-        <di:waypoint x="692" y="2038" />
-        <di:waypoint x="752" y="2038" />
+        <di:waypoint x="727" y="2188" />
+        <di:waypoint x="752" y="2188" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="DI_Stakeholder" bpmnElement="Participant_Stakeholder" isHorizontal="true">
         <dc:Bounds x="20" y="1230" width="2460" height="210" />
@@ -503,7 +503,7 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DI_Task_SubmitBallot" bpmnElement="Task_SubmitBallot">
-        <dc:Bounds x="196" y="1310" width="160" height="56" />
+        <dc:Bounds x="161" y="1310" width="230" height="56" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DI_Start_BallotRequest" bpmnElement="Start_BallotRequest">
         <dc:Bounds x="100" y="1320" width="36" height="36" />
@@ -512,12 +512,12 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="DI_S2" bpmnElement="S2">
-        <di:waypoint x="356" y="1338" />
+        <di:waypoint x="391" y="1338" />
         <di:waypoint x="416" y="1338" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_S1" bpmnElement="S1">
         <di:waypoint x="136" y="1338" />
-        <di:waypoint x="196" y="1338" />
+        <di:waypoint x="161" y="1338" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="DI_Annotation_ApplicableGovernanceRule" bpmnElement="Annotation_ApplicableGovernanceRule">
         <dc:Bounds x="70" y="1530" width="350" height="60" />
