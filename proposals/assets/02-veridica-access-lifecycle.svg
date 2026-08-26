@@ -266,6 +266,6 @@
 <g id="DI_Assoc_Outcome"><path class="assoc" d="M680.0,1156.0 L680.0,1260.0"/></g>
 <g id="DI_Assoc_AccessRecord"><path class="assoc" d="M2080.0,1156.0 L2055.0,1156.0 L2055.0,1250.0"/></g>
 <g id="DI_Assoc_Bindings"><path class="assoc" d="M1085.0,1170.0 L1085.0,1285.0 L1600.0,1285.0"/></g>
-<g id="DI_Assoc_RenunciationObligations"><path class="assoc" d="M540.0,1628.0 L640.0,1628.0"/></g>
+<g id="DI_Assoc_RenunciationObligations"><path class="assoc" d="M360.0,1600.0 L360.0,1565.0 L640.0,1565.0 L640.0,1580.0"/></g>
 <g id="DI_Assoc_Audit"><path class="assoc" d="M360.0,1656.0 L360.0,1765.0 L850.0,1765.0"/></g>
 </svg>

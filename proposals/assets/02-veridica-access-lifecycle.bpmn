@@ -589,8 +589,10 @@
         <di:waypoint x="1600" y="1115" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_Assoc_RenunciationObligations" bpmnElement="Assoc_RenunciationObligations">
-        <di:waypoint x="540" y="1458" />
-        <di:waypoint x="640" y="1458" />
+        <di:waypoint x="360" y="1430" />
+        <di:waypoint x="360" y="1395" />
+        <di:waypoint x="640" y="1395" />
+        <di:waypoint x="640" y="1410" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_Assoc_Audit" bpmnElement="Assoc_Audit">
         <di:waypoint x="360" y="1486" />
