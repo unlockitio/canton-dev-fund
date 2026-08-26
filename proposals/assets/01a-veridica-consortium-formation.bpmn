@@ -15,10 +15,10 @@
       <bpmn:outgoing>A2_Yes</bpmn:outgoing>
       <bpmn:outgoing>A2_No</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:intermediateCatchEvent id="A_PartyCreated" name="Required Party created/registered">
+    <bpmn:task id="A_PartyCreated" name="Create or register required Party">
       <bpmn:incoming>A2_Yes</bpmn:incoming>
       <bpmn:outgoing>A3</bpmn:outgoing>
-    </bpmn:intermediateCatchEvent>
+    </bpmn:task>
     <bpmn:exclusiveGateway id="A_PartyMerge" gatewayDirection="Converging">
       <bpmn:incoming>A2_No</bpmn:incoming>
       <bpmn:incoming>A3</bpmn:incoming>
@@ -113,7 +113,7 @@
         <dc:Bounds x="200" y="120" width="56" height="56" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DI_A_PartyCreated" bpmnElement="A_PartyCreated">
-        <dc:Bounds x="350" y="65" width="36" height="36" />
+        <dc:Bounds x="350" y="55" width="170" height="56" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DI_A_PartyMerge" bpmnElement="A_PartyMerge" isMarkerVisible="true">
         <dc:Bounds x="530" y="120" width="56" height="56" />
@@ -159,7 +159,7 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_A3" bpmnElement="A3">
-        <di:waypoint x="386" y="83" />
+        <di:waypoint x="520" y="83" />
         <di:waypoint x="558" y="83" />
         <di:waypoint x="558" y="120" />
       </bpmndi:BPMNEdge>
