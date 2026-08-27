@@ -15,33 +15,27 @@
     <bpmn:participant id="Participant_Stakeholder" name="Relevant Stakeholder (one per policy-defined stakeholder)" processRef="Process_Stakeholder">
       <bpmn:participantMultiplicity minimum="1" maximum="2147483647" />
     </bpmn:participant>
-    <bpmn:messageFlow id="MF_Proposal" name="Committed Governance Proposal" sourceRef="End_ProposalSent" targetRef="Start_Proposal" />
-    <bpmn:messageFlow id="MF_Revision" name="Governance Proposal revision request" sourceRef="End_RevisionRequestSent" targetRef="Start_Revision" />
-    <bpmn:messageFlow id="MF_Outcome" name="Approved Governance Outcome" sourceRef="End_OutcomeSent" targetRef="Start_Outcome" />
-    <bpmn:messageFlow id="MF_BallotRequest" name="Governance Proposal + Ballot Request" sourceRef="End_BallotRequestSent" targetRef="Start_BallotRequest" />
-    <bpmn:messageFlow id="Flow_058en4z" name="Committed Governance Proposal" sourceRef="Event_0qapmgd" targetRef="Start_Proposal" />
+    <bpmn:messageFlow id="MF_Proposal" sourceRef="End_ProposalSent" targetRef="Start_Proposal" />
+    <bpmn:messageFlow id="MF_Revision" sourceRef="End_RevisionRequestSent" targetRef="Start_Revision" />
+    <bpmn:messageFlow id="MF_Outcome" sourceRef="End_OutcomeSent" targetRef="Start_Outcome" />
+    <bpmn:messageFlow id="MF_BallotRequest" sourceRef="End_BallotRequestSent" targetRef="Start_BallotRequest" />
+    <bpmn:messageFlow id="Flow_058en4z" sourceRef="Event_0qapmgd" targetRef="Start_Proposal" />
     <bpmn:textAnnotation id="Annotation_ApplicableGovernanceRule">
       <bpmn:text>The applicable governance rule may vary by case, including quorum, voting weight, timeout, delegation, or abstention handling. These variations are intentionally not defined here.</bpmn:text>
     </bpmn:textAnnotation>
-    <bpmn:association id="Assoc_ApplicableGovernanceRule" sourceRef="Start_Ballot" targetRef="Annotation_ApplicableGovernanceRule" />
     <bpmn:textAnnotation id="Annotation_ProposalPreparation">
       <bpmn:text>Proposer validates capacity, defines and commits the Governance Proposal, then delivers it for Governor review.</bpmn:text>
     </bpmn:textAnnotation>
-    <bpmn:association id="Assoc_ProposalPreparation" sourceRef="Task_ValidateCapacity" targetRef="Annotation_ProposalPreparation" />
     <bpmn:textAnnotation id="Annotation_RevisionPreparation">
       <bpmn:text>Proposer validates capacity for the new cycle, defines and commits the revised Governance Proposal, then delivers it.</bpmn:text>
     </bpmn:textAnnotation>
-    <bpmn:association id="Assoc_RevisionPreparation" sourceRef="Task_RevisionValidate" targetRef="Annotation_RevisionPreparation" />
+    <bpmn:association id="Assoc_ProposalPreparation" sourceRef="Task_ValidateCapacity" targetRef="Annotation_ProposalPreparation" />
   </bpmn:collaboration>
   <bpmn:process id="Process_Proposer" isExecutable="false">
     <bpmn:laneSet id="Lanes_Proposer">
       <bpmn:lane id="Lane_Proposer" name="Proposer">
         <bpmn:flowNodeRef>Start_Action</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Task_ValidateCapacity</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Task_Withdraw</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>End_WithdrawalSent</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Start_Revision</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Task_RevisionValidate</bpmn:flowNodeRef>
       </bpmn:lane>
     </bpmn:laneSet>
     <bpmn:sequenceFlow id="P8" sourceRef="Start_Revision" targetRef="Task_RevisionValidate" />
@@ -49,44 +43,45 @@
     <bpmn:sequenceFlow id="P6" sourceRef="Start_Withdraw" targetRef="Task_Withdraw" />
     <bpmn:sequenceFlow id="P5" sourceRef="Task_ValidateCapacity" targetRef="End_ProposalSent" />
     <bpmn:sequenceFlow id="P1" sourceRef="Start_Action" targetRef="Task_ValidateCapacity" />
-    <bpmn:task id="Task_RevisionValidate" name="Prepare and deliver revised Governance Proposal">
-      <bpmn:incoming>P8</bpmn:incoming>
-      <bpmn:outgoing>Flow_0smsrdv</bpmn:outgoing>
-    </bpmn:task>
     <bpmn:startEvent id="Start_Revision" name="Revision request received">
       <bpmn:outgoing>P8</bpmn:outgoing>
       <bpmn:messageEventDefinition messageRef="Message_RevisionRequest" />
     </bpmn:startEvent>
-    <bpmn:endEvent id="End_WithdrawalSent" name="Withdrawal sent">
-      <bpmn:incoming>P7</bpmn:incoming>
-      <bpmn:messageEventDefinition messageRef="Message_Withdrawal" />
-    </bpmn:endEvent>
-    <bpmn:task id="Task_Withdraw" name="Withdraw proposal">
-      <bpmn:incoming>P6</bpmn:incoming>
-      <bpmn:outgoing>P7</bpmn:outgoing>
-    </bpmn:task>
-    <bpmn:task id="Task_ValidateCapacity" name="Prepare and deliver Governance Proposal">
-      <bpmn:incoming>P1</bpmn:incoming>
-      <bpmn:outgoing>P5</bpmn:outgoing>
-    </bpmn:task>
     <bpmn:startEvent id="Start_Action" name="Action requested">
       <bpmn:outgoing>P1</bpmn:outgoing>
     </bpmn:startEvent>
-    <bpmn:intermediateThrowEvent id="End_ProposalSent" name="Committed proposal sent">
-      <bpmn:incoming>P5</bpmn:incoming>
-      <bpmn:messageEventDefinition id="MessageEventDefinition_1doamxm" />
-    </bpmn:intermediateThrowEvent>
     <bpmn:sequenceFlow id="Flow_0smsrdv" sourceRef="Task_RevisionValidate" targetRef="Event_0qapmgd" />
-    <bpmn:endEvent id="Event_0qapmgd">
-      <bpmn:incoming>Flow_0smsrdv</bpmn:incoming>
-      <bpmn:messageEventDefinition id="MessageEventDefinition_1cimng0" />
-    </bpmn:endEvent>
     <bpmn:startEvent id="Start_Withdraw" name="Withdrawal requested">
       <bpmn:outgoing>P6</bpmn:outgoing>
       <bpmn:conditionalEventDefinition id="ConditionalEventDefinition_1q2p6vr">
         <bpmn:condition xsi:type="bpmn:tFormalExpression" />
       </bpmn:conditionalEventDefinition>
     </bpmn:startEvent>
+    <bpmn:task id="Task_Withdraw" name="Withdraw proposal">
+      <bpmn:incoming>P6</bpmn:incoming>
+      <bpmn:outgoing>P7</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_RevisionValidate" name="Prepare and deliver revised Governance Proposal">
+      <bpmn:incoming>P8</bpmn:incoming>
+      <bpmn:outgoing>Flow_0smsrdv</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="Event_0qapmgd" name="Review proposal sent">
+      <bpmn:incoming>Flow_0smsrdv</bpmn:incoming>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_1cimng0" />
+    </bpmn:endEvent>
+    <bpmn:endEvent id="End_WithdrawalSent" name="Withdrawal sent">
+      <bpmn:incoming>P7</bpmn:incoming>
+      <bpmn:messageEventDefinition messageRef="Message_Withdrawal" />
+    </bpmn:endEvent>
+    <bpmn:task id="Task_ValidateCapacity" name="Prepare and deliver Governance Proposal">
+      <bpmn:incoming>P1</bpmn:incoming>
+      <bpmn:outgoing>P5</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:intermediateThrowEvent id="End_ProposalSent" name="Committed proposal sent">
+      <bpmn:incoming>P5</bpmn:incoming>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_1doamxm" />
+    </bpmn:intermediateThrowEvent>
+    <bpmn:association id="Assoc_RevisionPreparation" sourceRef="Task_RevisionValidate" targetRef="Annotation_RevisionPreparation" />
   </bpmn:process>
   <bpmn:process id="Process_Governor" isExecutable="false">
     <bpmn:laneSet id="Lanes_Governor">
@@ -106,20 +101,7 @@
       <bpmn:incoming>Flow_1jakvug</bpmn:incoming>
       <bpmn:outgoing>G2</bpmn:outgoing>
     </bpmn:task>
-    <bpmn:exclusiveGateway id="Gateway_Approved" name="Approved?" default="G5">
-      <bpmn:incoming>G2</bpmn:incoming>
-      <bpmn:outgoing>G4</bpmn:outgoing>
-      <bpmn:outgoing>G5</bpmn:outgoing>
-    </bpmn:exclusiveGateway>
-    <bpmn:task id="Task_Distribute" name="Distribute proposal + Ballot Request">
-      <bpmn:incoming>G4</bpmn:incoming>
-      <bpmn:outgoing>G6</bpmn:outgoing>
-    </bpmn:task>
-    <bpmn:task id="Task_RequestRevision" name="Request revision">
-      <bpmn:incoming>G5</bpmn:incoming>
-      <bpmn:outgoing>G7</bpmn:outgoing>
-    </bpmn:task>
-    <bpmn:endEvent id="End_BallotRequestSent" name="Ballot request sent">
+    <bpmn:endEvent id="End_BallotRequestSent" name="Proposal + Ballot request sent">
       <bpmn:incoming>G6</bpmn:incoming>
       <bpmn:messageEventDefinition messageRef="Message_BallotRequest" />
     </bpmn:endEvent>
@@ -127,15 +109,30 @@
       <bpmn:incoming>G7</bpmn:incoming>
       <bpmn:messageEventDefinition messageRef="Message_RevisionRequest" />
     </bpmn:endEvent>
+    <bpmn:task id="Task_RequestRevision" name="Request revision">
+      <bpmn:incoming>G5</bpmn:incoming>
+      <bpmn:outgoing>G7</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_Distribute" name="Distribute proposal + Ballot Request">
+      <bpmn:incoming>G4</bpmn:incoming>
+      <bpmn:outgoing>G6</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="Gateway_Approved" name="Approved?" default="G5">
+      <bpmn:incoming>G2</bpmn:incoming>
+      <bpmn:outgoing>G4</bpmn:outgoing>
+      <bpmn:outgoing>G5</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
   </bpmn:process>
   <bpmn:process id="Process_Resolver" isExecutable="false">
     <bpmn:laneSet id="Lanes_Resolver">
       <bpmn:lane id="Lane_Resolver" name="Resolver" />
     </bpmn:laneSet>
-    <bpmn:task id="Task_Resolve" name="Evaluate and resolve Governance Proposal">
-      <bpmn:incoming>R1</bpmn:incoming>
-      <bpmn:outgoing>R2</bpmn:outgoing>
-    </bpmn:task>
+    <bpmn:startEvent id="Start_Ballot" name="Applicable governance rule satisfied">
+      <bpmn:outgoing>R1</bpmn:outgoing>
+      <bpmn:conditionalEventDefinition id="ConditionalEventDefinition_0w087i9">
+        <bpmn:condition xsi:type="bpmn:tFormalExpression" language="text/plain">Applicable governance rule satisfied</bpmn:condition>
+      </bpmn:conditionalEventDefinition>
+    </bpmn:startEvent>
     <bpmn:exclusiveGateway id="Gateway_Verdict" name="Verdict?">
       <bpmn:incoming>R2</bpmn:incoming>
       <bpmn:outgoing>R3</bpmn:outgoing>
@@ -146,28 +143,27 @@
       <bpmn:incoming>R3</bpmn:incoming>
       <bpmn:outgoing>R6</bpmn:outgoing>
     </bpmn:task>
-    <bpmn:endEvent id="End_OutcomeSent" name="Approved outcome sent">
-      <bpmn:incoming>R6</bpmn:incoming>
-      <bpmn:messageEventDefinition messageRef="Message_Outcome" />
-    </bpmn:endEvent>
     <bpmn:endEvent id="End_Rejected" name="VRejected">
       <bpmn:incoming>R4</bpmn:incoming>
     </bpmn:endEvent>
     <bpmn:endEvent id="End_Lapsed" name="VLapsed">
       <bpmn:incoming>R5</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:startEvent id="Start_Ballot" name="Applicable governance rule satisfied">
-      <bpmn:outgoing>R1</bpmn:outgoing>
-      <bpmn:conditionalEventDefinition id="ConditionalEventDefinition_0w087i9">
-        <bpmn:condition xsi:type="bpmn:tFormalExpression" language="text/plain">Applicable governance rule satisfied</bpmn:condition>
-      </bpmn:conditionalEventDefinition>
-    </bpmn:startEvent>
     <bpmn:sequenceFlow id="R1" sourceRef="Start_Ballot" targetRef="Task_Resolve" />
     <bpmn:sequenceFlow id="R2" sourceRef="Task_Resolve" targetRef="Gateway_Verdict" />
     <bpmn:sequenceFlow id="R3" sourceRef="Gateway_Verdict" targetRef="Task_CreateOutcome" />
     <bpmn:sequenceFlow id="R4" sourceRef="Gateway_Verdict" targetRef="End_Rejected" />
     <bpmn:sequenceFlow id="R5" sourceRef="Gateway_Verdict" targetRef="End_Lapsed" />
     <bpmn:sequenceFlow id="R6" sourceRef="Task_CreateOutcome" targetRef="End_OutcomeSent" />
+    <bpmn:endEvent id="End_OutcomeSent" name="Approved outcome sent">
+      <bpmn:incoming>R6</bpmn:incoming>
+      <bpmn:messageEventDefinition messageRef="Message_Outcome" />
+    </bpmn:endEvent>
+    <bpmn:task id="Task_Resolve" name="Evaluate and resolve Governance Proposal">
+      <bpmn:incoming>R1</bpmn:incoming>
+      <bpmn:outgoing>R2</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:association id="Assoc_ApplicableGovernanceRule" sourceRef="Start_Ballot" targetRef="Annotation_ApplicableGovernanceRule" />
   </bpmn:process>
   <bpmn:process id="Process_Executor" isExecutable="false">
     <bpmn:laneSet id="Lanes_Executor">
@@ -177,6 +173,14 @@
       <bpmn:outgoing>E1</bpmn:outgoing>
       <bpmn:messageEventDefinition messageRef="Message_Outcome" />
     </bpmn:startEvent>
+    <bpmn:endEvent id="End_Expired" name="Outcome expired">
+      <bpmn:incoming>E4</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="E1" sourceRef="Start_Outcome" targetRef="Task_ValidateExecution" />
+    <bpmn:sequenceFlow id="E2" sourceRef="Task_ValidateExecution" targetRef="Gateway_Execute" />
+    <bpmn:sequenceFlow id="E3" sourceRef="Gateway_Execute" targetRef="Task_Execute" />
+    <bpmn:sequenceFlow id="E4" sourceRef="Gateway_Execute" targetRef="End_Expired" />
+    <bpmn:sequenceFlow id="E5" sourceRef="Task_Execute" targetRef="End_Executed" />
     <bpmn:task id="Task_ValidateExecution" name="Validate executable outcome">
       <bpmn:incoming>E1</bpmn:incoming>
       <bpmn:outgoing>E2</bpmn:outgoing>
@@ -193,23 +197,19 @@
     <bpmn:endEvent id="End_Executed" name="Outcome executed">
       <bpmn:incoming>E5</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:endEvent id="End_Expired" name="Outcome expired">
-      <bpmn:incoming>E4</bpmn:incoming>
-    </bpmn:endEvent>
-    <bpmn:sequenceFlow id="E1" sourceRef="Start_Outcome" targetRef="Task_ValidateExecution" />
-    <bpmn:sequenceFlow id="E2" sourceRef="Task_ValidateExecution" targetRef="Gateway_Execute" />
-    <bpmn:sequenceFlow id="E3" sourceRef="Gateway_Execute" targetRef="Task_Execute" />
-    <bpmn:sequenceFlow id="E4" sourceRef="Gateway_Execute" targetRef="End_Expired" />
-    <bpmn:sequenceFlow id="E5" sourceRef="Task_Execute" targetRef="End_Executed" />
   </bpmn:process>
   <bpmn:process id="Process_Stakeholder" isExecutable="false">
     <bpmn:laneSet id="Lanes_Stakeholder">
       <bpmn:lane id="Lane_Stakeholder" name="Relevant Stakeholder">
         <bpmn:flowNodeRef>Start_BallotRequest</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Task_SubmitBallot</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>End_BallotSent</bpmn:flowNodeRef>
       </bpmn:lane>
     </bpmn:laneSet>
+    <bpmn:sequenceFlow id="S2" sourceRef="Task_SubmitBallot" targetRef="End_BallotSent" />
+    <bpmn:startEvent id="Start_BallotRequest" name="Ballot request received">
+      <bpmn:outgoing>S1</bpmn:outgoing>
+      <bpmn:messageEventDefinition messageRef="Message_BallotRequest" />
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="S1" sourceRef="Start_BallotRequest" targetRef="Task_SubmitBallot" />
     <bpmn:endEvent id="End_BallotSent" name="Ballot sent">
       <bpmn:incoming>S2</bpmn:incoming>
       <bpmn:messageEventDefinition messageRef="Message_Ballot" />
@@ -218,100 +218,88 @@
       <bpmn:incoming>S1</bpmn:incoming>
       <bpmn:outgoing>S2</bpmn:outgoing>
     </bpmn:task>
-    <bpmn:sequenceFlow id="S2" sourceRef="Task_SubmitBallot" targetRef="End_BallotSent" />
-    <bpmn:startEvent id="Start_BallotRequest" name="Ballot request received">
-      <bpmn:outgoing>S1</bpmn:outgoing>
-      <bpmn:messageEventDefinition messageRef="Message_BallotRequest" />
-    </bpmn:startEvent>
-    <bpmn:sequenceFlow id="S1" sourceRef="Start_BallotRequest" targetRef="Task_SubmitBallot" />
   </bpmn:process>
   <bpmndi:BPMNDiagram id="Diagram_01B">
     <bpmndi:BPMNPlane id="Plane_01B" bpmnElement="Collaboration_01B">
-    <bpmndi:BPMNShape id="DI_Proposer" bpmnElement="Participant_Proposer" isHorizontal="true">
-      <dc:Bounds x="20" y="20" width="2460" height="600" />
-    </bpmndi:BPMNShape>
-    <bpmndi:BPMNShape id="DI_Task_RevisionValidate" bpmnElement="Task_RevisionValidate">
-      <dc:Bounds x="381" y="460" width="180" height="56" />
-    </bpmndi:BPMNShape>
-    <bpmndi:BPMNShape id="DI_Start_Revision" bpmnElement="Start_Revision">
-      <dc:Bounds x="100" y="470" width="36" height="36" />
-      <bpmndi:BPMNLabel>
-        <dc:Bounds x="77" y="506" width="82" height="27" />
-      </bpmndi:BPMNLabel>
-    </bpmndi:BPMNShape>
-    <bpmndi:BPMNShape id="DI_End_WithdrawalSent" bpmnElement="End_WithdrawalSent">
-      <dc:Bounds x="416" y="330" width="36" height="36" />
-      <bpmndi:BPMNLabel>
-        <dc:Bounds x="394" y="306" width="79" height="14" />
-      </bpmndi:BPMNLabel>
-    </bpmndi:BPMNShape>
-    <bpmndi:BPMNShape id="DI_Task_Withdraw" bpmnElement="Task_Withdraw">
-      <dc:Bounds x="176" y="320" width="180" height="56" />
-    </bpmndi:BPMNShape>
-    <bpmndi:BPMNShape id="DI_Task_ValidateCapacity" bpmnElement="Task_ValidateCapacity">
-      <dc:Bounds x="381" y="100" width="180" height="56" />
-    </bpmndi:BPMNShape>
-    <bpmndi:BPMNShape id="DI_Start_Action" bpmnElement="Start_Action">
-      <dc:Bounds x="100" y="110" width="36" height="36" />
-      <bpmndi:BPMNLabel>
-        <dc:Bounds x="77" y="146" width="83" height="14" />
-      </bpmndi:BPMNLabel>
-    </bpmndi:BPMNShape>
-    <bpmndi:BPMNShape id="Event_1oao2m3_di" bpmnElement="End_ProposalSent">
-      <dc:Bounds x="1076" y="110" width="36" height="36" />
-      <bpmndi:BPMNLabel>
-        <dc:Bounds x="1060" y="73" width="67" height="27" />
-      </bpmndi:BPMNLabel>
-    </bpmndi:BPMNShape>
-    <bpmndi:BPMNShape id="Event_0bk5nmg_di" bpmnElement="Event_0qapmgd">
-      <dc:Bounds x="1076" y="470" width="36" height="36" />
-    </bpmndi:BPMNShape>
-    <bpmndi:BPMNShape id="Event_1xy35p2_di" bpmnElement="Start_Withdraw">
-      <dc:Bounds x="100" y="330" width="36" height="36" />
-      <bpmndi:BPMNLabel>
-        <dc:Bounds x="91" y="366" width="55" height="27" />
-      </bpmndi:BPMNLabel>
-    </bpmndi:BPMNShape>
-    <bpmndi:BPMNShape id="DI_Annotation_ProposalPreparation" bpmnElement="Annotation_ProposalPreparation">
-      <dc:Bounds x="830" y="180" width="260" height="70" />
-    </bpmndi:BPMNShape>
-    <bpmndi:BPMNShape id="DI_Annotation_RevisionPreparation" bpmnElement="Annotation_RevisionPreparation">
-      <dc:Bounds x="830" y="530" width="260" height="70" />
-    </bpmndi:BPMNShape>
-    <bpmndi:BPMNEdge id="DI_P8" bpmnElement="P8">
-      <di:waypoint x="136" y="488" />
-      <di:waypoint x="381" y="488" />
-    </bpmndi:BPMNEdge>
-    <bpmndi:BPMNEdge id="DI_P7" bpmnElement="P7">
-      <di:waypoint x="356" y="348" />
-      <di:waypoint x="416" y="348" />
-    </bpmndi:BPMNEdge>
-    <bpmndi:BPMNEdge id="DI_P6" bpmnElement="P6">
-      <di:waypoint x="136" y="348" />
-      <di:waypoint x="176" y="348" />
-    </bpmndi:BPMNEdge>
-    <bpmndi:BPMNEdge id="DI_P5" bpmnElement="P5">
-      <di:waypoint x="561" y="128" />
-      <di:waypoint x="1076" y="128" />
-    </bpmndi:BPMNEdge>
-    <bpmndi:BPMNEdge id="DI_P1" bpmnElement="P1">
-      <di:waypoint x="136" y="128" />
-      <di:waypoint x="381" y="128" />
-    </bpmndi:BPMNEdge>
-    <bpmndi:BPMNEdge id="Flow_0smsrdv_di" bpmnElement="Flow_0smsrdv">
-      <di:waypoint x="561" y="488" />
-      <di:waypoint x="1076" y="488" />
-    </bpmndi:BPMNEdge>
-    <bpmndi:BPMNEdge id="DI_Assoc_ProposalPreparation" bpmnElement="Assoc_ProposalPreparation">
-      <di:waypoint x="561" y="145" />
-      <di:waypoint x="830" y="180" />
-    </bpmndi:BPMNEdge>
-    <bpmndi:BPMNEdge id="DI_Assoc_RevisionPreparation" bpmnElement="Assoc_RevisionPreparation">
-      <di:waypoint x="561" y="505" />
-      <di:waypoint x="830" y="530" />
-    </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="DI_Proposer" bpmnElement="Participant_Proposer" isHorizontal="true">
+        <dc:Bounds x="20" y="20" width="1220" height="600" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_Start_Revision" bpmnElement="Start_Revision">
+        <dc:Bounds x="100" y="470" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="77" y="506" width="82" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_Start_Action" bpmnElement="Start_Action">
+        <dc:Bounds x="100" y="110" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="77" y="146" width="83" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1xy35p2_di" bpmnElement="Start_Withdraw">
+        <dc:Bounds x="100" y="330" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="91" y="366" width="55" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_Task_Withdraw" bpmnElement="Task_Withdraw">
+        <dc:Bounds x="230" y="320" width="180" height="56" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_Task_RevisionValidate" bpmnElement="Task_RevisionValidate">
+        <dc:Bounds x="230" y="460" width="180" height="56" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0bk5nmg_di" bpmnElement="Event_0qapmgd">
+        <dc:Bounds x="552" y="470" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="529" y="440" width="82" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_End_WithdrawalSent" bpmnElement="End_WithdrawalSent">
+        <dc:Bounds x="552" y="330" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="530" y="306" width="79" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_Task_ValidateCapacity" bpmnElement="Task_ValidateCapacity">
+        <dc:Bounds x="230" y="100" width="180" height="56" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1oao2m3_di" bpmnElement="End_ProposalSent">
+        <dc:Bounds x="552" y="110" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="536" y="73" width="67" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="DI_Assoc_RevisionPreparation" bpmnElement="Assoc_RevisionPreparation">
+        <di:waypoint x="320" y="460" />
+        <di:waypoint x="320" y="410" />
+        <di:waypoint x="636" y="410" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_P8" bpmnElement="P8">
+        <di:waypoint x="136" y="488" />
+        <di:waypoint x="230" y="488" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_P7" bpmnElement="P7">
+        <di:waypoint x="410" y="348" />
+        <di:waypoint x="552" y="348" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_P6" bpmnElement="P6">
+        <di:waypoint x="136" y="348" />
+        <di:waypoint x="230" y="348" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_P5" bpmnElement="P5">
+        <di:waypoint x="410" y="128" />
+        <di:waypoint x="552" y="128" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_P1" bpmnElement="P1">
+        <di:waypoint x="136" y="128" />
+        <di:waypoint x="230" y="128" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0smsrdv_di" bpmnElement="Flow_0smsrdv">
+        <di:waypoint x="410" y="488" />
+        <di:waypoint x="552" y="488" />
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="DI_Governor" bpmnElement="Participant_Governor" isHorizontal="true">
-        <dc:Bounds x="20" y="700" width="2460" height="450" />
+        <dc:Bounds x="20" y="700" width="1220" height="450" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DI_Start_Proposal" bpmnElement="Start_Proposal">
         <dc:Bounds x="112" y="790" width="36" height="36" />
@@ -320,149 +308,134 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DI_Task_Review" bpmnElement="Task_Review">
-        <dc:Bounds x="176" y="780" width="180" height="56" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="DI_Gateway_Approved" bpmnElement="Gateway_Approved" isMarkerVisible="true">
-        <dc:Bounds x="462" y="780" width="56" height="56" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="463" y="756" width="54" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="DI_Task_Distribute" bpmnElement="Task_Distribute">
-        <dc:Bounds x="560" y="780" width="180" height="56" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="DI_Task_RequestRevision" bpmnElement="Task_RequestRevision">
-        <dc:Bounds x="560" y="980" width="180" height="56" />
+        <dc:Bounds x="240" y="780" width="180" height="56" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DI_End_BallotRequestSent" bpmnElement="End_BallotRequestSent">
-        <dc:Bounds x="916" y="794" width="28" height="28" />
+        <dc:Bounds x="1046" y="794" width="28" height="28" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="896" y="757" width="68" height="27" />
+          <dc:Bounds x="1018" y="757" width="84" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DI_End_RevisionRequestSent" bpmnElement="End_RevisionRequestSent">
-        <dc:Bounds x="916" y="994" width="28" height="28" />
+        <dc:Bounds x="1046" y="994" width="28" height="28" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="889" y="957" width="82" height="27" />
+          <dc:Bounds x="1019" y="957" width="82" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_Task_RequestRevision" bpmnElement="Task_RequestRevision">
+        <dc:Bounds x="720" y="980" width="180" height="56" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_Task_Distribute" bpmnElement="Task_Distribute">
+        <dc:Bounds x="720" y="780" width="180" height="56" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_Gateway_Approved" bpmnElement="Gateway_Approved" isMarkerVisible="true">
+        <dc:Bounds x="542" y="780" width="56" height="56" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="543" y="756" width="54" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="DI_G2" bpmnElement="G2">
-        <di:waypoint x="356" y="808" />
-        <di:waypoint x="462" y="808" />
+        <di:waypoint x="420" y="808" />
+        <di:waypoint x="542" y="808" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_G4" bpmnElement="G4">
-        <di:waypoint x="518" y="808" />
-        <di:waypoint x="560" y="808" />
+        <di:waypoint x="598" y="808" />
+        <di:waypoint x="720" y="808" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_G5" bpmnElement="G5">
-        <di:waypoint x="490" y="836" />
-        <di:waypoint x="490" y="1008" />
-        <di:waypoint x="560" y="1008" />
+        <di:waypoint x="570" y="836" />
+        <di:waypoint x="570" y="1008" />
+        <di:waypoint x="720" y="1008" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_G6" bpmnElement="G6">
-        <di:waypoint x="740" y="808" />
-        <di:waypoint x="916" y="808" />
+        <di:waypoint x="900" y="808" />
+        <di:waypoint x="1046" y="808" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_G7" bpmnElement="G7">
-        <di:waypoint x="740" y="1008" />
-        <di:waypoint x="916" y="1008" />
+        <di:waypoint x="900" y="1008" />
+        <di:waypoint x="1046" y="1008" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1jakvug_di" bpmnElement="Flow_1jakvug">
         <di:waypoint x="148" y="808" />
-        <di:waypoint x="176" y="808" />
+        <di:waypoint x="240" y="808" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="DI_Resolver" bpmnElement="Participant_Resolver" isHorizontal="true">
-        <dc:Bounds x="20" y="1520" width="2460" height="330" />
+        <dc:Bounds x="20" y="1520" width="1220" height="330" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="DI_Task_Resolve" bpmnElement="Task_Resolve">
-        <dc:Bounds x="176" y="1610" width="180" height="56" />
+      <bpmndi:BPMNShape id="Event_0nrzqf1_di" bpmnElement="Start_Ballot">
+        <dc:Bounds x="100" y="1662" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="79" y="1698" width="79" height="40" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DI_Gateway_Verdict" bpmnElement="Gateway_Verdict" isMarkerVisible="true">
-        <dc:Bounds x="416" y="1600" width="56" height="56" />
+        <dc:Bounds x="543" y="1652" width="56" height="56" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="424" y="1656" width="40" height="14" />
+          <dc:Bounds x="507" y="1655" width="40" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DI_Task_CreateOutcome" bpmnElement="Task_CreateOutcome">
-        <dc:Bounds x="497" y="1610" width="180" height="56" />
+        <dc:Bounds x="670" y="1652" width="180" height="56" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="DI_End_OutcomeSent" bpmnElement="End_OutcomeSent">
-        <dc:Bounds x="752" y="1614" width="28" height="28" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="732" y="1577" width="67" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DI_End_Rejected" bpmnElement="End_Rejected">
-        <dc:Bounds x="532" y="1536" width="28" height="28" />
+        <dc:Bounds x="746" y="1578" width="28" height="28" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="521" y="1564" width="51" height="14" />
+          <dc:Bounds x="734" y="1563" width="51" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DI_End_Lapsed" bpmnElement="End_Lapsed">
-        <dc:Bounds x="532" y="1696" width="28" height="28" />
+        <dc:Bounds x="746" y="1748" width="28" height="28" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="524" y="1724" width="44" height="14" />
+          <dc:Bounds x="738" y="1733" width="44" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_0nrzqf1_di" bpmnElement="Start_Ballot">
-        <dc:Bounds x="100" y="1610" width="36" height="36" />
+      <bpmndi:BPMNShape id="DI_End_OutcomeSent" bpmnElement="End_OutcomeSent">
+        <dc:Bounds x="1026" y="1666" width="28" height="28" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="62" y="1646" width="112" height="27" />
+          <dc:Bounds x="1006" y="1629" width="67" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_Task_Resolve" bpmnElement="Task_Resolve">
+        <dc:Bounds x="240" y="1652" width="180" height="56" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="DI_Assoc_ApplicableGovernanceRule" bpmnElement="Assoc_ApplicableGovernanceRule">
+        <di:waypoint x="118" y="1662" />
+        <di:waypoint x="118" y="1590" />
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_R1" bpmnElement="R1">
-        <di:waypoint x="136" y="1638" />
-        <di:waypoint x="176" y="1638" />
+        <di:waypoint x="136" y="1680" />
+        <di:waypoint x="240" y="1680" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_R2" bpmnElement="R2">
-        <di:waypoint x="356" y="1638" />
-        <di:waypoint x="416" y="1638" />
+        <di:waypoint x="420" y="1680" />
+        <di:waypoint x="543" y="1680" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_R3" bpmnElement="R3">
-        <di:waypoint x="472" y="1638" />
-        <di:waypoint x="497" y="1638" />
+        <di:waypoint x="599" y="1680" />
+        <di:waypoint x="670" y="1680" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_R4" bpmnElement="R4">
-        <di:waypoint x="444" y="1600" />
-        <di:waypoint x="444" y="1550" />
-        <di:waypoint x="532" y="1550" />
+        <di:waypoint x="571" y="1652" />
+        <di:waypoint x="571" y="1592" />
+        <di:waypoint x="746" y="1592" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_R5" bpmnElement="R5">
-        <di:waypoint x="444" y="1656" />
-        <di:waypoint x="444" y="1710" />
-        <di:waypoint x="532" y="1710" />
+        <di:waypoint x="571" y="1708" />
+        <di:waypoint x="571" y="1762" />
+        <di:waypoint x="746" y="1762" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_R6" bpmnElement="R6">
-        <di:waypoint x="677" y="1638" />
-        <di:waypoint x="752" y="1638" />
+        <di:waypoint x="850" y="1680" />
+        <di:waypoint x="1026" y="1680" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="DI_Executor" bpmnElement="Participant_Executor" isHorizontal="true">
-        <dc:Bounds x="20" y="1930" width="2460" height="310" />
+        <dc:Bounds x="20" y="1930" width="1220" height="310" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DI_Start_Outcome" bpmnElement="Start_Outcome">
         <dc:Bounds x="100" y="2020" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="75" y="2056" width="87" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="DI_Task_ValidateExecution" bpmnElement="Task_ValidateExecution">
-        <dc:Bounds x="176" y="2160" width="180" height="56" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="DI_Gateway_Execute" bpmnElement="Gateway_Execute" isMarkerVisible="true">
-        <dc:Bounds x="416" y="2010" width="56" height="56" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="418" y="1972.5" width="52" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="DI_Task_Execute" bpmnElement="Task_Execute">
-        <dc:Bounds x="497" y="2160" width="180" height="56" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="DI_End_Executed" bpmnElement="End_Executed">
-        <dc:Bounds x="752" y="2024" width="28" height="28" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="744" y="2052" width="45" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DI_End_Expired" bpmnElement="End_Expired">
@@ -471,39 +444,49 @@
           <dc:Bounds x="724" y="2164" width="84" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_Task_ValidateExecution" bpmnElement="Task_ValidateExecution">
+        <dc:Bounds x="250" y="2010" width="180" height="56" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_Gateway_Execute" bpmnElement="Gateway_Execute" isMarkerVisible="true">
+        <dc:Bounds x="542" y="2010" width="56" height="56" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="544" y="1973" width="52" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_Task_Execute" bpmnElement="Task_Execute">
+        <dc:Bounds x="676" y="2010" width="180" height="56" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_End_Executed" bpmnElement="End_Executed">
+        <dc:Bounds x="1026" y="2024" width="28" height="28" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1017" y="1991" width="45" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="DI_E1" bpmnElement="E1">
-        <di:waypoint x="136" y="2188" />
-        <di:waypoint x="176" y="2188" />
+        <di:waypoint x="136" y="2038" />
+        <di:waypoint x="250" y="2038" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_E2" bpmnElement="E2">
-        <di:waypoint x="356" y="2188" />
-        <di:waypoint x="416" y="2188" />
+        <di:waypoint x="430" y="2038" />
+        <di:waypoint x="542" y="2038" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_E3" bpmnElement="E3">
-        <di:waypoint x="472" y="2188" />
-        <di:waypoint x="497" y="2188" />
+        <di:waypoint x="598" y="2038" />
+        <di:waypoint x="676" y="2038" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_E4" bpmnElement="E4">
-        <di:waypoint x="444" y="2066" />
-        <di:waypoint x="444" y="2150" />
+        <di:waypoint x="570" y="2066" />
+        <di:waypoint x="570" y="2150" />
         <di:waypoint x="752" y="2150" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_E5" bpmnElement="E5">
-        <di:waypoint x="677" y="2188" />
-        <di:waypoint x="752" y="2188" />
+        <di:waypoint x="856" y="2038" />
+        <di:waypoint x="1026" y="2038" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="DI_Stakeholder" bpmnElement="Participant_Stakeholder" isHorizontal="true">
-        <dc:Bounds x="20" y="1230" width="2460" height="210" />
+        <dc:Bounds x="20" y="1230" width="1220" height="210" />
         <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="DI_End_BallotSent" bpmnElement="End_BallotSent">
-        <dc:Bounds x="416" y="1324" width="28" height="28" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="404" y="1300" width="52" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="DI_Task_SubmitBallot" bpmnElement="Task_SubmitBallot">
-        <dc:Bounds x="176" y="1310" width="180" height="56" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DI_Start_BallotRequest" bpmnElement="Start_BallotRequest">
         <dc:Bounds x="100" y="1320" width="36" height="36" />
@@ -511,24 +494,34 @@
           <dc:Bounds x="84" y="1356" width="68" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_End_BallotSent" bpmnElement="End_BallotSent">
+        <dc:Bounds x="556" y="1324" width="28" height="28" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="544" y="1300" width="52" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_Task_SubmitBallot" bpmnElement="Task_SubmitBallot">
+        <dc:Bounds x="240" y="1310" width="180" height="56" />
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="DI_S2" bpmnElement="S2">
-        <di:waypoint x="356" y="1338" />
-        <di:waypoint x="416" y="1338" />
+        <di:waypoint x="420" y="1338" />
+        <di:waypoint x="556" y="1338" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_S1" bpmnElement="S1">
         <di:waypoint x="136" y="1338" />
-        <di:waypoint x="176" y="1338" />
+        <di:waypoint x="240" y="1338" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_Assoc_ProposalPreparation" bpmnElement="Assoc_ProposalPreparation">
+        <di:waypoint x="320" y="100" />
+        <di:waypoint x="320" y="58" />
+        <di:waypoint x="636" y="58" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="DI_Annotation_ApplicableGovernanceRule" bpmnElement="Annotation_ApplicableGovernanceRule">
         <dc:Bounds x="70" y="1530" width="350" height="60" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="DI_Assoc_ApplicableGovernanceRule" bpmnElement="Assoc_ApplicableGovernanceRule">
-        <di:waypoint x="118" y="1610" />
-        <di:waypoint x="118" y="1590" />
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_MF_Proposal" bpmnElement="MF_Proposal">
-        <di:waypoint x="1094" y="146" />
-        <di:waypoint x="1094" y="240" />
+        <di:waypoint x="570" y="146" />
+        <di:waypoint x="570" y="240" />
         <di:waypoint x="-70" y="240" />
         <di:waypoint x="-70" y="808" />
         <di:waypoint x="112" y="808" />
@@ -537,8 +530,8 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_MF_Revision" bpmnElement="MF_Revision">
-        <di:waypoint x="930" y="1022" />
-        <di:waypoint x="930" y="1090" />
+        <di:waypoint x="1060" y="1022" />
+        <di:waypoint x="1060" y="1090" />
         <di:waypoint x="-20" y="1090" />
         <di:waypoint x="-20" y="488" />
         <di:waypoint x="100" y="488" />
@@ -547,18 +540,18 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_MF_Outcome" bpmnElement="MF_Outcome">
-        <di:waypoint x="766" y="1642" />
-        <di:waypoint x="766" y="1800" />
+        <di:waypoint x="1040" y="1694" />
+        <di:waypoint x="1040" y="1800" />
         <di:waypoint x="-70" y="1800" />
         <di:waypoint x="-70" y="2038" />
         <di:waypoint x="100" y="2038" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="790" y="1780" width="60" height="40" />
+          <dc:Bounds x="1064" y="1780" width="60" height="40" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_MF_BallotRequest" bpmnElement="MF_BallotRequest">
-        <di:waypoint x="930" y="822" />
-        <di:waypoint x="930" y="870" />
+        <di:waypoint x="1060" y="822" />
+        <di:waypoint x="1060" y="870" />
         <di:waypoint x="-70" y="870" />
         <di:waypoint x="-70" y="1338" />
         <di:waypoint x="100" y="1338" />
@@ -567,14 +560,20 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_058en4z_di" bpmnElement="Flow_058en4z">
-        <di:waypoint x="1094" y="506" />
-        <di:waypoint x="1094" y="580" />
+        <di:waypoint x="570" y="506" />
+        <di:waypoint x="570" y="580" />
         <di:waypoint x="130" y="580" />
         <di:waypoint x="130" y="790" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1110" y="560" width="60" height="40" />
+          <dc:Bounds x="586" y="560" width="60" height="40" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="DI_Annotation_RevisionPreparation" bpmnElement="Annotation_RevisionPreparation">
+        <dc:Bounds x="636" y="382" width="260" height="55" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_Annotation_ProposalPreparation" bpmnElement="Annotation_ProposalPreparation">
+        <dc:Bounds x="636" y="30" width="260" height="55" />
+      </bpmndi:BPMNShape>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
 </bpmn:definitions>
