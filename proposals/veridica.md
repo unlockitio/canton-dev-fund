@@ -572,10 +572,15 @@ Open questions before submission:
 
 ## Related Projects and Standards
 
-- [RedStone CAPS proposal, PR #497](https://github.com/canton-foundation/canton-dev-fund/pull/497): proposes the Canton Access and Privacy Standard and privacy-preserving push-oracle patterns. It is potentially complementary, not an endorsement or confirmed dependency.
-- [Concordia](https://github.com/unlockitio/concordia): develops reusable decision workflows and Canton Allocation Primitives (CAP). CAP is distinct from CAPS.
-- [CIP-0100](https://github.com/canton-foundation/cips/blob/main/cip-0100/cip-0100.md): defines current Development Fund governance and implementation mechanics.
-- [Canton Network Splice](https://github.com/canton-network/splice): contains current Development Fund effectuation contracts and related infrastructure; exact supported interfaces require validation.
+| Project or standard | Proposal / PR | Repository / source | Relationship to Veridica | Boundary / alignment |
+| --- | --- | --- | --- | --- |
+| RedStone CAPS | [PR #497](https://github.com/canton-foundation/canton-dev-fund/pull/497) (proposal; approval state not stated) | N/A | Potentially complementary access, privacy, lineage, and privacy-preserving push-oracle patterns. | Optional composition only. No endorsement, dependency, or compatibility claim; interfaces, versions, and tests require validation. |
+| Concordia | N/A | [Concordia repository](https://github.com/unlockitio/concordia) | Possible reuse of Canton Allocation Primitives (CAP) for governed decisions, allocations, reward routing, and settlement handoffs. | CAP is distinct from CAPS and is not a complete Veridica evidence, pricing, or reward implementation. |
+| CIP-0100 | N/A | [CIP-0100](https://github.com/canton-foundation/cips/blob/main/cip-0100/cip-0100.md) (Active) | Defines Development Fund governance and implementation mechanics relevant to the demonstration boundary. | The demonstration preserves Development Fund authority and does not import CIP governance into the Veridica runtime. |
+| Canton Network Splice | N/A | [Canton Network Splice repository](https://github.com/canton-network/splice) | Possible reference for Development Fund effectuation contracts and related infrastructure. | Exact supported interfaces remain unresolved and require validation. |
+| Canton Token Standards | N/A | N/A | Potential asset representation and transfer layer outside Veridica records. | Settlement remains outside Veridica; no implementation claim is made. |
+| Daml Explicit Contract Disclosure | N/A | N/A | Supports the command-specific disclosure path. | No documentation or version claim is made without source evidence. |
+| DecMan / Canton Decentralized Party | N/A | N/A | Optional execution-model choice. | No dependency, requirement, version, or integration claim is made. |
 
 These references identify possible composition points. They do not represent adopter commitments, endorsements, approved governance changes, or guaranteed interface compatibility.
 
