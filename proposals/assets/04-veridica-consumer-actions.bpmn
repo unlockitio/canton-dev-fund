@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version="1.0" encoding="UTF-8"?>
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_Workflow04" targetNamespace="https://unlockit.io/veridica/bpmn" exporter="Veridica deterministic renderer" exporterVersion="4.0">
   <bpmn:message id="Message_QuoteRequest" name="Quote request" />
   <bpmn:message id="Message_Quote" name="Binding time-bound quote" />
@@ -51,9 +51,6 @@
         <bpmn:timeDate xsi:type="bpmn:tFormalExpression">${quote.expiresAt}</bpmn:timeDate>
       </bpmn:timerEventDefinition>
     </bpmn:intermediateCatchEvent>
-    <bpmn:endEvent id="Event_1mzfr2f" name="Quote declined">
-      <bpmn:incoming>Flow_130ew2r</bpmn:incoming>
-    </bpmn:endEvent>
     <bpmn:sequenceFlow id="C_Flow_01" sourceRef="Consumer_Start" targetRef="Consumer_SelectData" />
     <bpmn:sequenceFlow id="C_Flow_02" sourceRef="Consumer_SelectData" targetRef="Consumer_SendQuoteRequest" />
     <bpmn:sequenceFlow id="C_Flow_04" sourceRef="Consumer_ReceiveQuote" targetRef="Consumer_ReviewQuote" />
@@ -66,6 +63,9 @@
       <bpmn:incoming>Flow_0e0ebnd</bpmn:incoming>
       <bpmn:outgoing>Flow_0bjj8z9</bpmn:outgoing>
     </bpmn:task>
+    <bpmn:endEvent id="Event_1mzfr2f" name="Quote declined">
+      <bpmn:incoming>Flow_130ew2r</bpmn:incoming>
+    </bpmn:endEvent>
     <bpmn:intermediateThrowEvent id="Escrow_SendLocked" name="Send escrow locked to Data Provider">
       <bpmn:incoming>Flow_0bjj8z9</bpmn:incoming>
       <bpmn:messageEventDefinition messageRef="Message_EscrowLocked" />
@@ -119,8 +119,101 @@
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_Workflow04">
     <bpmndi:BPMNPlane id="BPMNPlane_Workflow04" bpmnElement="Collaboration_Workflow04">
+      <bpmndi:BPMNShape id="Shape_Participant_Consumer" bpmnElement="Participant_Consumer" isHorizontal="true">
+        <dc:Bounds x="40" y="-260" width="1060" height="560" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Consumer_Start" bpmnElement="Consumer_Start">
+        <dc:Bounds x="102" y="-208" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="89" y="-172" width="63" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Consumer_SelectData" bpmnElement="Consumer_SelectData">
+        <dc:Bounds x="238" y="-230" width="190" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Consumer_SendQuoteRequest" bpmnElement="Consumer_SendQuoteRequest">
+        <dc:Bounds x="528" y="-208" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="517" y="-234" width="57" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Consumer_ReceiveQuote" bpmnElement="Consumer_ReceiveQuote">
+        <dc:Bounds x="102" y="142" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="77" y="105" width="86" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Consumer_ReviewQuote" bpmnElement="Consumer_ReviewQuote">
+        <dc:Bounds x="238" y="120" width="190" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Consumer_QuoteDecision" bpmnElement="Consumer_QuoteDecision" isMarkerVisible="true">
+        <dc:Bounds x="528" y="135" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="404" y="195" width="71" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Consumer_ExpiryEnd" bpmnElement="Consumer_ExpiryEnd">
+        <dc:Bounds x="238" y="-38" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="216" y="-64" width="88" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_04yt00j_di" bpmnElement="Consumer_QuoteExpiry">
+        <dc:Bounds x="102" y="-38" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="79" y="-2" width="82" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Escrow_LockToken" bpmnElement="Escrow_LockToken">
+        <dc:Bounds x="668" y="120" width="190" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1mzfr2f_di" bpmnElement="Event_1mzfr2f">
+        <dc:Bounds x="535" y="-38" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="516" y="-62" width="74" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Escrow_SendLocked" bpmnElement="Escrow_SendLocked">
+        <dc:Bounds x="962" y="142" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="941" y="100" width="71" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Edge_C_Flow_01" bpmnElement="C_Flow_01">
+        <di:waypoint x="138" y="-190" />
+        <di:waypoint x="238" y="-190" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_C_Flow_02" bpmnElement="C_Flow_02">
+        <di:waypoint x="428" y="-190" />
+        <di:waypoint x="528" y="-190" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_C_Flow_04" bpmnElement="C_Flow_04">
+        <di:waypoint x="138" y="160" />
+        <di:waypoint x="238" y="160" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_C_Flow_05" bpmnElement="C_Flow_05">
+        <di:waypoint x="428" y="160" />
+        <di:waypoint x="528" y="160" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_130ew2r_di" bpmnElement="Flow_130ew2r">
+        <di:waypoint x="553" y="135" />
+        <di:waypoint x="553" y="-2" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_C_Flow_Expiry" bpmnElement="C_Flow_Expiry">
+        <di:waypoint x="138" y="-20" />
+        <di:waypoint x="238" y="-20" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0bjj8z9_di" bpmnElement="Flow_0bjj8z9">
+        <di:waypoint x="858" y="160" />
+        <di:waypoint x="962" y="160" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0e0ebnd_di" bpmnElement="Flow_0e0ebnd">
+        <di:waypoint x="578" y="160" />
+        <di:waypoint x="668" y="160" />
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="Shape_Participant_DataProvider" bpmnElement="Participant_DataProvider" isHorizontal="true">
-        <dc:Bounds x="40" y="330" width="870" height="350" />
+        <dc:Bounds x="40" y="330" width="1060" height="350" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_Provider_ReceiveQuoteRequest" bpmnElement="Provider_ReceiveQuoteRequest">
         <dc:Bounds x="102" y="412" width="36" height="36" />
@@ -134,7 +227,7 @@
       <bpmndi:BPMNShape id="Shape_Provider_SendQuote" bpmnElement="Provider_SendQuote">
         <dc:Bounds x="528" y="412" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="362" y="448" width="57" height="14" />
+          <dc:Bounds x="517" y="453" width="57" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_Provider_ReceiveLocked" bpmnElement="Provider_ReceiveLocked">
@@ -149,7 +242,7 @@
       <bpmndi:BPMNShape id="Shape_Provider_SendSettlementRequest" bpmnElement="Provider_SendSettlementRequest">
         <dc:Bounds x="528" y="542" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="350" y="492" width="80" height="40" />
+          <dc:Bounds x="506" y="500" width="80" height="40" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Edge_P_Flow_01" bpmnElement="P_Flow_01">
@@ -157,7 +250,7 @@
         <di:waypoint x="238" y="430" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Edge_P_Flow_02" bpmnElement="P_Flow_02">
-        <di:waypoint x="358" y="430" />
+        <di:waypoint x="428" y="430" />
         <di:waypoint x="528" y="430" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Edge_P_Flow_04" bpmnElement="P_Flow_04">
@@ -165,11 +258,11 @@
         <di:waypoint x="238" y="560" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Edge_P_Flow_05" bpmnElement="P_Flow_05">
-        <di:waypoint x="358" y="560" />
+        <di:waypoint x="428" y="560" />
         <di:waypoint x="528" y="560" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="Shape_Participant_Escrow" bpmnElement="Participant_Escrow" isHorizontal="true">
-        <dc:Bounds x="40" y="720" width="870" height="180" />
+        <dc:Bounds x="40" y="720" width="1060" height="180" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_Escrow_ReceiveSettlementRequest" bpmnElement="Escrow_ReceiveSettlementRequest">
         <dc:Bounds x="102" y="772" width="36" height="36" />
@@ -191,106 +284,13 @@
         <di:waypoint x="238" y="790" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Edge_E_Flow_05" bpmnElement="E_Flow_05">
-        <di:waypoint x="358" y="790" />
+        <di:waypoint x="428" y="790" />
         <di:waypoint x="528" y="790" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="Shape_Participant_Consumer" bpmnElement="Participant_Consumer" isHorizontal="true">
-        <dc:Bounds x="40" y="-260" width="870" height="560" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_Consumer_Start" bpmnElement="Consumer_Start">
-        <dc:Bounds x="102" y="-208" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="89" y="-172" width="63" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_Consumer_SelectData" bpmnElement="Consumer_SelectData">
-        <dc:Bounds x="238" y="-230" width="190" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_Consumer_SendQuoteRequest" bpmnElement="Consumer_SendQuoteRequest">
-        <dc:Bounds x="528" y="-208" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="361" y="-162.5" width="57" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_Consumer_ReceiveQuote" bpmnElement="Consumer_ReceiveQuote">
-        <dc:Bounds x="102" y="142" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="77" y="105" width="86" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_Consumer_ReviewQuote" bpmnElement="Consumer_ReviewQuote">
-        <dc:Bounds x="238" y="120" width="190" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_Consumer_QuoteDecision" bpmnElement="Consumer_QuoteDecision" isMarkerVisible="true">
-        <dc:Bounds x="528" y="135" width="50" height="50" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="404" y="195" width="71" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_Consumer_ExpiryEnd" bpmnElement="Consumer_ExpiryEnd">
-        <dc:Bounds x="238" y="-38" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="196" y="-2" width="88" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_04yt00j_di" bpmnElement="Consumer_QuoteExpiry">
-        <dc:Bounds x="102" y="-38" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="79" y="-2" width="82" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_1mzfr2f_di" bpmnElement="Event_1mzfr2f">
-        <dc:Bounds x="422" y="-38" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="403" y="-62" width="74" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_Escrow_LockToken" bpmnElement="Escrow_LockToken">
-        <dc:Bounds x="668" y="120" width="190" height="80" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_Escrow_SendLocked" bpmnElement="Escrow_SendLocked">
-        <dc:Bounds x="855" y="142" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="724" y="92" width="71" height="40" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="Edge_C_Flow_01" bpmnElement="C_Flow_01">
-        <di:waypoint x="138" y="-190" />
-        <di:waypoint x="238" y="-190" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_C_Flow_02" bpmnElement="C_Flow_02">
-        <di:waypoint x="358" y="-190" />
-        <di:waypoint x="528" y="-190" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_C_Flow_04" bpmnElement="C_Flow_04">
-        <di:waypoint x="138" y="160" />
-        <di:waypoint x="238" y="160" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_C_Flow_05" bpmnElement="C_Flow_05">
-        <di:waypoint x="358" y="160" />
-        <di:waypoint x="528" y="160" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_130ew2r_di" bpmnElement="Flow_130ew2r">
-        <di:waypoint x="553" y="135" />
-        <di:waypoint x="440" y="-2" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_C_Flow_Expiry" bpmnElement="C_Flow_Expiry">
-        <di:waypoint x="138" y="-20" />
-        <di:waypoint x="238" y="-20" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0bjj8z9_di" bpmnElement="Flow_0bjj8z9">
-        <di:waypoint x="758" y="160" />
-        <di:waypoint x="855" y="160" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0e0ebnd_di" bpmnElement="Flow_0e0ebnd">
-        <di:waypoint x="578" y="160" />
-        <di:waypoint x="668" y="160" />
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Edge_MessageFlow_QuoteRequest" bpmnElement="MessageFlow_QuoteRequest">
-        <di:waypoint x="546" y="-208" />
-        <di:waypoint x="390" y="-230" />
-        <di:waypoint x="-120" y="-230" />
+        <di:waypoint x="546" y="-172" />
+        <di:waypoint x="546" y="-110" />
+        <di:waypoint x="-120" y="-110" />
         <di:waypoint x="-120" y="430" />
         <di:waypoint x="102" y="430" />
         <bpmndi:BPMNLabel>
@@ -299,7 +299,7 @@
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Edge_MessageFlow_Quote" bpmnElement="MessageFlow_Quote">
         <di:waypoint x="546" y="412" />
-        <di:waypoint x="390" y="370" />
+        <di:waypoint x="546" y="370" />
         <di:waypoint x="-90" y="370" />
         <di:waypoint x="-90" y="160" />
         <di:waypoint x="102" y="160" />
@@ -307,24 +307,24 @@
           <dc:Bounds x="405" y="333" width="30" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_MessageFlow_EscrowLocked" bpmnElement="MessageFlow_EscrowLocked">
-        <di:waypoint x="873" y="178" />
-        <di:waypoint x="760" y="250" />
-        <di:waypoint x="-30" y="250" />
-        <di:waypoint x="-30" y="560" />
-        <di:waypoint x="102" y="560" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="370" y="818" width="71" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Edge_MessageFlow_SettlementRequest" bpmnElement="MessageFlow_SettlementRequest">
         <di:waypoint x="546" y="578" />
-        <di:waypoint x="390" y="630" />
+        <di:waypoint x="546" y="630" />
         <di:waypoint x="-30" y="630" />
         <di:waypoint x="-30" y="790" />
         <di:waypoint x="102" y="790" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="371" y="586" width="68" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_MessageFlow_EscrowLocked" bpmnElement="MessageFlow_EscrowLocked">
+        <di:waypoint x="980" y="178" />
+        <di:waypoint x="980" y="250" />
+        <di:waypoint x="-30" y="250" />
+        <di:waypoint x="-30" y="560" />
+        <di:waypoint x="102" y="560" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="370" y="818" width="71" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
