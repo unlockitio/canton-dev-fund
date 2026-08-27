@@ -1,0 +1,17 @@
+{
+  "name": "canton-dev-fund-bpmn-tools",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Repository-local BPMN rendering tools",
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "bpmn:render": "node tools/bpmn/render.mjs"
+  },
+  "dependencies": {
+    "bpmn-js": "18.25.1",
+    "puppeteer": "25.9.0"
+  }
+}
