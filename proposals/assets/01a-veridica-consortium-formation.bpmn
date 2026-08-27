@@ -1,32 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_01a_veridica_consortium_formation" targetNamespace="https://unlockit.io/veridica/bpmn" exporter="Veridica deterministic renderer" exporterVersion="4.0">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_01a_veridica_consortium_formation" targetNamespace="https://unlockit.io/veridica/bpmn" exporter="Veridica deterministic renderer" exporterVersion="4.0">
   <bpmn:collaboration id="Collaboration">
     <bpmn:participant id="Participant_Lead" name="Consortium Lead (Genesis Proposer)" processRef="Process_Lead" />
     <bpmn:participant id="Participant_Candidates" name="Fixed Candidate (multi-instance, one per committed Candidate)" processRef="Process_Candidates" />
-    <bpmn:participant id="Participant_Resolver" name="Genesis Resolver" processRef="Process_Resolver" />
-    <bpmn:messageFlow id="Message_Proposal" name="Genesis Proposal + Ballot Request" sourceRef="A_ProposalDelivered" targetRef="A_RequestReceived" />
+    <bpmn:participant id="Participant_Resolver" name="Resolver" processRef="Process_Resolver" />
+    <bpmn:messageFlow id="Message_Proposal" sourceRef="A_ProposalDelivered" targetRef="A_RequestReceived" />
+    <bpmn:textAnnotation id="A_DecisionPolicies">
+      <bpmn:text>Uses the Party Setup result to define and commit the execution identity/model, decision-policy fields, and fixed closed Candidate electorate.</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Assoc_A_DecisionPolicies" sourceRef="A_DecisionPolicies" targetRef="A_ProposeConsortium" />
   </bpmn:collaboration>
   <bpmn:process id="Process_Lead" isExecutable="false">
-    <bpmn:startEvent id="A_Start" name="Start">
-      <bpmn:outgoing>A1</bpmn:outgoing>
-    </bpmn:startEvent>
-    <bpmn:exclusiveGateway id="A_PartySetup" name="Execution identity requires Party setup?" gatewayDirection="Diverging">
-      <bpmn:incoming>A1</bpmn:incoming>
-      <bpmn:outgoing>A2_Yes</bpmn:outgoing>
-      <bpmn:outgoing>A2_No</bpmn:outgoing>
-    </bpmn:exclusiveGateway>
-    <bpmn:exclusiveGateway id="A_PartyMerge" gatewayDirection="Converging">
-      <bpmn:incoming>A2_No</bpmn:incoming>
-      <bpmn:incoming>A3</bpmn:incoming>
-      <bpmn:outgoing>A4</bpmn:outgoing>
-    </bpmn:exclusiveGateway>
-    <bpmn:task id="A_ProposeConsortium" name="Propose Consortium">
-      <bpmn:incoming>A4</bpmn:incoming>
-      <bpmn:outgoing>A6</bpmn:outgoing>
-      <bpmn:dataOutputAssociation id="DataOutputAssociation_1yqremm">
-        <bpmn:targetRef>DataObjectReference_1cx3e06</bpmn:targetRef>
-      </bpmn:dataOutputAssociation>
-    </bpmn:task>
     <bpmn:sequenceFlow id="A1" sourceRef="A_Start" targetRef="A_PartySetup" />
     <bpmn:sequenceFlow id="A2_Yes" name="Yes: DecMan Governor Party or single Consortium Party" sourceRef="A_PartySetup" targetRef="A_PartyCreated" />
     <bpmn:sequenceFlow id="A2_No" name="No: Use committed Proposer + Candidate Party set" sourceRef="A_PartySetup" targetRef="A_PartyMerge" />
@@ -34,36 +18,52 @@
     <bpmn:sequenceFlow id="A4" sourceRef="A_PartyMerge" targetRef="A_ProposeConsortium" />
     <bpmn:sequenceFlow id="A6" sourceRef="A_ProposeConsortium" targetRef="A_SendProposal" />
     <bpmn:sequenceFlow id="A7" sourceRef="A_SendProposal" targetRef="A_ProposalDelivered" />
-    <bpmn:dataObjectReference id="DataObjectReference_1cx3e06" name="Genesis Proposal" dataObjectRef="DataObject_0jxqfhw" />
-    <bpmn:dataObject id="DataObject_0jxqfhw" />
+    <bpmn:task id="A_ProposeConsortium" name="Propose Consortium">
+      <bpmn:incoming>A4</bpmn:incoming>
+      <bpmn:outgoing>A6</bpmn:outgoing>
+      <bpmn:dataOutputAssociation id="DataOutputAssociation_1yqremm">
+        <bpmn:targetRef>DataObjectReference_1cx3e06</bpmn:targetRef>
+      </bpmn:dataOutputAssociation>
+    </bpmn:task>
     <bpmn:task id="A_SendProposal" name="Send Genesis Proposal + Ballot Request to every fixed Candidate">
       <bpmn:incoming>A6</bpmn:incoming>
       <bpmn:outgoing>A7</bpmn:outgoing>
     </bpmn:task>
-    <bpmn:intermediateThrowEvent id="A_ProposalDelivered" name="Proposal delivered">
-      <bpmn:incoming>A7</bpmn:incoming>
-      <bpmn:messageEventDefinition id="MessageEventDefinition_1l1pgn1" />
-    </bpmn:intermediateThrowEvent>
+    <bpmn:exclusiveGateway id="A_PartyMerge" gatewayDirection="Converging">
+      <bpmn:incoming>A2_No</bpmn:incoming>
+      <bpmn:incoming>A3</bpmn:incoming>
+      <bpmn:outgoing>A4</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:exclusiveGateway id="A_PartySetup" name="Execution identity requires Party setup?" gatewayDirection="Diverging">
+      <bpmn:incoming>A1</bpmn:incoming>
+      <bpmn:outgoing>A2_Yes</bpmn:outgoing>
+      <bpmn:outgoing>A2_No</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:startEvent id="A_Start" name="Start">
+      <bpmn:outgoing>A1</bpmn:outgoing>
+    </bpmn:startEvent>
     <bpmn:task id="A_PartyCreated" name="Create or register required Party">
       <bpmn:incoming>A2_Yes</bpmn:incoming>
       <bpmn:outgoing>A3</bpmn:outgoing>
     </bpmn:task>
-    <bpmn:textAnnotation id="A_DecisionPolicies">
-      <bpmn:text>Uses the Party Setup result to define and commit the execution identity/model, decision-policy fields, and fixed closed Candidate electorate.</bpmn:text>
-    </bpmn:textAnnotation>
-    <bpmn:association id="Assoc_A_DecisionPolicies" sourceRef="A_DecisionPolicies" targetRef="A_ProposeConsortium" />
+    <bpmn:dataObjectReference id="DataObjectReference_1cx3e06" name="Genesis Proposal" dataObjectRef="DataObject_0jxqfhw" />
+    <bpmn:dataObject id="DataObject_0jxqfhw" />
+    <bpmn:intermediateThrowEvent id="A_ProposalDelivered" name="Proposal + Ballots sent">
+      <bpmn:incoming>A7</bpmn:incoming>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_1l1pgn1" />
+    </bpmn:intermediateThrowEvent>
   </bpmn:process>
   <bpmn:process id="Process_Candidates" isExecutable="false">
     <bpmn:sequenceFlow id="C1" sourceRef="A_RequestReceived" targetRef="A_SubmitBallot" />
     <bpmn:sequenceFlow id="C2" sourceRef="A_SubmitBallot" targetRef="Event_0dy1yhh" />
-    <bpmn:startEvent id="A_RequestReceived" name="Request received">
-      <bpmn:outgoing>C1</bpmn:outgoing>
-      <bpmn:messageEventDefinition />
-    </bpmn:startEvent>
     <bpmn:task id="A_SubmitBallot" name="Submit own ballot">
       <bpmn:incoming>C1</bpmn:incoming>
       <bpmn:outgoing>C2</bpmn:outgoing>
     </bpmn:task>
+    <bpmn:startEvent id="A_RequestReceived" name="Request received">
+      <bpmn:outgoing>C1</bpmn:outgoing>
+      <bpmn:messageEventDefinition />
+    </bpmn:startEvent>
     <bpmn:endEvent id="Event_0dy1yhh" name="Ballot submitted">
       <bpmn:incoming>C2</bpmn:incoming>
       <bpmn:messageEventDefinition id="MessageEventDefinition_1nnpgjp" />
@@ -75,11 +75,17 @@
     <bpmn:sequenceFlow id="R4" sourceRef="A_ElectionOutcome" targetRef="A_ConsortiumFormed" />
     <bpmn:sequenceFlow id="R5" sourceRef="A_ElectionOutcome" targetRef="A_VRejected" />
     <bpmn:sequenceFlow id="R6" sourceRef="A_ElectionOutcome" targetRef="A_VExpired" />
-    <bpmn:task id="A_EvaluateResolve" name="Evaluate and resolve genesis election">
+    <bpmn:task id="A_EvaluateResolve" name="Evaluate and resolve election">
       <bpmn:incoming>R2</bpmn:incoming>
       <bpmn:outgoing>R3</bpmn:outgoing>
     </bpmn:task>
-    <bpmn:exclusiveGateway id="A_ElectionOutcome" name="Genesis election outcome" gatewayDirection="Diverging">
+    <bpmn:startEvent id="A_ReceiveBallots" name="Ballots received">
+      <bpmn:outgoing>R2</bpmn:outgoing>
+      <bpmn:conditionalEventDefinition id="ConditionalEventDefinition_1a5xgcl">
+        <bpmn:condition xsi:type="bpmn:tFormalExpression" />
+      </bpmn:conditionalEventDefinition>
+    </bpmn:startEvent>
+    <bpmn:exclusiveGateway id="A_ElectionOutcome" name="Election outcome" gatewayDirection="Diverging">
       <bpmn:incoming>R3</bpmn:incoming>
       <bpmn:outgoing>R4</bpmn:outgoing>
       <bpmn:outgoing>R5</bpmn:outgoing>
@@ -94,29 +100,35 @@
     <bpmn:endEvent id="A_VExpired" name="VExpired">
       <bpmn:incoming>R6</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:startEvent id="A_ReceiveBallots" name="Genesis ballot received">
-      <bpmn:outgoing>R2</bpmn:outgoing>
-      <bpmn:conditionalEventDefinition id="ConditionalEventDefinition_1a5xgcl">
-        <bpmn:condition xsi:type="bpmn:tFormalExpression" />
-      </bpmn:conditionalEventDefinition>
-    </bpmn:startEvent>
   </bpmn:process>
   <bpmndi:BPMNDiagram id="Diagram">
     <bpmndi:BPMNPlane id="Plane" bpmnElement="Collaboration">
       <bpmndi:BPMNShape id="DI_Participant_Lead" bpmnElement="Participant_Lead" isHorizontal="true">
         <dc:Bounds x="20" y="30" width="1540" height="360" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="DI_A_Start" bpmnElement="A_Start">
-        <dc:Bounds x="100" y="126" width="36" height="36" />
+      <bpmndi:BPMNShape id="DI_A_ProposeConsortium" bpmnElement="A_ProposeConsortium">
+        <dc:Bounds x="680" y="120" width="190" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="DI_A_PartySetup" bpmnElement="A_PartySetup" isMarkerVisible="true">
-        <dc:Bounds x="200" y="120" width="56" height="56" />
+      <bpmndi:BPMNShape id="DI_A_SendProposal" bpmnElement="A_SendProposal">
+        <dc:Bounds x="980" y="120" width="190" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DI_A_PartyMerge" bpmnElement="A_PartyMerge" isMarkerVisible="true">
-        <dc:Bounds x="530" y="120" width="56" height="56" />
+        <dc:Bounds x="566" y="132" width="56" height="56" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="DI_A_ProposeConsortium" bpmnElement="A_ProposeConsortium">
-        <dc:Bounds x="680" y="110" width="190" height="76" />
+      <bpmndi:BPMNShape id="DI_A_PartySetup" bpmnElement="A_PartySetup" isMarkerVisible="true">
+        <dc:Bounds x="236" y="132" width="56" height="56" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="221" y="188" width="87" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_A_Start" bpmnElement="A_Start">
+        <dc:Bounds x="100" y="142" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="106" y="178" width="24" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_A_PartyCreated" bpmnElement="A_PartyCreated">
+        <dc:Bounds x="325" y="55" width="190" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DataObjectReference_1cx3e06_di" bpmnElement="DataObjectReference_1cx3e06">
         <dc:Bounds x="757" y="235" width="36" height="50" />
@@ -124,158 +136,155 @@
           <dc:Bounds x="732" y="292" width="87" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="DI_A_SendProposal" bpmnElement="A_SendProposal">
-        <dc:Bounds x="1005" y="110" width="190" height="76" />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_10jy2o2_di" bpmnElement="A_ProposalDelivered">
-        <dc:Bounds x="1342" y="130" width="36" height="36" />
+        <dc:Bounds x="1262" y="142" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1337" y="93" width="45" height="27" />
+          <dc:Bounds x="1235" y="105" width="89" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="DI_A_PartyCreated" bpmnElement="A_PartyCreated">
-        <dc:Bounds x="305" y="55" width="170" height="56" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="DI_A_DecisionPolicies" bpmnElement="A_DecisionPolicies">
-        <dc:Bounds x="630" y="45" width="430" height="45" />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="DI_A1" bpmnElement="A1">
-        <di:waypoint x="136" y="144" />
-        <di:waypoint x="200" y="144" />
+        <di:waypoint x="136" y="160" />
+        <di:waypoint x="236" y="160" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_A2_Yes" bpmnElement="A2_Yes">
-        <di:waypoint x="228" y="120" />
-        <di:waypoint x="228" y="83" />
-        <di:waypoint x="305" y="83" />
+        <di:waypoint x="264" y="132" />
+        <di:waypoint x="264" y="83" />
+        <di:waypoint x="325" y="83" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="125" y="53" width="89" height="53" />
+          <dc:Bounds x="161" y="52.999999999999986" width="89" height="53" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_A2_No" bpmnElement="A2_No">
-        <di:waypoint x="256" y="148" />
-        <di:waypoint x="530" y="148" />
+        <di:waypoint x="292" y="160" />
+        <di:waypoint x="566" y="160" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="354" y="157" width="79" height="66" />
+          <dc:Bounds x="354" y="169" width="79" height="66" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_A3" bpmnElement="A3">
-        <di:waypoint x="475" y="83" />
-        <di:waypoint x="558" y="83" />
-        <di:waypoint x="558" y="120" />
+        <di:waypoint x="515" y="83" />
+        <di:waypoint x="594" y="83" />
+        <di:waypoint x="594" y="132" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_A4" bpmnElement="A4">
-        <di:waypoint x="586" y="148" />
-        <di:waypoint x="680" y="148" />
+        <di:waypoint x="622" y="160" />
+        <di:waypoint x="680" y="160" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_A6" bpmnElement="A6">
-        <di:waypoint x="870" y="148" />
-        <di:waypoint x="1005" y="148" />
+        <di:waypoint x="870" y="160" />
+        <di:waypoint x="980" y="160" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_A7" bpmnElement="A7">
-        <di:waypoint x="1195" y="148" />
-        <di:waypoint x="1342" y="148" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="DI_Assoc_A_DecisionPolicies" bpmnElement="Assoc_A_DecisionPolicies">
-        <di:waypoint x="775" y="90" />
-        <di:waypoint x="775" y="110" />
+        <di:waypoint x="1170" y="160" />
+        <di:waypoint x="1262" y="160" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="DI_Participant_Candidates" bpmnElement="Participant_Candidates" isHorizontal="true">
         <dc:Bounds x="20" y="410" width="1540" height="180" />
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_A_SubmitBallot" bpmnElement="A_SubmitBallot">
+        <dc:Bounds x="235" y="470" width="190" height="80" />
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DI_A_RequestReceived" bpmnElement="A_RequestReceived">
-        <dc:Bounds x="102" y="480" width="36" height="36" />
+        <dc:Bounds x="102" y="492" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="77" y="516" width="86" height="14" />
+          <dc:Bounds x="77" y="528" width="86" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="DI_A_SubmitBallot" bpmnElement="A_SubmitBallot">
-        <dc:Bounds x="235" y="470" width="150" height="56" />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_1mmg3gr_di" bpmnElement="Event_0dy1yhh">
-        <dc:Bounds x="632" y="480" width="36" height="36" />
+        <dc:Bounds x="542" y="492" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="611" y="523" width="79" height="14" />
+          <dc:Bounds x="521" y="535" width="79" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="DI_C1" bpmnElement="C1">
-        <di:waypoint x="138" y="498" />
-        <di:waypoint x="235" y="498" />
+        <di:waypoint x="138" y="510" />
+        <di:waypoint x="235" y="510" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_C2" bpmnElement="C2">
-        <di:waypoint x="385" y="498" />
-        <di:waypoint x="632" y="498" />
+        <di:waypoint x="425" y="510" />
+        <di:waypoint x="542" y="510" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="DI_Participant_Resolver" bpmnElement="Participant_Resolver" isHorizontal="true">
         <dc:Bounds x="20" y="620" width="1540" height="270" />
+        <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DI_A_EvaluateResolve" bpmnElement="A_EvaluateResolve">
-        <dc:Bounds x="235" y="695" width="190" height="76" />
+        <dc:Bounds x="235" y="705" width="190" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1elhw67_di" bpmnElement="A_ReceiveBallots">
+        <dc:Bounds x="102" y="727" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="81" y="763" width="78" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DI_A_ElectionOutcome" bpmnElement="A_ElectionOutcome" isMarkerVisible="true">
-        <dc:Bounds x="492" y="705" width="56" height="56" />
+        <dc:Bounds x="532" y="717" width="56" height="56" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="479" y="761" width="82" height="27" />
+          <dc:Bounds x="468" y="706" width="85" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DI_A_ConsortiumFormed" bpmnElement="A_ConsortiumFormed">
-        <dc:Bounds x="632" y="650" width="36" height="36" />
+        <dc:Bounds x="692" y="650" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="622" y="686" width="57" height="27" />
+          <dc:Bounds x="682" y="686" width="57" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DI_A_VRejected" bpmnElement="A_VRejected">
-        <dc:Bounds x="632" y="715" width="36" height="36" />
+        <dc:Bounds x="692" y="727" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="625" y="751" width="51" height="14" />
+          <dc:Bounds x="685" y="763" width="51" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DI_A_VExpired" bpmnElement="A_VExpired">
-        <dc:Bounds x="632" y="780" width="36" height="36" />
+        <dc:Bounds x="692" y="792" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="628" y="816" width="45" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_1elhw67_di" bpmnElement="A_ReceiveBallots">
-        <dc:Bounds x="102" y="715" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="85" y="751" width="70" height="27" />
+          <dc:Bounds x="688" y="828" width="45" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="DI_R2" bpmnElement="R2">
-        <di:waypoint x="138" y="733" />
-        <di:waypoint x="235" y="733" />
+        <di:waypoint x="138" y="745" />
+        <di:waypoint x="235" y="745" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_R3" bpmnElement="R3">
-        <di:waypoint x="425" y="733" />
-        <di:waypoint x="492" y="733" />
+        <di:waypoint x="425" y="745" />
+        <di:waypoint x="532" y="745" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_R4" bpmnElement="R4">
-        <di:waypoint x="520" y="705" />
-        <di:waypoint x="520" y="668" />
-        <di:waypoint x="632" y="668" />
+        <di:waypoint x="560" y="717" />
+        <di:waypoint x="560" y="668" />
+        <di:waypoint x="692" y="668" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_R5" bpmnElement="R5">
-        <di:waypoint x="548" y="733" />
-        <di:waypoint x="632" y="733" />
+        <di:waypoint x="588" y="745" />
+        <di:waypoint x="692" y="745" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_R6" bpmnElement="R6">
-        <di:waypoint x="520" y="761" />
-        <di:waypoint x="520" y="798" />
-        <di:waypoint x="632" y="798" />
+        <di:waypoint x="560" y="773" />
+        <di:waypoint x="560" y="810" />
+        <di:waypoint x="692" y="810" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_Assoc_A_DecisionPolicies" bpmnElement="Assoc_A_DecisionPolicies">
+        <di:waypoint x="870" y="68" />
+        <di:waypoint x="775" y="68" />
+        <di:waypoint x="775" y="120" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DataOutputAssociation_1yqremm_di" bpmnElement="DataOutputAssociation_1yqremm">
-        <di:waypoint x="774" y="186" />
-        <di:waypoint x="773" y="235" />
+        <di:waypoint x="775" y="200" />
+        <di:waypoint x="775" y="235" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DI_Message_Proposal" bpmnElement="Message_Proposal">
-        <di:waypoint x="1362" y="166" />
-        <di:waypoint x="1362" y="340" />
+        <di:waypoint x="1282" y="178" />
+        <di:waypoint x="1282" y="340" />
         <di:waypoint x="120" y="340" />
-        <di:waypoint x="120" y="480" />
+        <di:waypoint x="120" y="492" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1376" y="326" width="87" height="27" />
+          <dc:Bounds x="1296" y="326" width="87" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="DI_A_DecisionPolicies" bpmnElement="A_DecisionPolicies">
+        <dc:Bounds x="870" y="45" width="430" height="45" />
+      </bpmndi:BPMNShape>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
 </bpmn:definitions>
