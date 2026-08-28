@@ -15,8 +15,7 @@
     <bpmn:participant id="Participant_Escrow" name="Escrow" processRef="Process_Escrow" />
     <bpmn:messageFlow id="MessageFlow_QuoteRequest" sourceRef="Consumer_SendQuoteRequest" targetRef="Provider_ReceiveQuoteRequest" />
     <bpmn:messageFlow id="MessageFlow_BindingQuote" sourceRef="Provider_SendBindingQuote" targetRef="Consumer_ReceiveBindingQuote" />
-    <bpmn:messageFlow id="MessageFlow_AcceptedQuoteFunding" sourceRef="Consumer_SendAcceptedQuoteFunding" targetRef="Escrow_ReceiveAcceptedQuoteFunding" />
-    <bpmn:messageFlow id="MessageFlow_FundingSecured" sourceRef="Escrow_SendFundingSecured" targetRef="Provider_ReceiveFundingSecured" />
+    <bpmn:messageFlow id="MessageFlow_AcceptedQuoteFunding" sourceRef="Consumer_SendAcceptedQuoteFunding" targetRef="Provider_ReceiveFundingSecured" />
     <bpmn:messageFlow id="MessageFlow_AllocationInputs" sourceRef="Provider_SendAllocationInputs" targetRef="Allocator_ReceiveAllocationInputs" />
     <bpmn:messageFlow id="MessageFlow_ExecutionEvidence" sourceRef="Allocator_SendExecutionEvidence" targetRef="Escrow_ReceiveExecutionEvidence" />
     <bpmn:textAnnotation id="Annotation_ConfiguredRoutes">
@@ -110,44 +109,30 @@
     <bpmn:sequenceFlow id="A_Flow_03" sourceRef="Allocator_AllocateEachInstruction" targetRef="Allocator_SendExecutionEvidence" />
   </bpmn:process>
   <bpmn:process id="Process_Escrow" name="Escrow actions" isExecutable="false">
-    <bpmn:startEvent id="Escrow_ReceiveAcceptedQuoteFunding" name="Receive accepted quote and funding instruction">
-      <bpmn:outgoing>E_Flow_01</bpmn:outgoing>
-      <bpmn:messageEventDefinition messageRef="Message_AcceptedQuoteFunding" />
-    </bpmn:startEvent>
-    <bpmn:intermediateThrowEvent id="Escrow_SendFundingSecured" name="Funding secured">
-      <bpmn:incoming>E_Flow_02</bpmn:incoming>
-      <bpmn:messageEventDefinition messageRef="Message_FundingSecured" />
-    </bpmn:intermediateThrowEvent>
-    <bpmn:task id="Escrow_SecureFunding" name="Secure required funding">
-      <bpmn:incoming>E_Flow_01</bpmn:incoming>
-      <bpmn:outgoing>E_Flow_02</bpmn:outgoing>
-    </bpmn:task>
-    <bpmn:intermediateThrowEvent id="Escrow_SendFinalReceipt" name="Emit final settlement receipt">
-      <bpmn:incoming>E_Flow_06</bpmn:incoming>
-      <bpmn:messageEventDefinition messageRef="Message_FinalReceipt" />
-    </bpmn:intermediateThrowEvent>
-    <bpmn:task id="Escrow_PerformFinalSettlement" name="Perform final settlement">
-      <bpmn:incoming>E_Flow_05</bpmn:incoming>
-      <bpmn:outgoing>E_Flow_06</bpmn:outgoing>
-    </bpmn:task>
-    <bpmn:task id="Escrow_VerifyExecutionRecords" name="Verify all N execution records">
-      <bpmn:incoming>E_Flow_04</bpmn:incoming>
-      <bpmn:outgoing>E_Flow_05</bpmn:outgoing>
-    </bpmn:task>
     <bpmn:intermediateCatchEvent id="Escrow_ReceiveExecutionEvidence" name="Receive execution-complete evidence">
       <bpmn:outgoing>E_Flow_04</bpmn:outgoing>
       <bpmn:messageEventDefinition messageRef="Message_ExecutionEvidence" />
     </bpmn:intermediateCatchEvent>
-    <bpmn:sequenceFlow id="E_Flow_01" sourceRef="Escrow_ReceiveAcceptedQuoteFunding" targetRef="Escrow_SecureFunding" />
-    <bpmn:sequenceFlow id="E_Flow_02" sourceRef="Escrow_SecureFunding" targetRef="Escrow_SendFundingSecured" />
-    <bpmn:sequenceFlow id="E_Flow_06" sourceRef="Escrow_PerformFinalSettlement" targetRef="Escrow_SendFinalReceipt" />
-    <bpmn:sequenceFlow id="E_Flow_05" sourceRef="Escrow_VerifyExecutionRecords" targetRef="Escrow_PerformFinalSettlement" />
+    <bpmn:task id="Escrow_VerifyExecutionRecords" name="Verify all N execution records">
+      <bpmn:incoming>E_Flow_04</bpmn:incoming>
+      <bpmn:outgoing>E_Flow_05</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Escrow_PerformFinalSettlement" name="Perform final settlement">
+      <bpmn:incoming>E_Flow_05</bpmn:incoming>
+      <bpmn:outgoing>E_Flow_06</bpmn:outgoing>
+    </bpmn:task>
     <bpmn:sequenceFlow id="E_Flow_04" sourceRef="Escrow_ReceiveExecutionEvidence" targetRef="Escrow_VerifyExecutionRecords" />
+    <bpmn:sequenceFlow id="E_Flow_05" sourceRef="Escrow_VerifyExecutionRecords" targetRef="Escrow_PerformFinalSettlement" />
+    <bpmn:sequenceFlow id="E_Flow_06" sourceRef="Escrow_PerformFinalSettlement" targetRef="Event_1b3jz6z" />
+    <bpmn:endEvent id="Event_1b3jz6z">
+      <bpmn:incoming>E_Flow_06</bpmn:incoming>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_0yz1m70" />
+    </bpmn:endEvent>
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_Workflow04">
     <bpmndi:BPMNPlane id="BPMNPlane_Workflow04" bpmnElement="Collaboration_Workflow04">
       <bpmndi:BPMNShape id="Shape_Participant_Consumer" bpmnElement="Participant_Consumer" isHorizontal="true">
-        <dc:Bounds x="20" y="-170" width="2700" height="370" />
+        <dc:Bounds x="20" y="-170" width="1170" height="370" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_Consumer_SendQuoteRequest" bpmnElement="Consumer_SendQuoteRequest">
         <dc:Bounds x="342" y="-98" width="36" height="36" />
@@ -156,7 +141,7 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_Consumer_SelectData" bpmnElement="Consumer_SelectData">
-        <dc:Bounds x="150" y="-120" width="160" height="80" />
+        <dc:Bounds x="150" y="-120" width="190" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_Consumer_Start" bpmnElement="Consumer_Start">
         <dc:Bounds x="80" y="-98" width="36" height="36" />
@@ -171,7 +156,7 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_Consumer_AcceptQuote" bpmnElement="Consumer_AcceptQuote">
-        <dc:Bounds x="150" y="40" width="140" height="80" />
+        <dc:Bounds x="150" y="40" width="190" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_Consumer_SendAcceptedQuoteFunding" bpmnElement="Consumer_SendAcceptedQuoteFunding">
@@ -181,7 +166,7 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Edge_C_Flow_02" bpmnElement="C_Flow_02">
-        <di:waypoint x="310" y="-80" />
+        <di:waypoint x="340" y="-80" />
         <di:waypoint x="342" y="-80" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Edge_C_Flow_01" bpmnElement="C_Flow_01">
@@ -193,11 +178,11 @@
         <di:waypoint x="150" y="80" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Edge_C_Flow_05" bpmnElement="C_Flow_05">
-        <di:waypoint x="290" y="80" />
+        <di:waypoint x="340" y="80" />
         <di:waypoint x="342" y="80" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="Shape_Participant_DataProvider" bpmnElement="Participant_DataProvider" isHorizontal="true">
-        <dc:Bounds x="20" y="220" width="2700" height="370" />
+        <dc:Bounds x="20" y="220" width="1170" height="370" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_Provider_SendBindingQuote" bpmnElement="Provider_SendBindingQuote">
         <dc:Bounds x="322" y="282" width="36" height="36" />
@@ -206,7 +191,7 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_Provider_PrepareBindingQuote" bpmnElement="Provider_PrepareBindingQuote">
-        <dc:Bounds x="150" y="260" width="140" height="80" />
+        <dc:Bounds x="150" y="260" width="190" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_Provider_ReceiveQuoteRequest" bpmnElement="Provider_ReceiveQuoteRequest">
         <dc:Bounds x="82" y="282" width="36" height="36" />
@@ -221,7 +206,7 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_Provider_PrepareSelectedData" bpmnElement="Provider_PrepareSelectedData">
-        <dc:Bounds x="150" y="430" width="140" height="80" />
+        <dc:Bounds x="150" y="430" width="190" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_Provider_SendAllocationInputs" bpmnElement="Provider_SendAllocationInputs">
         <dc:Bounds x="322" y="452" width="36" height="36" />
@@ -230,7 +215,7 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Edge_P_Flow_02" bpmnElement="P_Flow_02">
-        <di:waypoint x="290" y="300" />
+        <di:waypoint x="340" y="300" />
         <di:waypoint x="322" y="300" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Edge_P_Flow_01" bpmnElement="P_Flow_01">
@@ -242,67 +227,41 @@
         <di:waypoint x="150" y="470" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Edge_P_Flow_05" bpmnElement="P_Flow_05">
-        <di:waypoint x="290" y="470" />
+        <di:waypoint x="340" y="470" />
         <di:waypoint x="322" y="470" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="Shape_Participant_Escrow" bpmnElement="Participant_Escrow" isHorizontal="true">
-        <dc:Bounds x="20" y="880" width="2700" height="360" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_Escrow_ReceiveAcceptedQuoteFunding" bpmnElement="Escrow_ReceiveAcceptedQuoteFunding">
-        <dc:Bounds x="92" y="947" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="66" y="983" width="89" height="40" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_Escrow_SendFundingSecured" bpmnElement="Escrow_SendFundingSecured">
-        <dc:Bounds x="342" y="947" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="319" y="993" width="82" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_Escrow_SecureFunding" bpmnElement="Escrow_SecureFunding">
-        <dc:Bounds x="160" y="925" width="140" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_Escrow_SendFinalReceipt" bpmnElement="Escrow_SendFinalReceipt">
-        <dc:Bounds x="552" y="1102" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="527" y="1138" width="87" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_Escrow_PerformFinalSettlement" bpmnElement="Escrow_PerformFinalSettlement">
-        <dc:Bounds x="360" y="1080" width="160" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_Escrow_VerifyExecutionRecords" bpmnElement="Escrow_VerifyExecutionRecords">
-        <dc:Bounds x="160" y="1080" width="160" height="80" />
+        <dc:Bounds x="20" y="880" width="1170" height="190" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_Escrow_ReceiveExecutionEvidence" bpmnElement="Escrow_ReceiveExecutionEvidence">
-        <dc:Bounds x="92" y="1102" width="36" height="36" />
+        <dc:Bounds x="92" y="942" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="85" y="1138" width="51" height="53" />
+          <dc:Bounds x="85" y="978" width="51" height="53" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="Edge_E_Flow_01" bpmnElement="E_Flow_01">
-        <di:waypoint x="128" y="965" />
-        <di:waypoint x="160" y="965" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_E_Flow_02" bpmnElement="E_Flow_02">
-        <di:waypoint x="300" y="965" />
-        <di:waypoint x="342" y="965" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_E_Flow_06" bpmnElement="E_Flow_06">
-        <di:waypoint x="520" y="1120" />
-        <di:waypoint x="552" y="1120" />
+      <bpmndi:BPMNShape id="Shape_Escrow_VerifyExecutionRecords" bpmnElement="Escrow_VerifyExecutionRecords">
+        <dc:Bounds x="160" y="920" width="190" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Escrow_PerformFinalSettlement" bpmnElement="Escrow_PerformFinalSettlement">
+        <dc:Bounds x="360" y="920" width="190" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0998oim_di" bpmnElement="Event_1b3jz6z">
+        <dc:Bounds x="622" y="942" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Edge_E_Flow_04" bpmnElement="E_Flow_04">
+        <di:waypoint x="128" y="960" />
+        <di:waypoint x="160" y="960" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Edge_E_Flow_05" bpmnElement="E_Flow_05">
-        <di:waypoint x="320" y="1120" />
-        <di:waypoint x="360" y="1120" />
+        <di:waypoint x="350" y="960" />
+        <di:waypoint x="360" y="960" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_E_Flow_04" bpmnElement="E_Flow_04">
-        <di:waypoint x="128" y="1120" />
-        <di:waypoint x="160" y="1120" />
+      <bpmndi:BPMNEdge id="Edge_E_Flow_06" bpmnElement="E_Flow_06">
+        <di:waypoint x="550" y="960" />
+        <di:waypoint x="622" y="960" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="Shape_Participant_SettlementAllocator" bpmnElement="Participant_SettlementAllocator" isHorizontal="true">
-        <dc:Bounds x="20" y="610" width="2700" height="250" />
+        <dc:Bounds x="20" y="610" width="1170" height="250" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_Allocator_ReceiveAllocationInputs" bpmnElement="Allocator_ReceiveAllocationInputs">
         <dc:Bounds x="92" y="732" width="36" height="36" />
@@ -311,7 +270,7 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_Allocator_GenerateInstructions" bpmnElement="Allocator_GenerateInstructions">
-        <dc:Bounds x="160" y="710" width="170" height="80" />
+        <dc:Bounds x="160" y="710" width="190" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_Allocator_SendExecutionEvidence" bpmnElement="Allocator_SendExecutionEvidence">
         <dc:Bounds x="642" y="732" width="36" height="36" />
@@ -320,18 +279,18 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_Allocator_AllocateEachInstruction" bpmnElement="Allocator_AllocateEachInstruction" isExpanded="false">
-        <dc:Bounds x="370" y="710" width="220" height="80" />
+        <dc:Bounds x="370" y="710" width="190" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Edge_A_Flow_01" bpmnElement="A_Flow_01">
         <di:waypoint x="128" y="750" />
         <di:waypoint x="160" y="750" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Edge_A_Flow_02" bpmnElement="A_Flow_02">
-        <di:waypoint x="330" y="750" />
+        <di:waypoint x="350" y="750" />
         <di:waypoint x="370" y="750" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Edge_A_Flow_03" bpmnElement="A_Flow_03">
-        <di:waypoint x="590" y="750" />
+        <di:waypoint x="560" y="750" />
         <di:waypoint x="642" y="750" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Edge_Association_AllocationInputs" bpmnElement="Association_AllocationInputs">
@@ -366,21 +325,11 @@
       <bpmndi:BPMNEdge id="Edge_MessageFlow_AcceptedQuoteFunding" bpmnElement="MessageFlow_AcceptedQuoteFunding">
         <di:waypoint x="360" y="98" />
         <di:waypoint x="360" y="160" />
-        <di:waypoint x="-60" y="160" />
-        <di:waypoint x="-60" y="965" />
-        <di:waypoint x="92" y="965" />
+        <di:waypoint x="-40" y="160" />
+        <di:waypoint x="-40" y="470" />
+        <di:waypoint x="80" y="470" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="310" y="101" width="90" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_MessageFlow_FundingSecured" bpmnElement="MessageFlow_FundingSecured">
-        <di:waypoint x="360" y="947" />
-        <di:waypoint x="360" y="900" />
-        <di:waypoint x="-30" y="900" />
-        <di:waypoint x="-30" y="470" />
-        <di:waypoint x="82" y="470" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="-56" y="788" width="82" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Edge_MessageFlow_AllocationInputs" bpmnElement="MessageFlow_AllocationInputs">
@@ -400,10 +349,10 @@
         <di:waypoint x="660" y="768" />
         <di:waypoint x="660" y="820" />
         <di:waypoint x="0" y="820" />
-        <di:waypoint x="0" y="1120" />
-        <di:waypoint x="92" y="1120" />
+        <di:waypoint x="0" y="960" />
+        <di:waypoint x="92" y="960" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="-11" y="1195" width="52" height="40" />
+          <dc:Bounds x="-70" y="880" width="52" height="40" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="Shape_Annotation_ConfiguredRoutes" bpmnElement="Annotation_ConfiguredRoutes">
