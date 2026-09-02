@@ -11,11 +11,11 @@
 
 ## Abstract
 
-Veridica evolves conventional oracles from relying mainly on trusted third-party providers toward stronger, inspectable confidence in information. One or more contributors can provide information and evidence, and independent verifiers can check it when appropriate. Validation rules, supporting evidence, challenges, and past checks help applications assess confidence without treating a provider, a contract, or the ledger as a guarantee of truth.
+Veridica provides inspectable confidence in information through versioned contributions, supporting evidence, mechanical validation, and governed participation. Matching and aggregation validate information mechanically under applicable standards and policies. Eligible independent Verifiers may provide external evidence when the policy recognizes it, without replacing mechanical validation or always gating aggregation.
 
-Selective disclosure and controlled reuse are central to Veridica. It manages access and permitted use on a need-to-know basis through two complementary paths. Under normal Canton contract visibility, stakeholders see contract data, while participant or validator nodes host parties and retain and synchronize contract data according to those parties’ stakeholder visibility. When a non-stakeholder needs a contract for a specific workflow, a stakeholder can send an authenticated contract copy off-ledger for attachment to that workflow’s command. This permits workflow use without making the recipient a stakeholder, adding the contract to its normal visible contract set, or changing Daml authorization.
+Selective access and controlled reuse let applications share information on a need-to-know basis while governing who may access, verify, use, or further share it. A traceable history preserves how information was submitted, validated, optionally verified, corrected or replaced, shared, and used, together with previous versions, evidence, checks, and reasons. Each application can choose policies and acceptance thresholds suited to its purpose and risk.
 
-A traceable history shows how information was submitted, checked, corrected or replaced, shared, and used while retaining previous versions, evidence, checks, and reasons. Each application can choose acceptance thresholds based on its purpose and risk. Policies can control who may access, verify, use, or further share information and can allocate rewards to eligible contributors and verifiers based on the information and validation work the application recognizes.
+For priced use, a Consumer selects data, accepts a time-bound quote, and locks the Consumer token in Escrow. The Data Provider prepares the selected data and sends the applicable allocation inputs. The Settlement Allocator allocates the value of the locked Consumer token as rewards to Contributors and Verifiers according to the configured allocation and recipient routes. Escrow verifies the allocation instructions, and the final settlement, including delivery of the selected data to the Consumer, completes atomically.
 
 ---
 
@@ -23,23 +23,24 @@ A traceable history shows how information was submitted, checked, corrected or r
 
 ### 1. Objective
 
-Veridica’s objective is to provide shared Canton application primitives for information that can be contributed, checked, used on a need-to-know basis, and rewarded. It aims to move oracle use beyond relying mainly on a provider’s reputation toward confidence that applications can assess from evidence, validation, independent checks, and history.
+Veridica’s objective is to provide shared Canton application primitives for information that can be contributed, mechanically validated, optionally verified, used on a need-to-know basis, and rewarded. It aims to move oracle use beyond relying mainly on a provider’s reputation toward confidence that applications can assess from evidence, policy-governed matching and aggregation, mechanical validation, optional external verification, and history.
 
 Veridica must enable applications to:
 
 - accept information and supporting evidence from one or more contributors
-- apply clear validation rules and, when appropriate, record checks by independent verifiers
-- preserve evidence, challenges, corrections, previous versions, and the reasons for changes
+- match, validate, and aggregate information mechanically under clear, versioned standards and policies
+- record optional external verification by eligible independent Verifiers, whether performed manually or through automation on their behalf
+- preserve evidence, corrections, supersession, previous versions, and the reasons for changes
 - control selective disclosure and permitted use through normal Canton stakeholder visibility or Daml Explicit Contract Disclosure, without weakening Daml authorization
 - set acceptance rules and confidence thresholds suited to each application’s purpose and risk
-- trace how accepted information and verification work lead to policy-approved reward allocations for eligible contributors and verifiers
+- trace how accepted information and recognized verification work lead to policy-approved reward allocations for eligible contributors and Verifiers
 - reuse common, provider-neutral primitives across different applications instead of depending on one provider-specific product
 
-Success means an independent Canton team can use the shared primitives to build a workflow in which information is contributed, assessed, selectively used, updated with its history intact, and connected to an authorized reward decision. Veridica does not guarantee truth or data quality, make rewards automatic, or replace the governance and authorization rules chosen by each application.
+Success means an independent Canton team can use the shared primitives to build a workflow in which information is contributed, mechanically assessed, optionally supported by external verification, selectively used, corrected or superseded with its history intact, and connected to an authorized reward decision. Veridica does not guarantee truth or data quality, make rewards automatic, or replace the governance and authorization rules chosen by each application.
 
 ### 2. Implementation Mechanics
 
-Veridica will provide reusable Daml contracts, interfaces, application components, and reference flows. Its model will use composable contracts and linked records with separate responsibilities rather than one contract that represents the whole system. The exact contract, package, and interface decomposition will be validated during implementation.
+Veridica will provide reusable Daml contracts, interfaces, application components, APIs, and reference flows organized as composable contracts and linked records with distinct responsibilities. These components support governed information contribution, evidence, validation, access, reuse, priced use, reward allocation, settlement, and delivery. Matching and aggregation perform mechanical validation under the applicable standards and policies. Independent verification is optional external evidence, provided manually or through automation on behalf of an eligible Verifier, that may strengthen, qualify, or challenge confidence without replacing mechanical validation.
 
 #### Governed identifiers, standards, and policies
 
@@ -48,10 +49,13 @@ Each sharing context will use named and versioned configuration maintained by an
 - an **Identifier Scheme** defining how subjects and submissions are identified
 - an **Information Standard** defining fields, units, formats, and required metadata
 - an **Observation Key Policy** defining which fields identify the same contextual observation
-- a **Matching Policy** defining exact and semantic comparison, eligible matchers, tolerances, and review routes
-- an **Aggregation Policy** defining contribution selection, normalization, calculation, publication, pricing, and reward rules
+- a **Matching Policy** defining same-observation and governed related-observation matching, exact and semantic methods, mappings, tolerances, and matcher and input eligibility
+- an **Aggregation Policy** defining contribution selection, normalization, calculation, publication, and the mechanical validation and confidence inputs produced by aggregation
+- a **Verification Policy** defining when external verification is permitted or required, Verifier eligibility and independence, manual and automated modes, and how verification is recognized and weighted in confidence
 
-An **Observation Key** identifies a contextual observation that related contributions may describe. A **Contribution ID** uniquely identifies each submission. Contributions with the same Observation Key remain separate records with separate contributors, evidence, checks, permissions, and histories.
+An **Observation Key** identifies a contextual observation that related contributions may describe. Where an application integrates with an external data-standard interface, the applicable Observation Key Policy may define a mapping between Veridica observation identity and the external datapoint identity, schema version, and contextual fields.
+
+A **Contribution ID** uniquely identifies each submission. Contributions with the same Observation Key remain separate records with separate contributors, evidence, checks, permissions, and histories.
 
 Observation Keys are domain-specific. The following compact examples are illustrative, not universal requirements:
 
@@ -60,35 +64,35 @@ Observation Keys are domain-specific. The following compact examples are illustr
 | Equity price | Instrument ticker or stronger governed identifier + market + metric + currency + observation date + adjustment basis |
 | Real-estate valuation | Jurisdiction + property identifier + metric + effective date + currency + valuation basis |
 
-A policy may require stronger identifiers, finer timestamps, source categories, or other context. Changes to a scheme, standard, or policy create a new version so applications can identify exactly which rules were used.
+A policy may require stronger identifiers, finer timestamps, source categories, or other context. The exact versions of the Identifier Scheme, Information Standard, Observation Key Policy, Matching Policy, and Aggregation Policy used for each record or decision are retained so applications can determine which rules applied. Changes create a new version rather than changing the meaning of an earlier record.
+
+Pricing, reward allocation, settlement routes, and delivery are configured separately for the active priced-use flow. The Consumer accepts the binding quote, the Settlement Allocator applies the configured allocation and recipient routes, and Escrow verifies their execution before final settlement and delivery.
 
 #### Composable information, evidence, and decision records
 
-An information or assertion contract will contain submitted information or a reference to a document or dataset held elsewhere. It will carry its Contribution ID, identify one or more sources or contributors, declare the governed Information Standard and version, state its Observation Key under the applicable policy, and reference the configuration governing its sharing context.
+An information or assertion record will contain submitted information, a reference to a document or dataset held elsewhere, or both. It will carry its **Contribution ID**, identify its sources or contributors, declare the applicable **Information Standard** and version, state its **Observation Key**, and reference the configuration that governs the sharing context.
 
-A contribution may contain one record or a batch. Every contribution declares its standard and version, and every record remains independently identifiable, matchable, validatable, and traceable. A submission using multiple standards must place records in explicit standard groups or use separate batches. A batch is only a submission container; it is distinct from an aggregate information product calculated from selected inputs.
+A contribution may contain one record or a batch of records. Each contribution must declare its standard and version, and each record must remain independently identifiable, comparable under the applicable policies, subject to validation, and traceable through its history. If a submission uses multiple standards, it must place records into explicit standard groups or use separate batches. A batch is only a container for submitted records. It is not an aggregate information product calculated from selected inputs.
 
-Separate provenance and evidence records will link a contribution to sources, supporting documents, transformations, and earlier versions. Validation and verification records will identify the contribution and record checked, method used, evidence considered, result, limitations, responsible party, and declared conflicts. Lifecycle or decision records may separately record whether a version is pending, accepted, rejected, disputed, expired, corrected, or replaced. Usage, reuse, reward-eligibility, and allocation records will remain separate and linked.
+Separate provenance and evidence records will link a contribution to its sources, supporting documents, transformations, and earlier versions. A **Mechanical Validation Record** will identify the rules and inputs used, the result and limitations, the applicable policy versions, and an execution receipt. A separate **Verification Record** will identify the Verifier, the basis for eligibility and independence, the manual or automated method and any tool used, the evidence considered, the result, limitations or conflicts, and the Verifier’s attestation. Separate decision records may retain policy decisions without imposing a universal status model. Usage, reuse, reward eligibility, and allocation records will remain separate and linked to the relevant contribution, record, or aggregate product.
 
-Information may also relate explicitly to an earlier contribution through `supports`, `contradicts`, `corrects`, `replaces`, `enriches`, `derives_from`, or `duplicates`. These relations are claims, not proof. They remain subject to matching, validation, verification, and challenge, and they preserve the history of both records.
+Information may also have an explicit relationship to an earlier contribution, including `supports`, `contradicts`, `corrects`, `replaces`, `enriches`, `derives_from`, or `duplicates`. These relationships record how one item is claimed to relate to another. They do not by themselves prove that either item is true, accurate, or independent. The relationships remain subject to the applicable matching, mechanical validation, and optional verification policies, while preserving the history of both records.
 
-The ledger will hold contracts and state needed by the workflow. Larger documents or sensitive evidence may remain off-ledger and be delivered through an authorized channel. A ledger reference records their relationship to a contribution but does not by itself prove that the referenced material is correct, available, or unchanged.
+The ledger will hold the contracts and state needed to govern these records and their permitted use. Larger documents or sensitive evidence may remain outside the ledger and be delivered through an authorized channel. A ledger reference records the relationship between that material and the contribution, but does not by itself prove that the material is correct, available, authentic, or unchanged.
 
 #### Discovery, matching, validation, and confidence
 
-A privacy-safe discovery or catalog record may signal that information exists for a governed subject and type without exposing protected values, evidence, unnecessary contributor identity, or contributor counts. Policies may also support optional invitations for eligible contributors and verifiers.
+A privacy-safe discovery or catalog record may signal that information exists for a governed subject and type without exposing protected values, evidence, unnecessary contributor identity, or contributor counts. Policies may also support optional invitations for eligible contributors and Verifiers.
 
-A matching engine or authorized matcher first applies a named and versioned Matching Policy. **Exact matching** compares governed Observation Key fields directly. **Semantic matching** applies stated normalization, mappings, tolerances, or contextual rules. Outcomes are matched, ambiguous and sent for manual review, or not matched. Matching only decides whether records may be compared; it does not prove truth, quality, agreement, or independence.
+An authorized matcher applies a named and versioned Matching Policy to determine whether records describe the same governed observation, a governed related observation, are comparable, and, where applicable, have a governed content relationship. **Exact matching** compares governed Observation Key fields directly. **Semantic matching** applies stated normalization, mappings, tolerances, or contextual rules. Comparison is an internal matching activity that evaluates relevant records under the policy, rather than a standalone primitive. Matching does not by itself prove truth, quality, agreement, or independence.
 
-Only matched and comparable records proceed to comparison. A comparison may conclude that records corroborate, contradict, remain incomparable, or provide insufficient evidence. Independent submissions against the same Observation Key and explicit relations to prior contributions are both supported. An extra or duplicate contribution does not validate another record merely because it exists.
+Matching and aggregation perform mechanical validation under the applicable Information Standards and policies. Their records preserve the rules, inputs, results, limitations, policy versions, and execution receipts used. Independent verification is optional external evidence from an eligible independent Verifier, performed manually or through automation on the Verifier’s behalf. It may occur before, during, or after aggregation and may strengthen, qualify, or challenge confidence where the policy recognizes it, without replacing mechanical validation or always gating aggregation.
 
-Applications select validation rules and eligible independent verifiers through their policy. Where independence is required, a contributor cannot verify its own contribution. Conflict and role rules apply to matchers, verifiers, aggregators, and adjudicators. Verifiers may attest, request evidence, or raise a challenge. Corrections and replacements retain prior versions, checks, evidence, challenges, and reasons.
-
-Confidence is policy-based, not a raw vote or contribution count. It may consider evidence quality, method, operator and verifier independence, recency, unresolved disputes, corroboration, contradiction, and possible duplicate, Sybil, or collusive behavior. Each application chooses the policies, operators, verifiers, confidence measures, and acceptance thresholds it recognizes for its purpose and risk.
+Corrections and supersession retain prior versions, mechanical results, verification evidence, and reasons. Confidence is policy-derived from mechanical results, aggregation, evidence quality, and verification where the policy recognizes it. Each application chooses the policies, confidence measures, and acceptance thresholds suited to its purpose and risk.
 
 #### Aggregation and information products
 
-An aggregation pipeline creates a distinct information product from eligible source records. It will identify authorized inputs, normalize them under a named and versioned Information Standard and Aggregation Policy, handle outliers and missing data, apply recency rules, require any minimum number of independent inputs, and record supporting confidence and evidence.
+An aggregation pipeline creates a distinct information product from eligible source records. It will identify authorized inputs, normalize them under a named and versioned Information Standard and Aggregation Policy, handle outliers and missing data, apply recency rules, require any minimum number of independent inputs, and record mechanical validation outputs, evidence, and the inputs used by the applicable confidence policy.
 
 Publication controls define who may receive or use the aggregate product. Pricing and licensing rules apply independently to the aggregate and its source records. Reward rules may recognize eligible contribution, matching, verification, aggregation, or adjudication work. Every aggregate remains traceable to the input versions, policies, methods, decisions, and evidence used to create it.
 
@@ -99,8 +103,6 @@ An application may offer only aggregate products without selling or exposing sou
 Veridica will support two complementary Canton visibility paths across its contracts and records. Under normal Daml stakeholder or observer visibility, relevant parties see contract data and their participant nodes retain and synchronize the contract data those parties are entitled to see. For command-specific use by a non-stakeholder, a stakeholder may send an authenticated contract copy through an off-ledger channel using Daml Explicit Contract Disclosure. The recipient can attach that copy to a command, and the ledger validates it during transaction processing. This relaxes visibility for that command; it does not add the contract to the recipient's normal visible contract set or change Daml authorization.
 
 Policies state who may receive information or evidence, for which purpose it may be used, whether it may be shared or reused, and when permission expires. Separate usage and reuse records link an authorized workflow to the source or aggregate product, policy, permission, and version used. Revocation cannot make a party forget information already received.
-
-Where compatible interfaces become available, Veridica may interoperate with privacy and lineage primitives proposed by [CAPS in PR #497](https://github.com/canton-foundation/canton-dev-fund/pull/497). This is optional composition subject to interface review and tests, not a dependency on that proposal being approved.
 
 #### Pricing, rewards, and distributed operation
 
@@ -121,7 +123,7 @@ A reference workflow will demonstrate:
 3. one or more contributors submit independent records or a relation to a prior contribution, each with a Contribution ID, Observation Key, standard version, provenance, and evidence
 4. the catalog signals availability without revealing protected content or unnecessary contributor activity
 5. an authorized matcher applies exact or semantic matching and routes ambiguous cases for review
-6. validation, independent verification, challenges, and application policy produce a confidence assessment and lifecycle decision
+6. mechanical validation, optional independent Verification, challenges, and application policy produce the evidence and inputs from which the application policy derives a confidence assessment and lifecycle decision
 7. an authorized application either uses an accepted record directly or creates and uses a traceable aggregate product
 8. normal Daml visibility or Explicit Contract Disclosure supplies the contract input needed for the authorized workflow
 9. pricing and licensing are applied, usage is recorded, and recognized work may produce eligibility for an authorized reward-allocation decision
@@ -139,29 +141,27 @@ Veridica separates four concerns that implementations must not collapse:
 - **Execution Model and execution identity** define which Daml party or parties may carry out an authorized outcome, under which versioned controls. The executor set is a separate logical role from Governor and Resolver. Governor and Resolver may be assigned to the same Party or configuration, but that assignment neither merges roles nor changes the governance workflow.
 - **Participant hosting or custody** determines where those parties are hosted and how keys or operational control are held. Hosting or custody does not itself grant governance authority, Governor status, or business authorization.
 
-Consortium formation is a one-time bootstrap process. The Consortium Lead acts as Genesis **Proposer** and commits the closed immutable Candidate electorate when proposing the Consortium. 01A intentionally scopes only to that formation trigger and the visible execution-identity prerequisite; it does not represent all current policy decisions.
+Consortium formation is a one-time bootstrap process. The Consortium Lead acts as Genesis **Proposer** and commits the closed immutable Candidate electorate when proposing the Consortium. The formation workflow intentionally scopes only to that formation trigger and the visible execution-identity prerequisite; it does not represent all current policy decisions.
 
 The successful **Consortium formed** outcome establishes the formation result; `VRejected` and `VExpired` do not. Detailed rules for selecting and activating a Genesis Governor, Resolver, and Execution Model belong to the approved proposal, Initial Charter, and implementation specifications rather than the visual workflow. The selected model may be a distributed M-of-N operator-party arrangement, a single execution party controlled by a consortium legal entity, an optional DecMan-backed Canton Decentralized Party using supported open-source components, or a compatible future model. DecMan and Canton Decentralized Party are options, not requirements. DecMan supplies an execution mechanism, not the business policy engine; the approved proposal and charter definitions determine business authorization.
 
-After genesis, reusable consortium governance follows CAP terminology and mechanics. A Proposer eligible under the active governance policy prepares a proposal carrying the requested action, commitments, and timing. Eligible stakeholders handle their ballots, and the Resolver evaluates the proposal. Approved outcomes may proceed to the Executor set; rejected or lapsed decisions do not execute. Operators may be eligible under the initial policy but are not the only possible Proposers, and the Execution Model does not determine proposer eligibility. Policy, reward, membership, rules, execution-model, and other supported changes are proposal action types rather than separate setup workflows.
+After genesis, reusable consortium governance follows CAP terminology and mechanics. A Proposer eligible under the active governance policy prepares a proposal carrying the requested action, commitments, and timing. Eligible stakeholders handle their ballots, and the Resolver evaluates the proposal. Approved outcomes may proceed to the Executor set; **Rejected** or **Expired** decisions do not execute. Operators may be eligible under the initial policy but are not the only possible Proposers, and the Execution Model does not determine proposer eligibility. Policy, reward, membership, rules, execution-model, and other supported changes are proposal action types rather than separate setup workflows.
 
 Detailed policy and implementation rules define proposal timing, committed targets, withdrawal and ballot changes, executor authorization, drift handling, expiry, and audit records. A revised proposal starts a new decision cycle rather than reopening the current one. These rules constrain implementations but are not claimed as separate behavior in the current visual workflow.
 
-Reward governance is separate from governance voting weight. Macro rules may divide an approved reward amount into **X% for contributors, Y% for verifiers, and Z% for operators**, with any additional eligible roles explicitly defined. The policy must validate that all pools total 100%. Within each pool, micro allocation may use eligible credentials, role, recognized activity, quality, or other governed weights. Governance weights do not automatically become reward weights. Optional Concordia/CAP allocation or settlement interfaces may be used where validated interfaces fit; a non-CAP allocation path remains supported.
+Reward governance is separate from governance voting weight. Macro rules may divide an approved reward amount into **X% for contributors, Y% for verifiers, and Z% for operators**, with any additional eligible roles explicitly defined. The policy must validate that all pools total 100%. Within each pool, micro allocation may use eligible credentials, role, recognized activity, quality, or other governed weights. Governance weights do not automatically become reward weights. Veridica will seek to leverage, and may extend, Concordia/CAP where necessary and appropriate, subject to validated interfaces and explicit boundary assessment.
 
 #### BPMN Workflow Index
 
 These diagrams focus on the people and organizations that act, the order of their work, their decisions, and their handoffs. Contracts, policies, credentials, proposals, approvals, Governor mechanisms, and records appear as information used or produced during that work.
 
-| Workflow | GitHub view | Canonical BPMN 2.0 source | Purpose |
-|---|---|---|---|
-| 01A. Consortium formation and genesis election | [SVG](assets/01a-veridica-consortium-formation.svg) | [BPMN](assets/01a-veridica-consortium-formation.bpmn) | Forms the Consortium through a genesis election: complete any required Party setup, define the proposal and fixed Candidate electorate, send the proposal and ballot request to Candidates, handle their ballots, and resolve the outcome. |
-| 01B. Consortium governance | [SVG](assets/01b-veridica-consortium-governance.svg) | [BPMN](assets/01b-veridica-consortium-governance.bpmn) | Runs reusable governance from proposal preparation and Governor review through stakeholder ballots and resolution; only an approved outcome proceeds to the Executor set. |
-| 02. Veridica Access Lifecycle | [SVG](assets/02-veridica-access-lifecycle.svg) | [BPMN](assets/02-veridica-access-lifecycle.bpmn) | Routes sponsored and self-requested admission, additional role or credential requests, governed revocation, and unilateral named role renunciation through the Veridica Operator. Contributor, Aggregator, Verifier, and Consumer are independently accepted functional role capabilities; approved capabilities are recorded with scoped credentials. Governed cases use the reusable 01B mechanism. |
-| 02a. Access Governance and Trust Weighting |  |  | Reserved for a future BPMN covering weighting formulas, thresholds, and reassessment. Workflow 02 consumes and records the governed eligibility outcome without reproducing those mechanics. |
-| 03. Data producer actions | [SVG](assets/03-veridica-data-producer-actions.svg) | [BPMN](assets/03-veridica-data-producer-actions.bpmn) | Shows Contributor, Aggregator, and Verifier as separate participants. Every initial or superseding contribution version goes to both Aggregator and Verifier; corrections require fresh validation, and consolidated contributions return through the same validation path. No handoff reaches 05. |
-| 04. Consumer actions | [SVG](assets/04-veridica-consumer-actions.svg) | [BPMN](assets/04-veridica-consumer-actions.bpmn) | Shows Consumer, Data Provider, Settlement Allocator, and Escrow in a full priced-use real-time settlement continuation. The Consumer selects direct data or an aggregation and accepts a binding time-bound quote; the Provider supplies allocation inputs, the Settlement Allocator executes and records every configured recipient instruction across three route classes, and Escrow verifies all N records before final settlement and data delivery. |
-| 05. Reward allocation | [SVG](assets/05-veridica-reward-allocation.svg) | [BPMN](assets/05-veridica-reward-allocation.bpmn) | Standalone reward eligibility and entitlement workflow. It validates versioned policy, participation, eligibility, quality, independence, activity, caps, and floors, then records versioned entitlements and audit inputs without allocating or effecting settlement. |
+| Seq. | Workflow | Preview (SVG) | Authoritative BPMN 2.0 source | Scope and handoff | Status |
+| --- | --- | --- | --- | --- | --- |
+| 01A | Consortium Formation and Genesis Election | [SVG](assets/01a-veridica-consortium-formation.svg) | [BPMN](assets/01a-veridica-consortium-formation.bpmn) | Establishes the consortium context and genesis election outcome used by subsequent governance. | Defined |
+| 01B | Consortium Governance | [SVG](assets/01b-veridica-consortium-governance.svg) | [BPMN](assets/01b-veridica-consortium-governance.bpmn) | Governs proposals, review, stakeholder ballots, resolution, and execution. | Defined |
+| 02 | Veridica Access Lifecycle | [SVG](assets/02-veridica-access-lifecycle.svg) | [BPMN](assets/02-veridica-access-lifecycle.bpmn) | Governs admission, capabilities, revocation, and renunciation for participant roles. | Defined |
+| 03 | Data Producer Actions | [SVG](assets/03-veridica-data-producer-actions.svg) | [BPMN](assets/03-veridica-data-producer-actions.bpmn) | Covers contribution, matching, mechanical validation, correction, aggregation, and optional independent verification. Produces information or products that may be used in priced use. | Defined |
+| 04 | Consumer Actions | [SVG](assets/04-veridica-consumer-actions.svg) | [BPMN](assets/04-veridica-consumer-actions.bpmn) | Covers selected-data pricing, Consumer token lock, configured reward instructions for Contributors and Verifiers, final settlement, and atomic data delivery. | Defined |
 
 "Open" discovery or registration means that parties can find the process and apply. Formal roles, workflow actions, and information access remain subject to credentials, election or approval, policy, and Daml authorization.
 
@@ -169,7 +169,7 @@ These diagrams focus on the people and organizations that act, the order of thei
 
 The **Consortium Lead** is the Genesis **Proposer**. The Lead first decides whether the execution identity requires Party setup; either creates or registers the required DecMan Governor Party or single Consortium Party, or uses the committed Proposer + Candidate Party set; then proposes the Consortium. That proposal uses the Party Setup result to define and commit the selected execution identity/model, configured decision-policy fields, and fixed, closed Candidate electorate.
 
-After proposing, the Proposer sends the Genesis Proposal and Ballot Request to every fixed Candidate. Each Candidate handles its own ballot. Once the ballots are available for resolution, the Genesis Resolver evaluates and resolves the election, ending in **Consortium formed**, **VRejected**, or **VExpired**. Detailed privacy, deadline, rejection, and replacement rules belong to external policy or implementation specifications; they are not shown as workflow steps here.
+After proposing, the Proposer sends the Genesis Proposal and Ballot Request to every fixed Candidate. Each Candidate handles its own ballot. Once the ballots are available for resolution, the Genesis Resolver evaluates and resolves the election, ending in **Consortium formed**, **Rejected**, or **Expired**. Detailed privacy, deadline, rejection, and replacement rules belong to external policy or implementation specifications; they are not shown as workflow steps here.
 
 ![01A. Veridica consortium formation and genesis election BPMN](assets/01a-veridica-consortium-formation.svg)
 
@@ -179,7 +179,7 @@ Canonical source: [01A Veridica consortium formation and genesis election BPMN 2
 
 Each reusable governance cycle begins when an action is requested of a Proposer, who prepares a Governance Proposal and delivers it to the Governor. The Governor reviews it, then either distributes the proposal for stakeholder consideration or requests a revision. A revision begins a new proposal cycle rather than reopening the existing ballot.
 
-The applicable stakeholders then handle their own ballots under the governance process. Once the applicable governance condition is satisfied, the Resolver evaluates the proposal. An approved outcome goes to the Executor set for validation and either execution or expiry; rejected and lapsed proposals end without execution. The diagram also shows a separate Proposer withdrawal request, but does not show that request interrupting the Governor's review.
+The applicable stakeholders then handle their own ballots under the governance process. Once the applicable governance condition is satisfied, the Resolver evaluates the proposal. An approved outcome goes to the Executor set for validation and either execution or expiry; **Rejected** and **Expired** proposals end without execution. The diagram also shows a separate Proposer withdrawal request, but does not show that request interrupting the Governor's review.
 
 Detailed rules for proposer eligibility, ballot admission and tallying, withdrawal timing, execution windows, executor authorization, committed targets, drift handling, and audit records belong to the governing policy and implementation specifications. They are not shown as separate workflow behavior here.
 
@@ -199,21 +199,21 @@ Workflow 02 separates the Governor or Consortium Member, Prospective Participant
 
 Contributor, Aggregator, Verifier, and Consumer are functional role capabilities held by a Veridica Participant. For admission and additional capabilities, the Operator validates the request and eligibility policy, then uses **Obtain governed outcome from 01B**. Workflow 02 keeps that reusable governance work within 01B instead of repeating its participants and decisions.
 
-An approved admission or capability outcome identifies the accepted role capabilities. The Operator records and activates each accepted capability and its scoped credentials; these records may be completed independently for the accepted capabilities. A rejected or expired outcome is recorded without activation. Governed revocation also uses 01B and removes only the named access or capabilities when approved. By contrast, unilateral self-renunciation verifies participant control and removes the named held capability and its scoped credentials without governance approval, preserving unrelated capabilities.
+An approved admission or capability outcome identifies the accepted role capabilities. The Operator records and activates each accepted capability and its scoped credentials; these records may be completed independently for the accepted capabilities. A **Rejected** or **Expired** outcome is recorded without activation. Governed revocation also uses 01B and removes only the named access or capabilities when approved. By contrast, unilateral self-renunciation verifies participant control and removes the named held capability and its scoped credentials without governance approval, preserving unrelated capabilities.
 
-Detailed eligibility constraints, including whether Aggregator and Verifier capabilities may be combined for the same product, belong to the governed access policy rather than the visual workflow. Workflow 05 remains separate; Workflow 02 shows no direct handoff to it.
+Detailed eligibility constraints, including whether Aggregator and Verifier capabilities may be combined for the same product, belong to the governed access policy rather than the visual workflow. Reward eligibility and priced-use reward allocation are handled by the active application and settlement flow.
 
 ![2. Veridica access lifecycle BPMN](assets/02-veridica-access-lifecycle.svg)
 
 #### 03. Data Producer Actions
 
-Workflow 03 has separate Contributor, Aggregator, and Verifier participants. Participant lifecycle and technical Platform behavior remain outside this workflow. The Contributor submits a versioned contribution with its provenance and evidence, sending the same version to both the Aggregator and the Verifier. The Verifier validates the received contribution and evidence independently. That validation does not gate or alter the Aggregator's matching or aggregation.
+Workflow 03 has separate Contributor, Aggregator, and Verifier participants. Participant lifecycle and technical Platform behavior remain outside this workflow. The Contributor submits a versioned contribution with its provenance and evidence, sending the same version to both the Aggregator and the Verifier. The Verifier independently assesses the received contribution and evidence as optional external evidence. That assessment does not gate or alter the Aggregator's matching or aggregation.
 
-The Aggregator receives and matches contributions, then evaluates **Correction needed?** If correction is needed, the Aggregator sends a request to the Contributor. The Contributor resolves or corrects the contribution and submits a superseding version to both the Aggregator and the Verifier for fresh validation. The prior version remains visible as not current and requiring revalidation.
+The Aggregator receives and matches contributions, then evaluates **Correction needed?** If correction is needed, the Aggregator sends a request to the Contributor. The Contributor resolves or corrects the contribution and submits a superseding version to both the Aggregator and the Verifier for fresh mechanical validation and, where performed, fresh independent Verification. The prior version remains visible as not current, with its prior mechanical validation and any Verification history retained.
 
-When no correction is needed, the Aggregator prepares a consolidated contribution and sends it to the Verifier. The Verifier receives it through the same contribution validation path used for other versions, recording the validation without assessing the Aggregator's performance or method.
+When no correction is needed, the Aggregator prepares a consolidated contribution and sends it to the Verifier. The Verifier receives it through the same external-verification path used for other versions, recording the Verification without assessing the Aggregator's performance or method.
 
-Detailed independence, matching, aggregation, validation, and quality rules belong to the applicable policies and standards unless shown as a step or decision here. The workflow does not hand work to Workflow 05.
+Detailed independence, matching, aggregation, validation, and quality rules belong to the applicable policies and standards unless shown as a step or decision here. Reward eligibility and priced-use reward allocation are handled by the active application and settlement flow rather than a standalone workflow.
 
 ![3. Veridica data producer actions BPMN](assets/03-veridica-data-producer-actions.svg)
 
@@ -221,17 +221,11 @@ Detailed independence, matching, aggregation, validation, and quality rules belo
 
 Workflow 04 is the full priced-use real-time settlement continuation across exactly four participants: **Consumer, Data Provider, Settlement Allocator, and Escrow**. There is no Platform role. The Consumer selects either a direct data point or an aggregation and requests a binding time-bound quote. The Data Provider returns that quote; once accepted, the Consumer sends the accepted quote and token-lock instruction to Escrow. Escrow secures the amount and sends **Escrow locked** to the Data Provider.
 
-The Data Provider then prepares the selected data and sends Allocation inputs containing the data or product reference, secured funds reference, quote, and policy version to the Settlement Allocator. The Settlement Allocator generates immutable N-recipient settlement instructions, iterates every instruction, selects and performs each Contributor or Verifier recipient's configured route, and records each execution. The three per-instruction route classes are stablecoin, same-standard internal-token credit, or fiat rail. A fiat execution record requires confirmation from the configured connector and rail; it does not assert ultimate bank irrevocability. Escrow then verifies that every N instruction was executed and recorded, performs final settlement, and emits the final settlement receipt.
+The Data Provider then prepares the selected data and sends Allocation inputs containing the data or product reference, secured funds reference, quote, and policy version to the Settlement Allocator. The Settlement Allocator generates immutable N-recipient settlement instructions, iterates every instruction, selects and performs each Contributor or Verifier recipient's configured route, and records each execution. The three per-instruction route classes are stablecoin, same-standard internal-token credit, or fiat rail. A fiat execution record requires confirmation from the configured connector and rail; it does not assert ultimate bank irrevocability. Escrow then verifies that every N instruction was executed and recorded and atomically completes final settlement with delivery of the selected data to the Consumer.
 
-After completed settlement, Escrow sends a settlement receipt to the Data Provider and Consumer. Only then does the Data Provider deliver the selected data, and the Consumer receives it and ends. This continuation has no batch, deferred, pending, off-ramp, or later token-spending behavior.
+Escrow emits the final settlement receipt to the Data Provider and Consumer, and the Consumer receives the selected data as part of the completed atomic flow. This continuation has no batch, deferred, pending, off-ramp, or later token-spending behavior.
 
 ![4. Veridica consumer actions BPMN](assets/04-veridica-consumer-actions.svg)
-
-#### 5. Reward Allocation
-
-The downstream workflow is a narrow, standalone **Reward Eligibility and Entitlement** process. It consumes the active versioned participation and reward policy, authorized fee and usage reference, and eligibility evidence that the 02 chassis and 03, 03a, 03b, 04 role-party actions record; it does not redefine those inputs ad hoc. It validates policy and pools, credentials, roles, quality, independence, activity, caps, and floors, then records versioned eligibility and reward entitlements with accounting and audit records. Governance voting weights do not automatically equal participation, confidence, or reward weights. W05 produces policy, eligibility, and entitlement inputs that may inform W04 Settlement Allocator, but it does not calculate or effect priced-use allocation, settlement, payment, payout, credit, or settlement receipts. No message flow from the 02 participant-lifecycle or 03, 03a, 03b, 04 role-party actions reaches 05.
-
-![5. Veridica reward-allocation BPMN](assets/05-veridica-reward-allocation.svg)
 
 ### 3. Architectural Alignment
 
@@ -539,7 +533,7 @@ CAPS provides relevant and constructive groundwork for selective access and sign
 
 **Why separate disclosure from reuse.** Seeing data for one purpose does not necessarily authorize redistribution, derivation, or monetization. Explicit grants make those boundaries inspectable while acknowledging that ledger revocation cannot erase information already learned.
 
-**Why support rewards without embedding settlement.** Contribution and verification policies can determine eligibility or allocation. Existing Canton Token Standards should remain responsible for asset representation and transfer.
+**Why separate reward eligibility records from settlement.** Contribution, matching, aggregation, and Verification policies can provide inputs to eligibility and priced-use reward allocation. The active priced-use flow allocates the locked Consumer token and atomically settles with delivery, while existing Canton Token Standards remain responsible for asset representation and transfer.
 
 **Why demonstrate CAP/Concordia governance.** Proposal and milestone decisions are useful proving workflows for evidence-backed governance UI. The demonstration can test reusable decision and allocation mechanics while accurately preserving current CIP-0100 authority and the distinction between governance and effectuation.
 
@@ -573,6 +567,7 @@ Open questions before submission:
 | Project or standard | Proposal / PR | Repository / source | Relationship to Veridica | Boundary / alignment |
 | --- | --- | --- | --- | --- |
 | RedStone CAPS | [PR #497](https://github.com/canton-foundation/canton-dev-fund/pull/497) (proposal; approval state not stated) | N/A | Potentially complementary access, privacy, lineage, and privacy-preserving push-oracle patterns. | Optional composition only. No endorsement, dependency, or compatibility claim; interfaces, versions, and tests require validation. |
+| Kaiko Data Standard (CDS) | [Dev Fund PR #113](https://github.com/canton-foundation/canton-dev-fund/pull/113) (merged); [CDS PR #14](https://github.com/kaikodata/canton-data-standard/pull/14) (open; review-only, not adopted) | [canton-data-standard repository](https://github.com/kaikodata/canton-data-standard) | Potential reuse for typed datapoints, schema versioning, distributor identity, signatures, and verification audit records. Veridica would assess a version-pinned adapter or import-export boundary, map its Information Standards, Contribution, and Evidence records to selected CDS interfaces, and validate schema/version, signature/audit semantics, and compatibility through tests. | No compatibility or implementation claim. Veridica should not duplicate CDS data-publication or audit primitives; it retains contribution correction/supersession, aggregation, confidence, access/reuse, governance, and reward allocation. CDS PR #14 is not a dependency. |
 | Concordia | N/A | [Concordia repository](https://github.com/unlockitio/concordia) | Possible reuse of Canton Allocation Primitives (CAP) for governed decisions, allocations, reward routing, and settlement handoffs. | CAP is distinct from CAPS and is not a complete Veridica evidence, pricing, or reward implementation. |
 | CIP-0100 | N/A | [CIP-0100](https://github.com/canton-foundation/cips/blob/main/cip-0100/cip-0100.md) (Active) | Defines Development Fund governance and implementation mechanics relevant to the demonstration boundary. | The demonstration preserves Development Fund authority and does not import CIP governance into the Veridica runtime. |
 | Canton Network Splice | N/A | [Canton Network Splice repository](https://github.com/canton-network/splice) | Possible reference for Development Fund effectuation contracts and related infrastructure. | Exact supported interfaces remain unresolved and require validation. |
